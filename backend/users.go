@@ -65,5 +65,4 @@ func getUser(cfg *Config, ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, users)
-
 }

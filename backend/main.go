@@ -4,17 +4,21 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	_ "modernc.org/sqlite"
 )
 
 type Config struct {
-	db *database.Queries
+	db   *database.Queries
+	cost int64
 }
 
 func main() {
+	godotenv.Load()
 	r := gin.New()
 	dbName := "main.db"
 	if len(os.Args) > 1 && os.Args[1] == "test" {
