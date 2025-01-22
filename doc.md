@@ -1,3 +1,4 @@
+# API Documentation
 ## GET /user
 - return Array of User
 ```
