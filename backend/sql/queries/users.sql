@@ -2,9 +2,10 @@
 INSERT INTO users(user_id, FName, LName, email, password)
 VALUES( ?, ?, ?, ?, ?);
 
--- name: GetUser :one
-select * from users
-WHERE user_id = ?;
+-- name: GetUserByEmail :one
+select password from users
+WHERE email = ?;
+
 
 -- name: GetAllUser :many
 SELECT * from users;

@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
-	"strconv"
 
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
 	"github.com/gin-gonic/gin"
@@ -39,6 +38,10 @@ func main() {
 	})
 	r.GET("/user", func(ctx *gin.Context) {
 		getUser(&cfg, ctx)
+	})
+	r.POST("/user/login", func(ctx *gin.Context) {
+		loginUser(&cfg, ctx)
+
 	})
 	r.GET("/reset", func(ctx *gin.Context) {
 		cfg.db.DeleteAllUser(ctx.Request.Context())

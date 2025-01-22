@@ -1,0 +1,25 @@
+GET http://localhost:8080/reset
+[Options]
+output: -
+HTTP 200
+
+POST http://localhost:8080/user
+[Options]
+output: -
+{
+	"first_name":"first",
+	"last_name":"last",
+	"email":"example@gmail.com",
+	"password":"123"
+}
+HTTP 200
+[Captures]
+email: jsonpath "$.email"
+password: jsonpath "$.password"
+
+POST http://localhost:8080/user/login
+{
+	"email":"{{ email }}",
+	"password":"123"
+}
+HTTP 201

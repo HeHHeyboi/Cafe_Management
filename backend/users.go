@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/HeHHeyboi/Cafe_Management/backend/internal/auth"
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -27,7 +28,14 @@ func createUser(cfg *Config, ctx *gin.Context) {
 		ctx.JSON(401, gin.H{"error": fmt.Sprintf("Binding Error")})
 		return
 	}
+
 	user.UserID = uuid.New()
+	user.Password, err = auth.HashPassword(&user.Password)
+	if err != nil {
+		ctx.JSON(401, gin.H{"error": fmt.Sprintf("HashPassword Error: %v", err)})
+		return
+	}
+
 	err = cfg.db.CreateUser(ctx.Request.Context(), database.CreateUserParams{
 		UserID:   user.UserID,
 		Fname:    sql.NullString{String: user.Fname, Valid: user.Fname != ""},
@@ -39,6 +47,7 @@ func createUser(cfg *Config, ctx *gin.Context) {
 		ctx.JSON(401, gin.H{"error": err.Error()})
 		return
 	}
+	ctx.JSON(200, user)
 }
 
 func getUser(cfg *Config, ctx *gin.Context) {
@@ -65,4 +74,31 @@ func getUser(cfg *Config, ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, users)
+}
+
+func loginUser(cfg *Config, ctx *gin.Context) {
+	type Param struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	var param Param
+	if err := ctx.ShouldBindJSON(&param); err != nil {
+		ctx.JSON(401, gin.H{"error": fmt.Sprintf("Binding Error: %v", err)})
+		return
+	}
+
+	hashPassword, err := cfg.db.GetUserByEmail(ctx.Request.Context(), param.Email)
+	if err != nil {
+		ctx.JSON(404, gin.H{"error": fmt.Sprintf("Can't Get User: %v", err)})
+		return
+	}
+
+	ok := auth.ComparePassword(&param.Password, &hashPassword)
+	if !ok {
+		ctx.JSON(401, gin.H{"Authentication": fmt.Sprint("Incorrect Password")})
+		return
+	}
+
+	ctx.Status(201)
 }
