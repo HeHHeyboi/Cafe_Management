@@ -41,10 +41,21 @@ func main() {
 	})
 	r.POST("/user/login", func(ctx *gin.Context) {
 		loginUser(&cfg, ctx)
+	})
 
+	r.POST("/gallery", func(ctx *gin.Context) {
+		BookGallery(&cfg, ctx)
 	})
 	r.GET("/reset", func(ctx *gin.Context) {
-		cfg.db.DeleteAllUser(ctx.Request.Context())
+		err := cfg.db.DeleteAllUser(ctx.Request.Context())
+		err = cfg.db.DeleteGallery(ctx.Request.Context())
+
+		if err != nil {
+			ctx.JSON(401, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
 		ctx.JSON(200, gin.H{
 			"msg": "Reset Success",
 		})

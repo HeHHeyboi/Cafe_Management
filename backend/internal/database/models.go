@@ -8,6 +8,14 @@ import (
 	"database/sql"
 )
 
+type Gallery struct {
+	Gname     string
+	Startdate string
+	Enddate   string
+	Desc      sql.NullString
+	UserID    interface{}
+}
+
 type User struct {
 	UserID   interface{}
 	Fname    sql.NullString

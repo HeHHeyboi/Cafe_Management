@@ -60,7 +60,6 @@ func getUser(cfg *Config, ctx *gin.Context) {
 	for _, v := range data {
 		id, err := uuid.Parse(v.UserID.(string))
 		if err != nil {
-
 			ctx.IndentedJSON(401, gin.H{"error": err.Error()})
 		}
 		user := User{
