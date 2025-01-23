@@ -1,6 +1,6 @@
 
 -- +goose Up
-CREATE TABLE gallery(
+CREATE TABLE IF NOT EXISTS gallery(
 	Gname TEXT PRIMARY KEY NOT NULL,
 	StartDate TEXT NOT NULL,
 	EndDate TEXT NOT NULL,

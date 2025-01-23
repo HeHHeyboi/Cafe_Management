@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE users(
+CREATE TABLE IF NOT EXISTS users(
 	user_id UUID PRIMARY KEY NOT NULL, 
 	FName TEXT,
 	LName TEXT,
