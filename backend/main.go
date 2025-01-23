@@ -20,15 +20,14 @@ func main() {
 	godotenv.Load()
 	r := gin.New()
 	dbName := "main.db"
-	if len(os.Args) > 1 && os.Args[1] == "test" {
-		dbName = "test.db"
-	}
 
 	db, err := sql.Open("sqlite", dbName)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	setUpDB(db)
+
 	dbQuery := database.New(db)
 	cfg := Config{
 		db: dbQuery,
@@ -62,4 +61,28 @@ func main() {
 	})
 
 	r.Run("localhost:8080")
+}
+
+func setUpDB(db *sql.DB) {
+	resUserTab, err := db.Exec(createUserTable)
+	if err != nil {
+		fmt.Println("Set up DB error ", err)
+		os.Exit(1)
+	}
+	if res, err := resUserTab.LastInsertId(); err != nil {
+		fmt.Println("Set up DB error ", err)
+	} else {
+		fmt.Println("createUserTable ", res)
+	}
+
+	resGalleryTab, err := db.Exec(createGalleryTable)
+	if err != nil {
+		fmt.Println("Set up DB error ", err)
+		os.Exit(1)
+	}
+	if res, err := resGalleryTab.LastInsertId(); err != nil {
+		fmt.Println("Set up DB error ", err)
+	} else {
+		fmt.Println("createGalleryTable ", res)
+	}
 }
