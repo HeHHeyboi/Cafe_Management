@@ -1,3 +1,5 @@
+GET http://localhost:8080/reset
+
 POST http://localhost:8080/user
 {
 	"first_name":"first",

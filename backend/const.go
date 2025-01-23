@@ -15,4 +15,5 @@ const (
 	DESC TEXT,
 	user_id UUID
 );`
+	enableForeignKey = `pragma foreign_keys=ON;`
 )
