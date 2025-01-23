@@ -8,20 +8,19 @@ import (
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	_ "modernc.org/sqlite"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Config struct {
-	db   *database.Queries
-	cost int64
+	db *database.Queries
 }
 
 func main() {
 	godotenv.Load()
 	r := gin.New()
-	dbName := "main.db"
+	dbName := "main.db?_fk=ON"
 
-	db, err := sql.Open("sqlite", dbName)
+	db, err := sql.Open("sqlite3", dbName)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -64,25 +63,16 @@ func main() {
 }
 
 func setUpDB(db *sql.DB) {
-	resUserTab, err := db.Exec(createUserTable)
+	_, err := db.Exec(createUserTable)
 	if err != nil {
-		fmt.Println("Set up DB error ", err)
+		fmt.Println("Set up User table error ", err)
 		os.Exit(1)
-	}
-	if res, err := resUserTab.LastInsertId(); err != nil {
-		fmt.Println("Set up DB error ", err)
-	} else {
-		fmt.Println("createUserTable ", res)
 	}
 
-	resGalleryTab, err := db.Exec(createGalleryTable)
+	_, err = db.Exec(createGalleryTable)
 	if err != nil {
-		fmt.Println("Set up DB error ", err)
+		fmt.Println("Set up Gallery Table error ", err)
 		os.Exit(1)
 	}
-	if res, err := resGalleryTab.LastInsertId(); err != nil {
-		fmt.Println("Set up DB error ", err)
-	} else {
-		fmt.Println("createGalleryTable ", res)
-	}
+
 }

@@ -7,12 +7,12 @@ const (
 	LName TEXT,
 	email TEXT NOT NULL,
 	password TEXT NOT NULL
-)`
+);`
 	createGalleryTable = `CREATE TABLE IF NOT EXISTS gallery(
 	Gname TEXT PRIMARY KEY NOT NULL,
 	StartDate TEXT NOT NULL,
 	EndDate TEXT NOT NULL,
 	DESC TEXT,
 	user_id UUID
-)`
+);`
 )
