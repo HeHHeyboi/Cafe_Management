@@ -1,5 +1,17 @@
 GET http://localhost:8080/reset
 
+POST http://localhost:8080/gallery
+[Options]
+output: -
+{
+	"name": "gallery_Name",
+	"start_date":"2025-01-25",
+	"end_date":"2025-01-30",
+	"description":"this is gallery",
+	"user_id": "83a7d2f4-613f-4fdb-8256-84bef8a61ed2"
+}
+HTTP 401
+
 POST http://localhost:8080/user
 [Options]
 output: -
