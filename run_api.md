@@ -2,10 +2,10 @@
 ถ้าจะรัน server เพื่อ test api ให้ทำตามนี้
 ## Windows
 ```
-./backend.exe
+./backend_window.exe
 ```
 
 ## Mac
 ```
-cd ./backend/ && go run .
+./backend_mac
 ```
