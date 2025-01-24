@@ -1,4 +1,5 @@
 # API Documentation
+[/reset Endpoint](#reset)
 [/user Endpoint](#user)
 
 - [GET /user: List all User](#get-user)
@@ -7,7 +8,11 @@
 
 - [POST /user/login: Login User](#post-userlogin)
 
-
+## [GET /reset](#reset)
+Reset ข้อมูลใน Data Base
+```
+http://localhost:8080/reset
+```
 ## [/user](#user)
 
 ### [GET /user](#get-user)
