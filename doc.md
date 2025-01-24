@@ -1,5 +1,6 @@
 # API Documentation
 [/reset Endpoint](#reset)
+
 [/user Endpoint](#user)
 
 - [GET /user: List all User](#get-user)
