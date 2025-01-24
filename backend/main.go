@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"embed"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/pressly/goose/v3"
 	// _ "github.com/mattn/go-sqlite3"
 	_ "modernc.org/sqlite"
 )
@@ -16,6 +18,9 @@ import (
 type Config struct {
 	db *database.Queries
 }
+
+//go:embed sql/schema/*.sql
+var embedMigration embed.FS
 
 func main() {
 	godotenv.Load()
@@ -28,10 +33,10 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	setUpDB(db)
 
 	if len(os.Args) < 2 {
 		gin.SetMode(gin.ReleaseMode)
-		setUpDB(db)
 	} else if os.Args[1] == "test" {
 		gin.SetMode(gin.DebugMode)
 	}
@@ -75,20 +80,25 @@ func main() {
 func setUpDB(db *sql.DB) {
 	_, err := db.Exec(enableForeignKey)
 	if err != nil {
-		fmt.Println("Set up User table error ", err)
+		fmt.Println("Enable Foreign Key error", err)
 		os.Exit(1)
 	}
 
-	_, err = db.Exec(createUserTable)
-	if err != nil {
-		fmt.Println("Set up User table error ", err)
-		os.Exit(1)
+	goose.SetBaseFS(embedMigration)
+	if err := goose.SetDialect("sqlite"); err != nil {
+		panic(err)
 	}
 
-	_, err = db.Exec(createGalleryTable)
-	if err != nil {
-		fmt.Println("Set up Gallery Table error ", err)
-		os.Exit(1)
+	if err := goose.Up(db, "sql/schema"); err != nil {
+		panic(err)
 	}
+
+	var fk_enable int
+	row := db.QueryRow("pragma foreign_keys;")
+	err = row.Scan(&fk_enable)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Foreign status : ", fk_enable == 1)
 
 }
