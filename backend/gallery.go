@@ -58,14 +58,9 @@ func BookGallery(cfg *Config, ctx *gin.Context) {
 	})
 
 	if err != nil {
-		msg := "Booking Error: "
-		switch err.(type) {
-		case ForeignMissing:
-			msg += "Please Created User first"
-		default:
-			msg += err.Error()
-		}
+		msg := "Booking Error: " + checkError(err)
 		ctx.JSON(401, gin.H{"error": msg})
+		ctx.Error(err)
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{

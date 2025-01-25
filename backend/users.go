@@ -25,7 +25,8 @@ func createUser(cfg *Config, ctx *gin.Context) {
 	var err error
 
 	if err = ctx.BindJSON(&user); err != nil {
-		ctx.JSON(401, gin.H{"error": fmt.Sprintf("Binding Error")})
+		// ctx.JSON(401, gin.H{"error": fmt.Sprintf("Binding Error")})
+		http.Error(ctx.Writer, "Binding Error", http.StatusBadRequest)
 		return
 	}
 
@@ -33,6 +34,7 @@ func createUser(cfg *Config, ctx *gin.Context) {
 	user.Password, err = auth.HashPassword(&user.Password)
 	if err != nil {
 		ctx.JSON(401, gin.H{"error": fmt.Sprintf("HashPassword Error: %v", err)})
+		ctx.Error(err)
 		return
 	}
 
@@ -44,7 +46,9 @@ func createUser(cfg *Config, ctx *gin.Context) {
 		Password: user.Password,
 	})
 	if err != nil {
-		ctx.JSON(401, gin.H{"error": err.Error()})
+		msg := checkError(err)
+		ctx.JSON(401, gin.H{"error": msg})
+		ctx.Error(err)
 		return
 	}
 	ctx.JSON(200, user)
