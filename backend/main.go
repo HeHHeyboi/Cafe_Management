@@ -67,7 +67,8 @@ func main() {
 		err = cfg.db.DeleteGallery(ctx.Request.Context())
 
 		if err != nil {
-			ctx.String(http.StatusInternalServerError, err.Error())
+			ctx.Error(err)
+			ctx.String(http.StatusInternalServerError, "Can't reset data")
 			return
 		}
 		ctx.JSON(200, gin.H{
