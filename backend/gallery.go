@@ -13,8 +13,8 @@ import (
 
 type Gallery struct {
 	Gname     string    `json:"name"`
-	Startdate time.Time `json:"start_date"`
-	Enddate   time.Time `json:"end_date"`
+	Startdate string    `json:"start_date"`
+	Enddate   string    `json:"end_date"`
 	Desc      string    `json:"description"`
 	UserID    uuid.UUID `json:"user_id"`
 }
@@ -35,26 +35,22 @@ func BookGallery(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
-	var book Gallery
-	book.Gname = param.Gname
-	book.Startdate, err = time.Parse(time.DateOnly, param.Startdate)
-	book.Enddate, err = time.Parse(time.DateOnly, param.Enddate)
+	start_date, err := time.Parse(time.DateOnly, param.Startdate)
+	end_date, err := time.Parse(time.DateOnly, param.Enddate)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": fmt.Sprintf("Parse Time Error: %v", err)})
 		return
 	}
-	book.Desc = param.Desc
-	book.UserID = param.UserID
 
 	data, err := cfg.db.BookGallery(ctx.Request.Context(), database.BookGalleryParams{
-		Gname:     book.Gname,
-		Startdate: book.Startdate.Format(time.DateOnly),
-		Enddate:   book.Enddate.Format(time.DateOnly),
+		Gname:     param.Gname,
+		Startdate: start_date.Format(time.DateOnly),
+		Enddate:   end_date.Format(time.DateOnly),
 		Desc: sql.NullString{
-			String: book.Desc,
-			Valid:  (book.Desc != ""),
+			String: param.Desc,
+			Valid:  (param.Desc != ""),
 		},
-		UserID: book.UserID,
+		UserID: param.UserID,
 	})
 
 	if err != nil {
@@ -63,12 +59,40 @@ func BookGallery(cfg *Config, ctx *gin.Context) {
 		ctx.Error(err)
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"name":        data.Gname,
-		"start_date":  data.Startdate,
-		"end_date":    data.Enddate,
-		"description": data.Desc,
-		"user_id":     data.UserID,
-	})
 
+	var book Gallery
+	book.Gname = data.Gname
+	book.Startdate = data.Startdate
+	book.Enddate = data.Enddate
+	book.Desc = data.Desc.String
+	book.UserID = uuid.MustParse(data.UserID.(string))
+	ctx.JSON(http.StatusOK, gin.H{
+		"name":        book.Gname,
+		"start_date":  book.Startdate,
+		"end_date":    book.Enddate,
+		"description": book.Desc,
+		"user_id":     book.UserID,
+	})
+}
+
+func listBooking(cfg *Config, ctx *gin.Context) {
+
+	data, err := cfg.db.ListGallery(ctx.Request.Context())
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "List Booking Error"})
+		ctx.Error(err)
+	}
+
+	var galleries []Gallery
+	for _, book := range data {
+		gallery := Gallery{
+			Gname:     book.Gname,
+			Startdate: book.Startdate,
+			Enddate:   book.Enddate,
+			Desc:      book.Desc.String,
+			UserID:    uuid.MustParse(book.UserID.(string)),
+		}
+		galleries = append(galleries, gallery)
+	}
+	ctx.JSON(http.StatusOK, galleries)
 }

@@ -61,6 +61,9 @@ func main() {
 	r.POST("/gallery", func(ctx *gin.Context) {
 		BookGallery(&cfg, ctx)
 	})
+	r.GET("/gallery", func(ctx *gin.Context) {
+		listBooking(&cfg, ctx)
+	})
 
 	r.GET("/reset", func(ctx *gin.Context) {
 		err := cfg.db.DeleteAllUser(ctx.Request.Context())
