@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS gallery(
 	EndDate TEXT NOT NULL,
 	DESC TEXT,
 	user_id UUID,
-	FOREIGN KEY(user_id) REFERENCES users(user_id)
+	FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 -- +goose Down
