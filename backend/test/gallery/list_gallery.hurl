@@ -62,3 +62,7 @@ HTTP 200
 jsonpath "$.user_id" == "{{userID2}}"
 
 GET http://localhost:8080/gallery
+[Options]
+output: -
+
+GET http://localhost:8080/gallery?this_month=true
