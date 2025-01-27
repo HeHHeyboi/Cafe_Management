@@ -53,10 +53,51 @@ func (q *Queries) DeleteGallery(ctx context.Context) error {
 
 const listGallery = `-- name: ListGallery :many
 select gname, startdate, enddate, "desc", user_id from gallery
+ORDER BY "StartDate"
 `
 
 func (q *Queries) ListGallery(ctx context.Context) ([]Gallery, error) {
 	rows, err := q.db.QueryContext(ctx, listGallery)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Gallery
+	for rows.Next() {
+		var i Gallery
+		if err := rows.Scan(
+			&i.Gname,
+			&i.Startdate,
+			&i.Enddate,
+			&i.Desc,
+			&i.UserID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGalleryByMonth = `-- name: ListGalleryByMonth :many
+SELECT gname, startdate, enddate, "desc", user_id FROM gallery
+WHERE StartDate >= CASE 
+	WHEN (CAST(?1 AS INT )) THEN date('now','start of month') ELSE '0' 
+END
+AND StartDate < CASE 
+	WHEN (CAST(?1 AS INT) ) THEN date('now','start of month','+1 month') ELSE '99999' 
+END
+`
+
+// FIX: This Query next time, May be use WITH-CLAUSE to handle variable
+func (q *Queries) ListGalleryByMonth(ctx context.Context, thisMonth int64) ([]Gallery, error) {
+	rows, err := q.db.QueryContext(ctx, listGalleryByMonth, thisMonth)
 	if err != nil {
 		return nil, err
 	}
