@@ -64,5 +64,10 @@ jsonpath "$.user_id" == "{{userID2}}"
 GET http://localhost:8080/gallery
 [Options]
 output: -
+delay: 1s
 
-GET http://localhost:8080/gallery?this_month=true
+GET http://localhost:8080/gallery?month=this
+[Options]
+output: -
+delay: 1s
+GET http://localhost:8080/gallery?month=feb
