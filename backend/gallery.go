@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
@@ -71,22 +70,31 @@ func BookGallery(cfg *Config, ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, book)
 }
 
-// TODO: Accept 'month' Query to filter book gallery that have been book in this month
 func listBooking(cfg *Config, ctx *gin.Context) {
-	query := ctx.DefaultQuery("this_month", "false")
-	this_month, err := strconv.ParseBool(query)
-	if err != nil {
-		panic(err)
-	}
-	var data []database.Gallery
+	month := ctx.DefaultQuery("month", "none")
+	fmt.Println(month)
 
-	if this_month {
-		data, err = cfg.db.ListGalleryByMonth(ctx.Request.Context(), 1)
+	var data []database.Gallery
+	var err error
+
+	if month == "this" {
+		fmt.Println("month = this")
+		data, err = cfg.db.ListGalleryByMonth(ctx.Request.Context(), database.ListGalleryByMonthParams{
+			ThisMonth: true,
+			Month:     nil,
+		})
+	} else if month != "none" {
+		fmt.Println("month = ", month)
+		data, err = cfg.db.ListGalleryByMonth(ctx.Request.Context(), database.ListGalleryByMonthParams{
+			ThisMonth: false,
+			Month:     "TEXT",
+		})
 	} else {
 		data, err = cfg.db.ListGallery(ctx.Request.Context())
 	}
+
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "List Booking Error"})
+		ctx.JSON(500, gin.H{"error": "List Booking Error"})
 		ctx.Error(err)
 	}
 
