@@ -11,8 +11,8 @@ func TestHash(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Hash Error: %v", err)
 	}
-	err = ComparePassword(&password, &hash)
-	if err != nil {
+	ok := ComparePassword(&password, &hash)
+	if !ok {
 		t.Fatalf("Password doesn't Match: %v", err)
 	}
 	fmt.Println("Test Success")
