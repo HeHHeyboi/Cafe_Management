@@ -16,7 +16,8 @@ import (
 )
 
 type Config struct {
-	db *database.Queries
+	db     *database.Queries
+	secret string
 }
 
 //go:embed sql/schema/*.sql
@@ -24,7 +25,6 @@ var embedMigration embed.FS
 
 func main() {
 	godotenv.Load()
-	// dbName := "main.db?_fk=ON"
 	dbName := "main.db"
 
 	db, err := sql.Open("sqlite", dbName)
@@ -41,9 +41,15 @@ func main() {
 		gin.SetMode(gin.DebugMode)
 	}
 
+	secret, ok := os.LookupEnv("SECRET")
+	if !ok {
+		fmt.Println("Doesn't have SECRET in enviroment variable")
+	}
+
 	dbQuery := database.New(db)
 	cfg := Config{
-		db: dbQuery,
+		db:     dbQuery,
+		secret: secret,
 	}
 	r := gin.New()
 	r.Use(gin.Logger())

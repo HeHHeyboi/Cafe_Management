@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/HeHHeyboi/Cafe_Management/backend/internal/auth"
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -21,14 +22,24 @@ type Gallery struct {
 
 func BookGallery(cfg *Config, ctx *gin.Context) {
 	type Param struct {
-		Gname     string    `json:"name"`
-		Startdate string    `json:"start_date"`
-		Enddate   string    `json:"end_date"`
-		Desc      string    `json:"description"`
-		UserID    uuid.UUID `json:"user_id"`
+		Gname     string `json:"name"`
+		Startdate string `json:"start_date"`
+		Enddate   string `json:"end_date"`
+		Desc      string `json:"description"`
 	}
 	var param Param
 	var err error
+
+	cookie, err := ctx.Request.Cookie("id")
+	if err != nil {
+		ctx.JSON(401, gin.H{"error": "Please login first"})
+		return
+	}
+
+	id, err := auth.ReadCookie(cookie, cfg.secret)
+	if err != nil {
+		panic(err.Error())
+	}
 
 	if err = ctx.BindJSON(&param); err != nil {
 		ctx.JSON(400, gin.H{"error": fmt.Sprintf("Binding Error: %v", err)})
@@ -50,13 +61,13 @@ func BookGallery(cfg *Config, ctx *gin.Context) {
 			String: param.Desc,
 			Valid:  (param.Desc != ""),
 		},
-		UserID: param.UserID,
+		UserID: id,
 	})
 
 	if err != nil {
 		msg := "Booking Error: " + checkError(err)
 		ctx.JSON(401, gin.H{"error": msg})
-		ctx.Error(err)
+		ctx.Error(fmt.Errorf("%v", msg))
 		return
 	}
 
@@ -78,13 +89,13 @@ func listBooking(cfg *Config, ctx *gin.Context) {
 	var err error
 
 	if month == "this" {
-		fmt.Println("month = this")
+		// fmt.Println("month = this")
 		data, err = cfg.db.ListGalleryByMonth(ctx.Request.Context(), database.ListGalleryByMonthParams{
 			ThisMonth: true,
 			Month:     nil,
 		})
 	} else if month != "none" {
-		fmt.Println("month = ", month)
+		// fmt.Println("month = ", month)
 		data, err = cfg.db.ListGalleryByMonth(ctx.Request.Context(), database.ListGalleryByMonthParams{
 			ThisMonth: false,
 			Month:     "TEXT",

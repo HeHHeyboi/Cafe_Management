@@ -3,7 +3,7 @@ INSERT INTO users(user_id, FName, LName, email, password)
 VALUES( ?, ?, ?, ?, ?);
 
 -- name: GetUserByEmail :one
-select password from users
+select user_id,password from users
 WHERE email = ?;
 
 

@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -15,24 +16,16 @@ import (
 
 var ErrInvalidValue error = errors.New("Invalid Value")
 
-/*
-TODO: finish cookie.go
-CreateCookie: not done ,not test
-ReadCookie: not done, not test
-ValidateCookie: not done, not test
-encryptCookie: done, not test
-decryptCookie: done, not test
-*/
 func CreateCookie(name, value, secret string) (http.Cookie, error) {
-	encodeVal := base64.URLEncoding.EncodeToString([]byte(value))
 	expireDate := time.Now().AddDate(0, 0, 7)
-	encrypt, err := encryptCookie(name, encodeVal, secret)
+	encrypt, err := encryptCookie(name, value, secret)
+	encodeVal := base64.URLEncoding.EncodeToString([]byte(encrypt))
 	if err != nil {
 		return http.Cookie{}, err
 	}
 	cookie := http.Cookie{
 		Name:     name,
-		Value:    encrypt,
+		Value:    encodeVal,
 		Path:     "/",
 		Expires:  expireDate,
 		SameSite: http.SameSiteStrictMode,
@@ -42,16 +35,16 @@ func CreateCookie(name, value, secret string) (http.Cookie, error) {
 }
 
 func ReadCookie(cookie *http.Cookie, secret string) (string, error) {
-	decrypt, err := decryptCookie(cookie, secret)
+	value, err := base64.URLEncoding.DecodeString(cookie.Value)
 	if err != nil {
 		return "", err
 	}
 
-	value, err := base64.URLEncoding.DecodeString(decrypt)
+	decrypt, err := decryptCookie(cookie.Name, value, secret)
 	if err != nil {
 		return "", err
 	}
-	return string(value), nil
+	return string(decrypt), nil
 }
 
 func encryptCookie(name, value, secret string) (string, error) {
@@ -77,20 +70,23 @@ func encryptCookie(name, value, secret string) (string, error) {
 	return string(encrypt), nil
 }
 
-func decryptCookie(cookie *http.Cookie, secret string) (string, error) {
-	encryptVal := cookie.Value
+func decryptCookie(name string, value []byte, secret string) (string, error) {
+	encryptVal := value
 	block, err := aes.NewCipher([]byte(secret))
 	if err != nil {
+		log.Fatal("block Error")
 		return "", err
 	}
 
 	aesGCM, err := cipher.NewGCM(block)
 	if err != nil {
+		log.Fatal("aesGCM Error")
 		return "", err
 	}
 
 	nonceSize := aesGCM.NonceSize()
 	if len(encryptVal) < nonceSize {
+		log.Fatal("nonceSize Error")
 		return "", ErrInvalidValue
 	}
 
@@ -99,16 +95,19 @@ func decryptCookie(cookie *http.Cookie, secret string) (string, error) {
 
 	plaintext, err := aesGCM.Open(nil, []byte(nonce), []byte(ciphertext), nil)
 	if err != nil {
+		log.Fatal("plaintext Error", err.Error())
 		return "", ErrInvalidValue
 	}
 
-	expectedName, value, ok := strings.Cut(string(plaintext), ":")
+	expectedName, decrypt_value, ok := strings.Cut(string(plaintext), ":")
 	if !ok {
+		log.Fatal("cannot cut string Error")
 		return "", ErrInvalidValue
 	}
 
-	if expectedName != cookie.Name {
+	if string(expectedName) != name {
+		log.Fatal("expectedName Error")
 		return "", ErrInvalidValue
 	}
-	return value, nil
+	return string(decrypt_value), nil
 }
