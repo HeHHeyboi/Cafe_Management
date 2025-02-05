@@ -27,6 +27,15 @@ output: -
 HTTP 201
 
 POST http://localhost:8080/user/login
+[Options]
+output: -
+{
+	"email":"{{ email }}",
+	"password":"321"
+}
+HTTP 401
+
+POST http://localhost:8080/user/login
 {
 	"email":"thana@gmail.com",
 	"password":"123"

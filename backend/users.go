@@ -32,7 +32,7 @@ func createUser(cfg *Config, ctx *gin.Context) {
 	user.UserID = uuid.New()
 	user.Password, err = auth.HashPassword(&user.Password)
 	if err != nil {
-		ctx.JSON(401, gin.H{"error": fmt.Sprintf("HashPassword Error: %v", err)})
+		ctx.JSON(401, gin.H{"error": fmt.Sprintf("data Error: %v", err)})
 		ctx.Error(err)
 		return
 	}
@@ -90,17 +90,24 @@ func loginUser(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
-	hashPassword, err := cfg.db.GetUserByEmail(ctx.Request.Context(), param.Email)
+	data, err := cfg.db.GetUserByEmail(ctx.Request.Context(), param.Email)
 	if err != nil {
-		ctx.JSON(404, gin.H{"error": fmt.Sprintf("Can't Get User: %v", err)})
+		msg := checkError(err)
+		ctx.JSON(404, gin.H{"error": msg})
 		return
 	}
 
-	ok := auth.ComparePassword(&param.Password, &hashPassword)
+	ok := auth.ComparePassword(&param.Password, &data.Password)
 	if !ok {
 		ctx.JSON(401, gin.H{"Authentication": fmt.Sprint("Incorrect Password")})
 		return
 	}
 
+	cookie, err := auth.CreateCookie("id", data.UserID.(string), cfg.secret)
+	if err != nil {
+		panic("Creaet Cookie error")
+	}
+
+	http.SetCookie(ctx.Writer, &cookie)
 	ctx.Status(201)
 }
