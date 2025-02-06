@@ -33,14 +33,17 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	setUpDB(db)
 
 	if len(os.Args) < 2 {
 		gin.SetMode(gin.ReleaseMode)
 	} else if os.Args[1] == "test" {
 		gin.SetMode(gin.DebugMode)
+	} else if os.Args[1] == "reset" {
+		goose.Reset(db, "sql/schema")
+		return
 	}
 
+	setUpDB(db)
 	secret, ok := os.LookupEnv("SECRET")
 	if !ok {
 		fmt.Println("Doesn't have SECRET in enviroment variable")
