@@ -48,7 +48,7 @@ Example:
 - Content-Type: application/json
 
 ในการสร้าง User account ต้องการ data ที่ส่งมาพร้อมกับ Request คือ
-
+Data ที่ต้องส่งมาคือ
 Example:
 ```
 {
@@ -62,6 +62,7 @@ Example:
 - `last_name`: นามสกุล
 - `email`: อีเมลของ user
 - `password`: จะได้ค่าเป็นรหัสผ่านที่ถูกเข้ารหัส
+
 จากนั้นจะส่ง json กลับมา
 ```
 {
@@ -79,8 +80,7 @@ Example:
 - `password`: จะได้ค่าเป็นรหัสผ่านที่ถูกเข้ารหัส
 
 ### [POST /user/login](#post-userlogin)
-Login เข้าบัญชีด้วย `email` & `password`
-
+Login เข้าบัญชีด้วย `email` & `password` จะทำการสร้าง cookie ในเครื่องของ client
 Example:
 ```
 {
@@ -96,14 +96,13 @@ Example:
 
 ## [POST /gallery](#post-gallery)
 จองวันที่จัด Gallery
-
+Data ที่ต้องส่งมาคือ
 ```
 {
     "name": "gallery_Name",
     "start_date": "2025-01-25",
     "end_date": "2025-01-30",
     "description": "this is gallery",
-    "user_id": "a0eefe01-40ca-46d0-a470-0954b9ab2e19"
 }
 ```
 - `name`: ชื่อของแกลลอรี่
@@ -115,7 +114,7 @@ Example:
 ## [GET /gallery?month=](#get-gallerymonth)
 จะได้ค่าออกมาเป็น Array ของ json ที่มีโครงสร้างดังนี้
 Query:
-- `month`: ใส่ได้ 2 ค่ามี ชื่อเดือน(ภาษาอังกฤษ) | this(แสดง Gallery ที่มี `start_date` ภายในเดือนนี้)
+- `month`: this(แสดง Gallery ที่มี `start_date` ภายในเดือนนี้)
 
 Example:
 ```
