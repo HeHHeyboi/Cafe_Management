@@ -10,7 +10,7 @@ import (
 )
 
 const addMenu = `-- name: AddMenu :exec
-INSERT into menu(name,price,type) 
+INSERT INTO menu(name,price,type) 
 VALUES(?,?,?)
 `
 
@@ -34,8 +34,28 @@ func (q *Queries) DeleteAllMenu(ctx context.Context) error {
 	return err
 }
 
+const deleteMenuByID = `-- name: DeleteMenuByID :exec
+DELETE FROM menu
+WHERE menu_id = ?
+`
+
+func (q *Queries) DeleteMenuByID(ctx context.Context, menuID int64) error {
+	_, err := q.db.ExecContext(ctx, deleteMenuByID, menuID)
+	return err
+}
+
+const deleteMenuByName = `-- name: DeleteMenuByName :exec
+DELETE FROM menu
+WHERE name = ?
+`
+
+func (q *Queries) DeleteMenuByName(ctx context.Context, name string) error {
+	_, err := q.db.ExecContext(ctx, deleteMenuByName, name)
+	return err
+}
+
 const getAllMenus = `-- name: GetAllMenus :many
-Select menu_id, name, price, type from menu
+SELECT menu_id, name, price, type FROM menu
 `
 
 func (q *Queries) GetAllMenus(ctx context.Context) ([]Menu, error) {
@@ -67,7 +87,7 @@ func (q *Queries) GetAllMenus(ctx context.Context) ([]Menu, error) {
 }
 
 const getAllType = `-- name: GetAllType :many
-Select type from menu
+SELECT type FROM menu
 `
 
 func (q *Queries) GetAllType(ctx context.Context) ([]string, error) {
@@ -94,7 +114,7 @@ func (q *Queries) GetAllType(ctx context.Context) ([]string, error) {
 }
 
 const getMenu = `-- name: GetMenu :one
-Select menu_id, name, price, type from menu
+SELECT menu_id, name, price, type FROM menu
 WHERE name = ?
 `
 
