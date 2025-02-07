@@ -1,10 +1,10 @@
--- +goose up
+-- +goose Up
 CREATE TABLE IF NOT EXISTS menu(
-	menu_id TEXT PRIMARY KEY NOT NULL,
+	menu_id INTEGER PRIMARY KEY,
 	name TEXT NOT NULL,
 	price REAL NOT NULL,
 	type TEXT NOT NULL
 );
 
--- +goose down
+-- +goose Down
 drop table menu;

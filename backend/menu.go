@@ -1,1 +1,55 @@
 package main
+
+import (
+	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
+	"github.com/gin-gonic/gin"
+)
+
+type Menu struct {
+	MenuID int64   `json:"menu_id"`
+	Name   string  `json:"name"`
+	Type   string  `json:"type"`
+	Price  float64 `json:"price"`
+}
+
+func AddNewMenu(cfg *Config, ctx *gin.Context) {
+	var newMenu Menu
+	var err error
+
+	if err = ctx.ShouldBindJSON(&newMenu); err != nil {
+		ctx.JSON(400, gin.H{"error": "Binding Errror"})
+		return
+	}
+
+	err = cfg.db.AddMenu(ctx.Request.Context(), database.AddMenuParams{
+		Name:  newMenu.Name,
+		Type:  newMenu.Type,
+		Price: newMenu.Price,
+	})
+	if err != nil {
+		ctx.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, gin.H{"msg": "Add menu Success"})
+}
+
+func GetAllMenu(cfg *Config, ctx *gin.Context) {
+	data, err := cfg.db.GetAllMenus(ctx.Request.Context())
+	if err != nil {
+		ctx.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	menus := []Menu{}
+	for _, m := range data {
+		menu := Menu{
+			m.MenuID,
+			m.Name,
+			m.Type,
+			m.Price,
+		}
+		menus = append(menus, menu)
+	}
+
+	ctx.JSON(200, menus)
+}
