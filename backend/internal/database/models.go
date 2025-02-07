@@ -16,6 +16,13 @@ type Gallery struct {
 	UserID    interface{}
 }
 
+type Menu struct {
+	MenuID int64
+	Name   string
+	Price  float64
+	Type   string
+}
+
 type User struct {
 	UserID   interface{}
 	Fname    sql.NullString

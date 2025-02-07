@@ -74,9 +74,17 @@ func main() {
 		listBooking(&cfg, ctx)
 	})
 
+	r.GET("/menu", func(ctx *gin.Context) {
+		GetAllMenu(&cfg, ctx)
+	})
+	r.POST("/menu", func(ctx *gin.Context) {
+		AddNewMenu(&cfg, ctx)
+	})
+
 	r.GET("/reset", func(ctx *gin.Context) {
 		err := cfg.db.DeleteAllUser(ctx.Request.Context())
 		err = cfg.db.DeleteGallery(ctx.Request.Context())
+		err = cfg.db.DeleteAllMenu(ctx.Request.Context())
 
 		if err != nil {
 			ctx.Error(err)
