@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strconv"
+
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
 	"github.com/gin-gonic/gin"
 )
@@ -52,4 +54,32 @@ func GetAllMenu(cfg *Config, ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, menus)
+}
+
+func DeleteMenuByName(cfg *Config, ctx *gin.Context) {
+	name := ctx.Param("name")
+
+	err := cfg.db.DeleteMenuByName(ctx.Request.Context(), name)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(204, gin.H{"msg": "Delete Success"})
+}
+
+func DeleteMenuByID(cfg *Config, ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(400, "Invalid id")
+		return
+	}
+
+	err = cfg.db.DeleteMenuByID(ctx.Request.Context(), int64(id))
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(204, "Delete Success")
 }

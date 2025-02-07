@@ -1,16 +1,24 @@
 -- name: AddMenu :exec
-INSERT into menu(name,price,type) 
+INSERT INTO menu(name,price,type) 
 VALUES(?,?,?);
 
 -- name: GetAllMenus :many
-Select * from menu;
+SELECT * FROM menu;
 
 -- name: GetAllType :many
-Select type from menu;
+SELECT type FROM menu;
 
 -- name: GetMenu :one
-Select * from menu
+SELECT * FROM menu
 WHERE name = ?;
 
 -- name: DeleteAllMenu :exec
 DELETE FROM menu;
+
+-- name: DeleteMenuByName :exec
+DELETE FROM menu
+WHERE name = ?;
+
+-- name: DeleteMenuByID :exec
+DELETE FROM menu
+WHERE menu_id = ?;
