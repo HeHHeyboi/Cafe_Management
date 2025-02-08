@@ -8,15 +8,16 @@ import (
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/auth"
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
 
 type User struct {
-	UserID   uuid.UUID `json:"id"`
-	Fname    string    `json:"first_name"`
-	Lname    string    `json:"last_name"`
-	Email    string    `json:"email"`
-	Password string    `json:"password"`
+	UserID   uuid.UUID `json:"-"`
+	Fname    string    `json:"first_name" form:"first_name" binding:"required"`
+	Lname    string    `json:"last_name" form:"last_name" binding:"required"`
+	Email    string    `json:"email" form:"email" binding:"required"`
+	Password string    `json:"password" form:"password" binding:"required"`
 }
 
 func createUser(cfg *Config, ctx *gin.Context) {
@@ -24,8 +25,8 @@ func createUser(cfg *Config, ctx *gin.Context) {
 	var user User
 	var err error
 
-	if err = ctx.BindJSON(&user); err != nil {
-		http.Error(ctx.Writer, "Binding Error", http.StatusBadRequest)
+	if err = ctx.ShouldBind(&user); err != nil {
+		bindingErrorMsg(err.(validator.ValidationErrors), ctx)
 		return
 	}
 
@@ -45,7 +46,7 @@ func createUser(cfg *Config, ctx *gin.Context) {
 		Password: user.Password,
 	})
 	if err != nil {
-		msg := checkError(err)
+		msg := checkDataBaseError(err)
 		ctx.JSON(401, gin.H{"error": msg})
 		ctx.Error(err)
 		return
@@ -80,19 +81,19 @@ func getUser(cfg *Config, ctx *gin.Context) {
 
 func loginUser(cfg *Config, ctx *gin.Context) {
 	type Param struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
+		Email    string `json:"email" form:"email" binding:"required"`
+		Password string `json:"password" form:"password" binding:"required"`
 	}
 
 	var param Param
-	if err := ctx.ShouldBindJSON(&param); err != nil {
-		ctx.JSON(401, gin.H{"error": fmt.Sprintf("Binding Error: %v", err)})
+	if err := ctx.ShouldBind(&param); err != nil {
+		bindingErrorMsg(err.(validator.ValidationErrors), ctx)
 		return
 	}
 
 	data, err := cfg.db.GetUserByEmail(ctx.Request.Context(), param.Email)
 	if err != nil {
-		msg := checkError(err)
+		msg := checkDataBaseError(err)
 		ctx.JSON(404, gin.H{"error": msg})
 		return
 	}
@@ -105,9 +106,9 @@ func loginUser(cfg *Config, ctx *gin.Context) {
 
 	cookie, err := auth.CreateCookie("id", data.UserID.(string), cfg.secret)
 	if err != nil {
-		panic("Creaet Cookie error")
+		panic("Create Cookie error")
 	}
 
 	http.SetCookie(ctx.Writer, &cookie)
-	ctx.Status(201)
+	ctx.JSON(201, gin.H{"msg": "Login success"})
 }

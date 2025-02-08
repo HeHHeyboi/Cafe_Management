@@ -5,21 +5,22 @@ import (
 
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type Menu struct {
 	MenuID int64   `json:"menu_id"`
-	Name   string  `json:"name"`
-	Type   string  `json:"type"`
-	Price  float64 `json:"price"`
+	Name   string  `json:"name" form:"name" binding:"required"`
+	Type   string  `json:"type" form:"type" binding:"required"`
+	Price  float64 `json:"price" form:"price" binding:"required"`
 }
 
 func AddNewMenu(cfg *Config, ctx *gin.Context) {
 	var newMenu Menu
 	var err error
 
-	if err = ctx.ShouldBindJSON(&newMenu); err != nil {
-		ctx.JSON(400, gin.H{"error": "Binding Errror"})
+	if err = ctx.ShouldBind(&newMenu); err != nil {
+		bindingErrorMsg(err.(validator.ValidationErrors), ctx)
 		return
 	}
 
