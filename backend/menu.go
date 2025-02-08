@@ -84,3 +84,78 @@ func DeleteMenuByID(cfg *Config, ctx *gin.Context) {
 
 	ctx.JSON(204, "Delete Success")
 }
+
+func UpdateMenu(c *Config) func(*gin.Context) {
+	return func(ctx *gin.Context) {
+		_, ok := ctx.Params.Get("id")
+		if ok {
+			updateMenuByID(c, ctx)
+		} else {
+			updateMenuByName(c, ctx)
+		}
+	}
+}
+
+func updateMenuByID(cfg *Config, ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(400, "Invalid id")
+		return
+	}
+
+	var param Menu
+	if err = ctx.ShouldBind(&param); err != nil {
+		bindingErrorMsg(err.(validator.ValidationErrors), ctx)
+		return
+	}
+
+	data, err := cfg.db.UpdateMenuByID(ctx.Request.Context(), database.UpdateMenuByIDParams{
+		Name:   param.Name,
+		Type:   param.Type,
+		Price:  param.Price,
+		MenuID: int64(id),
+	})
+
+	if err != nil {
+		msg := checkDataBaseError(err)
+		ctx.JSON(500, gin.H{"err": msg})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"menu_id": data.MenuID,
+		"name":    data.Name,
+		"type":    data.Type,
+		"price":   data.Price,
+	})
+}
+
+func updateMenuByName(cfg *Config, ctx *gin.Context) {
+	name := ctx.Param("name")
+
+	var param Menu
+	if err := ctx.ShouldBind(&param); err != nil {
+		bindingErrorMsg(err.(validator.ValidationErrors), ctx)
+		return
+	}
+
+	data, err := cfg.db.UpdateMenuByName(ctx.Request.Context(), database.UpdateMenuByNameParams{
+		SetName: param.Name,
+		Type:    param.Type,
+		Price:   param.Price,
+		Name:    name,
+	})
+
+	if err != nil {
+		msg := checkDataBaseError(err)
+		ctx.JSON(500, gin.H{"err": msg})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"menu_id": data.MenuID,
+		"name":    data.Name,
+		"type":    data.Type,
+		"price":   data.Price,
+	})
+}

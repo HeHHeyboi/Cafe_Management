@@ -129,3 +129,65 @@ func (q *Queries) GetMenu(ctx context.Context, name string) (Menu, error) {
 	)
 	return i, err
 }
+
+const updateMenuByID = `-- name: UpdateMenuByID :one
+UPDATE menu
+SET name = ?, type = ?, price = ?
+WHERE menu_id = ?
+RETURNING menu_id, name, price, type
+`
+
+type UpdateMenuByIDParams struct {
+	Name   string
+	Type   string
+	Price  float64
+	MenuID int64
+}
+
+func (q *Queries) UpdateMenuByID(ctx context.Context, arg UpdateMenuByIDParams) (Menu, error) {
+	row := q.db.QueryRowContext(ctx, updateMenuByID,
+		arg.Name,
+		arg.Type,
+		arg.Price,
+		arg.MenuID,
+	)
+	var i Menu
+	err := row.Scan(
+		&i.MenuID,
+		&i.Name,
+		&i.Price,
+		&i.Type,
+	)
+	return i, err
+}
+
+const updateMenuByName = `-- name: UpdateMenuByName :one
+UPDATE menu
+SET name = ?, type = ?, price = ?
+WHERE name = ? 
+RETURNING menu_id, name, price, type
+`
+
+type UpdateMenuByNameParams struct {
+	SetName string
+	Type    string
+	Price   float64
+	Name    string
+}
+
+func (q *Queries) UpdateMenuByName(ctx context.Context, arg UpdateMenuByNameParams) (Menu, error) {
+	row := q.db.QueryRowContext(ctx, updateMenuByName,
+		arg.SetName,
+		arg.Type,
+		arg.Price,
+		arg.Name,
+	)
+	var i Menu
+	err := row.Scan(
+		&i.MenuID,
+		&i.Name,
+		&i.Price,
+		&i.Type,
+	)
+	return i, err
+}

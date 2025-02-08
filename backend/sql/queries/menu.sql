@@ -22,3 +22,16 @@ WHERE name = ?;
 -- name: DeleteMenuByID :exec
 DELETE FROM menu
 WHERE menu_id = ?;
+
+-- name: UpdateMenuByName :one
+UPDATE menu
+SET name = @set_name, type = ?, price = ?
+WHERE name = @name 
+RETURNING *;
+
+-- name: UpdateMenuByID :one
+UPDATE menu
+SET name = ?, type = ?, price = ?
+WHERE menu_id = ?
+RETURNING *;
+
