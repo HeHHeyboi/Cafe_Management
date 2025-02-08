@@ -1,22 +1,25 @@
 # Run Api 
 ถ้าจะรัน server เพื่อ test api ให้ทำตามนี้
-## Windows
+
+Windows
 ```
 ./backend_window.exe
 ```
 
-## Mac
+Mac
 ```
 ./backend_mac
 ```
 
+# Reset
 หรืออยากจะ Reset DataBase ด้วยก็
-## Windows
+
+Windows
 ```
 ./backend_window.exe reset
 ```
 
-## Mac
+Mac
 ```
 ./backend_mac reset
 ```
