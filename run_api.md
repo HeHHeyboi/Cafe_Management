@@ -9,3 +9,14 @@
 ```
 ./backend_mac
 ```
+
+หรืออยากจะ Reset DataBase ด้วยก็
+## Windows
+```
+./backend_window.exe reset
+```
+
+## Mac
+```
+./backend_mac reset
+```
