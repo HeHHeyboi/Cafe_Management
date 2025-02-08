@@ -86,6 +86,9 @@ func main() {
 	r.DELETE("/menu/name/:name", func(ctx *gin.Context) {
 		DeleteMenuByName(&cfg, ctx)
 	})
+	r.PUT("/menu/id/:id", UpdateMenu(&cfg))
+
+	r.PUT("/menu/name/:name", UpdateMenu(&cfg))
 
 	r.GET("/reset", func(ctx *gin.Context) {
 		err := cfg.db.DeleteAllUser(ctx.Request.Context())
