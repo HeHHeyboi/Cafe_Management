@@ -94,6 +94,9 @@ func loginUser(cfg *Config, ctx *gin.Context) {
 	data, err := cfg.db.GetUserByEmail(ctx.Request.Context(), param.Email)
 	if err != nil {
 		msg := checkDataBaseError(err)
+		if err.Error() == noResult {
+			msg += "Email, Please Create User"
+		}
 		ctx.JSON(404, gin.H{"error": msg})
 		return
 	}
@@ -106,7 +109,10 @@ func loginUser(cfg *Config, ctx *gin.Context) {
 
 	cookie, err := auth.CreateCookie("id", data.UserID.(string), cfg.secret)
 	if err != nil {
-		panic("Create Cookie error")
+		// panic("Create Cookie error")
+		ctx.Status(500)
+		ctx.Error(err)
+		return
 	}
 
 	http.SetCookie(ctx.Writer, &cookie)

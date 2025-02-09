@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
@@ -57,12 +58,72 @@ func GetAllMenu(cfg *Config, ctx *gin.Context) {
 	ctx.JSON(200, menus)
 }
 
+func GetMenu(c *Config) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		_, id_exist := ctx.Params.Get("id")
+		if id_exist {
+			getMenuByID(c, ctx)
+		} else {
+			getMenuByName(c, ctx)
+		}
+	}
+}
+
+func getMenuByName(cfg *Config, ctx *gin.Context) {
+	name := ctx.Param("name")
+
+	data, err := cfg.db.GetMenuByName(ctx.Request.Context(), name)
+	if err != nil {
+		msg := checkDataBaseError(err)
+		if err.Error() == noResult {
+			msg += fmt.Sprintf("menu ที่มีชื่อ %s", name)
+		}
+
+		ctx.JSON(404, gin.H{"err": msg})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"menu_id": data.MenuID,
+		"name":    data.Name,
+		"type":    data.Type,
+		"price":   data.Price,
+	})
+
+}
+func getMenuByID(cfg *Config, ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(500, "Invalid id")
+		return
+	}
+
+	data, err := cfg.db.GetMenuByID(ctx.Request.Context(), int64(id))
+	if err != nil {
+		msg := checkDataBaseError(err)
+		if err.Error() == noResult {
+			msg += fmt.Sprintf("menu ที่มี id %d", id)
+		}
+
+		ctx.JSON(404, gin.H{"err": msg})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"menu_id": data.MenuID,
+		"name":    data.Name,
+		"type":    data.Type,
+		"price":   data.Price,
+	})
+}
+
 func DeleteMenuByName(cfg *Config, ctx *gin.Context) {
 	name := ctx.Param("name")
 
 	err := cfg.db.DeleteMenuByName(ctx.Request.Context(), name)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.Error(err)
 		return
 	}
 
@@ -78,7 +139,8 @@ func DeleteMenuByID(cfg *Config, ctx *gin.Context) {
 
 	err = cfg.db.DeleteMenuByID(ctx.Request.Context(), int64(id))
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.Error(err)
 		return
 	}
 
@@ -87,8 +149,8 @@ func DeleteMenuByID(cfg *Config, ctx *gin.Context) {
 
 func UpdateMenu(c *Config) func(*gin.Context) {
 	return func(ctx *gin.Context) {
-		_, ok := ctx.Params.Get("id")
-		if ok {
+		_, id_exist := ctx.Params.Get("id")
+		if id_exist {
 			updateMenuByID(c, ctx)
 		} else {
 			updateMenuByName(c, ctx)
@@ -118,7 +180,11 @@ func updateMenuByID(cfg *Config, ctx *gin.Context) {
 
 	if err != nil {
 		msg := checkDataBaseError(err)
-		ctx.JSON(500, gin.H{"err": msg})
+		if err.Error() == noResult {
+			msg += fmt.Sprintf("menu ที่มี id %d", id)
+		}
+
+		ctx.JSON(404, gin.H{"err": msg})
 		return
 	}
 
@@ -148,7 +214,11 @@ func updateMenuByName(cfg *Config, ctx *gin.Context) {
 
 	if err != nil {
 		msg := checkDataBaseError(err)
-		ctx.JSON(500, gin.H{"err": msg})
+		if err.Error() == noResult {
+			msg += fmt.Sprintf("menu ที่มีชื่อ %s", name)
+		}
+
+		ctx.JSON(404, gin.H{"err": msg})
 		return
 	}
 

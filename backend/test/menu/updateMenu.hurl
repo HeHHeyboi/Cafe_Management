@@ -43,4 +43,27 @@ PUT http://localhost:8080/menu/name/{{name}}
 }
 
 GET http://localhost:8080/menu
+[Options]
+output: -
+HTTP 200
+
+PUT http://localhost:8080/menu/name/something
+[Options]
+output: -
+{
+	"name": "Red Velvet",
+	"type": "Dessert",
+	"price": 100 
+}
+
+PUT http://localhost:8080/menu/id/99
+[Options]
+output: -
+{
+	"name": "Cola",
+	"type": "Meal",
+	"price": 55 
+}
+
+GET http://localhost:8080/menu
 HTTP 200
