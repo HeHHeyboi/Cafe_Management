@@ -8,9 +8,13 @@ SELECT * FROM menu;
 -- name: GetAllType :many
 SELECT type FROM menu;
 
--- name: GetMenu :one
+-- name: GetMenuByName :one
 SELECT * FROM menu
 WHERE name = ?;
+
+-- name: GetMenuByID :one
+SELECT * FROM menu
+WHERE menu_id = ?;
 
 -- name: DeleteAllMenu :exec
 DELETE FROM menu;

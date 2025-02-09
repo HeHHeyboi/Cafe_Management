@@ -75,25 +75,8 @@ GET http://localhost:8080/menu
 output: -
 HTTP 200
 
-POST http://localhost:8080/menu
-[Options]
-output: -
-{
-	"name": "Cookie2",
-	"type": "Snack",
-	"price": 50 
-}
-HTTP 200
+DELETE http://localhost:8080/menu/name/something
+HTTP 204
 
-POST http://localhost:8080/menu
-[Options]
-output: -
-{
-	"name": "Coffee2",
-	"type": "Drink",
-	"price": 85 
-}
-HTTP 200
-
-GET http://localhost:8080/menu
-HTTP 200
+DELETE http://localhost:8080/menu/id/99
+HTTP 204

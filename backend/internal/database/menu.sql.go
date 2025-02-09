@@ -113,13 +113,30 @@ func (q *Queries) GetAllType(ctx context.Context) ([]string, error) {
 	return items, nil
 }
 
-const getMenu = `-- name: GetMenu :one
+const getMenuByID = `-- name: GetMenuByID :one
+SELECT menu_id, name, price, type FROM menu
+WHERE menu_id = ?
+`
+
+func (q *Queries) GetMenuByID(ctx context.Context, menuID int64) (Menu, error) {
+	row := q.db.QueryRowContext(ctx, getMenuByID, menuID)
+	var i Menu
+	err := row.Scan(
+		&i.MenuID,
+		&i.Name,
+		&i.Price,
+		&i.Type,
+	)
+	return i, err
+}
+
+const getMenuByName = `-- name: GetMenuByName :one
 SELECT menu_id, name, price, type FROM menu
 WHERE name = ?
 `
 
-func (q *Queries) GetMenu(ctx context.Context, name string) (Menu, error) {
-	row := q.db.QueryRowContext(ctx, getMenu, name)
+func (q *Queries) GetMenuByName(ctx context.Context, name string) (Menu, error) {
+	row := q.db.QueryRowContext(ctx, getMenuByName, name)
 	var i Menu
 	err := row.Scan(
 		&i.MenuID,

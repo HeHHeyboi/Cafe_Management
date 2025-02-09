@@ -80,14 +80,18 @@ func main() {
 	r.POST("/menu", func(ctx *gin.Context) {
 		AddNewMenu(&cfg, ctx)
 	})
+
+	r.GET("/menu/id/:id", GetMenu(&cfg))
+	r.GET("/menu/name/:name", GetMenu(&cfg))
+
 	r.DELETE("/menu/id/:id", func(ctx *gin.Context) {
 		DeleteMenuByID(&cfg, ctx)
 	})
 	r.DELETE("/menu/name/:name", func(ctx *gin.Context) {
 		DeleteMenuByName(&cfg, ctx)
 	})
-	r.PUT("/menu/id/:id", UpdateMenu(&cfg))
 
+	r.PUT("/menu/id/:id", UpdateMenu(&cfg))
 	r.PUT("/menu/name/:name", UpdateMenu(&cfg))
 
 	r.GET("/reset", func(ctx *gin.Context) {
