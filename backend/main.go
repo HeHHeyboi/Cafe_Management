@@ -66,6 +66,9 @@ func main() {
 	r.POST("/user/login", func(ctx *gin.Context) {
 		loginUser(&cfg, ctx)
 	})
+	r.GET("/user/logout", func(ctx *gin.Context) {
+		logoutUser(&cfg, ctx)
+	})
 
 	r.POST("/gallery", func(ctx *gin.Context) {
 		BookGallery(&cfg, ctx)

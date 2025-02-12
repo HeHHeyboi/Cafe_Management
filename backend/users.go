@@ -115,6 +115,12 @@ func loginUser(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
-	http.SetCookie(ctx.Writer, &cookie)
+	fmt.Printf("cookie: %v\n", cookie)
+	http.SetCookie(ctx.Writer, cookie)
 	ctx.JSON(201, gin.H{"msg": "Login success"})
+}
+
+func logoutUser(cfg *Config, ctx *gin.Context) {
+	ctx.SetCookie("id", "", -1, "/", "localhost", false, true)
+	ctx.JSON(200, gin.H{"msg": "logout success"})
 }

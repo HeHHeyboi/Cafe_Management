@@ -16,17 +16,18 @@ import (
 
 var ErrInvalidValue error = errors.New("Invalid Value")
 
-func CreateCookie(name, value, secret string) (http.Cookie, error) {
+func CreateCookie(name, value, secret string) (*http.Cookie, error) {
 	expireDate := time.Now().AddDate(0, 0, 7)
 	encrypt, err := encryptCookie(name, value, secret)
 	encodeVal := base64.URLEncoding.EncodeToString([]byte(encrypt))
 	if err != nil {
-		return http.Cookie{}, err
+		return &http.Cookie{}, err
 	}
-	cookie := http.Cookie{
+	cookie := &http.Cookie{
 		Name:     name,
 		Value:    encodeVal,
 		Path:     "/",
+		Domain:   "localhost",
 		Expires:  expireDate,
 		SameSite: http.SameSiteStrictMode,
 	}
