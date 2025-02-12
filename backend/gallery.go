@@ -32,7 +32,7 @@ func BookGallery(cfg *Config, ctx *gin.Context) {
 
 	user_id, err := auth.ReadCookie(cookie, cfg.secret)
 	if err != nil {
-		panic(err.Error())
+		ctx.JSON(401, gin.H{"error": err.Error()})
 	}
 
 	if err = ctx.ShouldBind(&param); err != nil {

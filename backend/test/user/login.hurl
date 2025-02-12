@@ -17,6 +17,7 @@ HTTP 200
 email: jsonpath "$.email"
 password: jsonpath "$.password"
 
+
 POST http://localhost:8080/user/login
 [Options]
 output: -
@@ -41,3 +42,22 @@ POST http://localhost:8080/user/login
 	"password":"123"
 }
 HTTP 404
+
+POST http://localhost:8080/user
+[Options]
+output: -
+{
+	"first_name":"thana",
+	"last_name":"that",
+	"email":"thana@gmail.com",
+	"password":"321"
+}
+HTTP 200
+
+POST http://localhost:8080/user/login
+{
+	"email":"thana@gmail.com",
+	"password":"321"
+}
+HTTP 201
+
