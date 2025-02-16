@@ -16,6 +16,13 @@
 - [GET /gallery?month : แสดง Gallery ที่ได้จองทั้งหมด](#get-gallerymonth)
 
 [/menu Endpoint](#menu)
+- [GET /menu : List menu ทั้งหมด](#get-menu)
+
+- [POST /menu : เพิ่มเมนู](#post-menu)
+
+- [PUT /menu : แก้ไขข้อมูลใน เมนู](#put-menu)
+
+- [DELETE /menu : ลบเมนู](#delete-menu)
 
 ## [GET /reset](#get-reset)
 Reset ข้อมูลใน Data Base
