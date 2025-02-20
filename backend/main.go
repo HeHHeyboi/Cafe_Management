@@ -97,10 +97,17 @@ func main() {
 	r.PUT("/menu/id/:id", UpdateMenu(&cfg))
 	r.PUT("/menu/name/:name", UpdateMenu(&cfg))
 
+	r.GET("/giveAway", func(ctx *gin.Context) {
+		GetAllGiveAways(&cfg, ctx)
+	})
+	r.POST("/giveAway", func(ctx *gin.Context) {
+		AddNewGiveAway(&cfg, ctx)
+	})
 	r.GET("/reset", func(ctx *gin.Context) {
 		err := cfg.db.DeleteAllUser(ctx.Request.Context())
 		err = cfg.db.DeleteGallery(ctx.Request.Context())
 		err = cfg.db.DeleteAllMenu(ctx.Request.Context())
+		err = cfg.db.DeleteGiveAways(ctx.Request.Context())
 
 		if err != nil {
 			ctx.Error(err)

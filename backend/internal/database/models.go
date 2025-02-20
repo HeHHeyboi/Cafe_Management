@@ -6,6 +6,7 @@ package database
 
 import (
 	"database/sql"
+	"time"
 )
 
 type Gallery struct {
@@ -14,6 +15,15 @@ type Gallery struct {
 	Enddate   string
 	Desc      sql.NullString
 	UserID    interface{}
+}
+
+type GiveAway struct {
+	ID     int64
+	Name   string
+	Amount int64
+	Remain int64
+	Desc   sql.NullString
+	Date   time.Time
 }
 
 type Menu struct {
