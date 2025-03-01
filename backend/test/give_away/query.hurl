@@ -23,6 +23,21 @@ output:-
 HTTP 201
 
 GET http://localhost:8080/giveAway
+[Options]
+output:-
 HTTP 200
+[Captures]
+name: jsonpath "$.[0].name"
+id: jsonpath "$.[1].id"
 
+GET http://localhost:8080/giveAway?name={{name}}
+[Options]
+output:-
+HTTP 200
+[Asserts]
+jsonpath "$.name" == {{name}}
 
+GET http://localhost:8080/giveAway?id={{id}}
+HTTP 200
+[Asserts]
+jsonpath "$.id" == {{id}}
