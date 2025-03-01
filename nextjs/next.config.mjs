@@ -1,5 +1,5 @@
-next.config.js
-module.exports = {
+
+export default {
     async rewrites() {
         return [
             {
