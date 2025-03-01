@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"strconv"
 
@@ -33,12 +34,26 @@ func AddNewMenu(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
-	err = cfg.db.AddMenu(ctx.Request.Context(), database.AddMenuParams{
-		Name:     newMenu.Name,
+	data := database.AddMenuParams{
+		Name:  newMenu.Name,
+		Price: newMenu.Price,
+		Type: sql.NullString{
+			String: newMenu.Type,
+			Valid:  newMenu.Type != "",
+		},
 		MenuType: newMenu.MenuType,
-		Type:     newMenu.Type,
-		Price:    newMenu.Price,
-	})
+	}
+	fmt.Println(data)
+
+	if !data.Type.Valid {
+		data.Type.String = "-"
+		data.Type.Valid = true
+	}
+
+	fmt.Println(data)
+
+	err = cfg.db.AddMenu(ctx.Request.Context(), data)
+
 	if err != nil {
 		ctx.JSON(401, gin.H{"error": err.Error()})
 		return
@@ -60,7 +75,7 @@ func GetAllMenu(cfg *Config, ctx *gin.Context) {
 			m.Name,
 			m.MenuType,
 			m.Price,
-			m.Type,
+			m.Type.String,
 		}
 		menus = append(menus, menu)
 	}
@@ -181,13 +196,22 @@ func updateMenuByID(cfg *Config, ctx *gin.Context) {
 		bindingErrorMsg(err.(validator.ValidationErrors), ctx)
 		return
 	}
-
-	data, err := cfg.db.UpdateMenuByID(ctx.Request.Context(), database.UpdateMenuByIDParams{
-		Name:   param.Name,
-		Type:   param.Type,
+	updateData := database.UpdateMenuByIDParams{
+		Name:     param.Name,
+		MenuType: param.MenuType,
+		Type: sql.NullString{
+			String: param.Type,
+			Valid:  param.Type != "",
+		},
 		Price:  param.Price,
 		MenuID: int64(id),
-	})
+	}
+	if !updateData.Type.Valid {
+		updateData.Type.String = "-"
+		updateData.Type.Valid = true
+	}
+
+	data, err := cfg.db.UpdateMenuByID(ctx.Request.Context(), updateData)
 
 	if err != nil {
 		msg := checkDataBaseError(err)
@@ -200,10 +224,11 @@ func updateMenuByID(cfg *Config, ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, gin.H{
-		"menu_id": data.MenuID,
-		"name":    data.Name,
-		"type":    data.Type,
-		"price":   data.Price,
+		"menu_id":   data.MenuID,
+		"name":      data.Name,
+		"menu_type": data.MenuType,
+		"type":      data.Type.String,
+		"price":     data.Price,
 	})
 }
 
@@ -216,12 +241,22 @@ func updateMenuByName(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
-	data, err := cfg.db.UpdateMenuByName(ctx.Request.Context(), database.UpdateMenuByNameParams{
-		SetName: param.Name,
-		Type:    param.Type,
-		Price:   param.Price,
-		Name:    name,
-	})
+	updateData := database.UpdateMenuByNameParams{
+		SetName:  param.Name,
+		MenuType: param.MenuType,
+		Type: sql.NullString{
+			String: param.Type,
+			Valid:  param.Type != "",
+		},
+		Price: param.Price,
+		Name:  name,
+	}
+	if !updateData.Type.Valid {
+		updateData.Type.String = "-"
+		updateData.Type.Valid = true
+	}
+
+	data, err := cfg.db.UpdateMenuByName(ctx.Request.Context(), updateData)
 
 	if err != nil {
 		msg := checkDataBaseError(err)
@@ -234,9 +269,10 @@ func updateMenuByName(cfg *Config, ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, gin.H{
-		"menu_id": data.MenuID,
-		"name":    data.Name,
-		"type":    data.Type,
-		"price":   data.Price,
+		"menu_id":   data.MenuID,
+		"name":      data.Name,
+		"menu_type": data.MenuType,
+		"type":      data.Type.String,
+		"price":     data.Price,
 	})
 }

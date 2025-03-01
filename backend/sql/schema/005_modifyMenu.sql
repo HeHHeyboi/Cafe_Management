@@ -4,7 +4,7 @@ ALTER TABLE menu
 RENAME COLUMN type to menu_type;
 
 ALTER TABLE menu
-ADD COLUMN type TEXT NOT NULL;
+ADD COLUMN type TEXT;
 -- +gooseStatementEnd
 
 

@@ -27,4 +27,4 @@ HTTP 200
 jsonpath "$.[0].name" == "Cola"
 jsonpath "$.[1].name" == "Cake"
 jsonpath "$.[0].type" == "เย็น" 
-jsonpath "$.[1].type" == "" 
+jsonpath "$.[1].type" == "-" 

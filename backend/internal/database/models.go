@@ -31,7 +31,7 @@ type Menu struct {
 	Name     string
 	Price    float64
 	MenuType string
-	Type     string
+	Type     sql.NullString
 }
 
 type User struct {
