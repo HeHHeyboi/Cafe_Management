@@ -1,9 +1,9 @@
-import Image from "next/image";
-import Navbar from "../../components/Navbar/Navbar";
+import dropdownlist from "./components/Navbar/dropdownlist";
 
 export default function Home() {
   return (
     <div >
+      <dropdownlist />
         <h1>Home</h1>
     </div>
   );
