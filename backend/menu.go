@@ -10,14 +10,22 @@ import (
 )
 
 type Menu struct {
-	MenuID int64   `json:"menu_id"`
-	Name   string  `json:"name" form:"name" binding:"required"`
-	Type   string  `json:"type" form:"type" binding:"required"`
-	Price  float64 `json:"price" form:"price" binding:"required"`
+	MenuID   int64   `json:"menu_id"`
+	Name     string  `json:"name" form:"name" binding:"required"`
+	MenuType string  `json:"menu_type" form:"menu_type" binding:"required"`
+	Price    float64 `json:"price" form:"price" binding:"required"`
+	Type     string  `json:"type" form:"type"`
 }
 
 func AddNewMenu(cfg *Config, ctx *gin.Context) {
-	var newMenu Menu
+	type Param struct {
+		Name     string  `json:"name" form:"name" binding:"required"`
+		MenuType string  `json:"menu_type" form:"menu_type" binding:"required"`
+		Price    float64 `json:"price" form:"price" binding:"required"`
+		Type     string  `json:"type" form:"price"`
+	}
+
+	var newMenu Param
 	var err error
 
 	if err = ctx.ShouldBind(&newMenu); err != nil {
@@ -26,9 +34,10 @@ func AddNewMenu(cfg *Config, ctx *gin.Context) {
 	}
 
 	err = cfg.db.AddMenu(ctx.Request.Context(), database.AddMenuParams{
-		Name:  newMenu.Name,
-		Type:  newMenu.Type,
-		Price: newMenu.Price,
+		Name:     newMenu.Name,
+		MenuType: newMenu.MenuType,
+		Type:     newMenu.Type,
+		Price:    newMenu.Price,
 	})
 	if err != nil {
 		ctx.JSON(401, gin.H{"error": err.Error()})
@@ -49,8 +58,9 @@ func GetAllMenu(cfg *Config, ctx *gin.Context) {
 		menu := Menu{
 			m.MenuID,
 			m.Name,
-			m.Type,
+			m.MenuType,
 			m.Price,
+			m.Type,
 		}
 		menus = append(menus, menu)
 	}
@@ -84,10 +94,11 @@ func getMenuByName(cfg *Config, ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, gin.H{
-		"menu_id": data.MenuID,
-		"name":    data.Name,
-		"type":    data.Type,
-		"price":   data.Price,
+		"menu_id":   data.MenuID,
+		"name":      data.Name,
+		"menu_type": data.MenuType,
+		"type":      data.Type,
+		"price":     data.Price,
 	})
 
 }
