@@ -84,3 +84,61 @@ func (q *Queries) GetAllGiveAways(ctx context.Context) ([]GetAllGiveAwaysRow, er
 	}
 	return items, nil
 }
+
+const getGiveAwayByID = `-- name: GetGiveAwayByID :one
+SELECT id,name,amount,remain,desc,date(date) as date
+FROM giveAway
+WHERE id = ?
+`
+
+type GetGiveAwayByIDRow struct {
+	ID     int64
+	Name   string
+	Amount int64
+	Remain int64
+	Desc   sql.NullString
+	Date   interface{}
+}
+
+func (q *Queries) GetGiveAwayByID(ctx context.Context, id int64) (GetGiveAwayByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getGiveAwayByID, id)
+	var i GetGiveAwayByIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Amount,
+		&i.Remain,
+		&i.Desc,
+		&i.Date,
+	)
+	return i, err
+}
+
+const getGiveAwayByName = `-- name: GetGiveAwayByName :one
+SELECT id,name,amount,remain,desc,date(date) as date
+FROM giveAway
+WHERE name = ?
+`
+
+type GetGiveAwayByNameRow struct {
+	ID     int64
+	Name   string
+	Amount int64
+	Remain int64
+	Desc   sql.NullString
+	Date   interface{}
+}
+
+func (q *Queries) GetGiveAwayByName(ctx context.Context, name string) (GetGiveAwayByNameRow, error) {
+	row := q.db.QueryRowContext(ctx, getGiveAwayByName, name)
+	var i GetGiveAwayByNameRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Amount,
+		&i.Remain,
+		&i.Desc,
+		&i.Date,
+	)
+	return i, err
+}
