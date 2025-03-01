@@ -24,6 +24,11 @@
 
 - [DELETE /menu : ลบเมนู](#delete-menu)
 
+[/giveAway Endpoint](#giveaway)
+- [GET /giveAway : List giveaway ทั้งหมด](#get-giveaway)
+  
+- [POST /giveAway : เพิ่ม giveAway](#post-giveaway)
+  
 ## [GET /reset](#get-reset)
 Reset ข้อมูลใน Data Base
 ```
@@ -235,3 +240,50 @@ Example:
 
 `DELETE http://localhost:8080/menu/id/{menu_id}`
 `DELETE http://localhost:8080/menu/name/{name}`
+
+# [/giveAway](#giveaway)
+
+## [GET /giveAway](#get-giveaway)
+ใช้ในการ List รายการ GiveAway
+`Query Parameter`
+- `id` : id ของ GiveAway
+- `name` : ชื่อของ GiveAway
+Ex.
+```
+http://localhost:8080/giveAway?id=1
+http://localhost:8080/giveAway?name=สักชื่อ
+```
+จะได้
+```
+[
+  {
+    "id": 1,
+    "name": "someone",
+    "amount": 100,
+    "remain": 100,
+    "desc": "someone birthday",
+    "date": "2025-03-01T00:00:00Z"
+  },
+...
+]
+```
+- `id` : id ของ GiveAway
+- `name` : ชื่อของ GiveAway
+- `amount` : จำนวนของ GiveAway ทั้งหมด
+- `remain` : จำนวนยอดคงเหลือของ GiveAway
+- `desc` : คำอธิบาย
+- `date` : วันที่เพิ่ม GiveAway เข้ามา
+
+## [POST /giveAway](#post-giveaway)
+ใช้สำหรับเพิ่ม GiveAway ใหม่
+ข้อมูลที่ต้องส่งมาคือ
+```
+{
+	"name": "someone",
+	"amount": 100,
+	"desc": "someone birthday"
+}
+```
+- `name` : ชื่อของ GiveAway
+- `amount` : จำนวนของ GiveAway ทั้งหมด
+- `desc` : คำอธิบาย
