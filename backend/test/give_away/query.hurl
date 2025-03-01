@@ -1,10 +1,10 @@
 GET http://localhost:8080/reset
 [Options]
-output:-
+output: -
 
 POST http://localhost:8080/giveAway
 [Options]
-output:-
+output: -
 {
 	"name": "someone",
 	"amount": 100,
@@ -14,7 +14,7 @@ HTTP 201
 
 POST http://localhost:8080/giveAway
 [Options]
-output:-
+output: -
 {
 	"name": "2",
 	"amount": 10,
