@@ -5,7 +5,8 @@ POST http://localhost:8080/menu
 output: -
 {
 	"name": "Cola",
-	"type": "Drink",
+	"menu_type": "Drink",
+	"type": "เย็น",
 	"price": 15
 }
 HTTP 200
@@ -15,7 +16,7 @@ POST http://localhost:8080/menu
 output: -
 {
 	"name": "Cake",
-	"type": "Dessert",
+	"menu_type": "Dessert",
 	"price": 83 
 }
 HTTP 200
@@ -25,3 +26,5 @@ HTTP 200
 [Asserts]
 jsonpath "$.[0].name" == "Cola"
 jsonpath "$.[1].name" == "Cake"
+jsonpath "$.[0].type" == "เย็น" 
+jsonpath "$.[1].type" == "" 

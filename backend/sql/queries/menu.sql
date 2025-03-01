@@ -1,12 +1,15 @@
 -- name: AddMenu :exec
-INSERT INTO menu(name,price,type) 
-VALUES(?,?,?);
+INSERT INTO menu(name,price,type,menu_type) 
+VALUES(?,?,?,?);
 
 -- name: GetAllMenus :many
 SELECT * FROM menu;
 
 -- name: GetAllType :many
 SELECT type FROM menu;
+
+-- name: GetAllMenuType :many
+SELECT menu_type FROM menu;
 
 -- name: GetMenuByName :one
 SELECT * FROM menu
