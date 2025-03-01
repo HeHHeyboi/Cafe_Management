@@ -7,21 +7,28 @@ package database
 
 import (
 	"context"
+	"database/sql"
 )
 
 const addMenu = `-- name: AddMenu :exec
-INSERT INTO menu(name,price,type) 
-VALUES(?,?,?)
+INSERT INTO menu(name,price,type,menu_type) 
+VALUES(?,?,?,?)
 `
 
 type AddMenuParams struct {
-	Name  string
-	Price float64
-	Type  string
+	Name     string
+	Price    float64
+	Type     sql.NullString
+	MenuType string
 }
 
 func (q *Queries) AddMenu(ctx context.Context, arg AddMenuParams) error {
-	_, err := q.db.ExecContext(ctx, addMenu, arg.Name, arg.Price, arg.Type)
+	_, err := q.db.ExecContext(ctx, addMenu,
+		arg.Name,
+		arg.Price,
+		arg.Type,
+		arg.MenuType,
+	)
 	return err
 }
 
@@ -54,8 +61,35 @@ func (q *Queries) DeleteMenuByName(ctx context.Context, name string) error {
 	return err
 }
 
+const getAllMenuType = `-- name: GetAllMenuType :many
+SELECT menu_type FROM menu
+`
+
+func (q *Queries) GetAllMenuType(ctx context.Context) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getAllMenuType)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var menu_type string
+		if err := rows.Scan(&menu_type); err != nil {
+			return nil, err
+		}
+		items = append(items, menu_type)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAllMenus = `-- name: GetAllMenus :many
-SELECT menu_id, name, price, type FROM menu
+SELECT menu_id, name, price, menu_type, type FROM menu
 `
 
 func (q *Queries) GetAllMenus(ctx context.Context) ([]Menu, error) {
@@ -71,6 +105,7 @@ func (q *Queries) GetAllMenus(ctx context.Context) ([]Menu, error) {
 			&i.MenuID,
 			&i.Name,
 			&i.Price,
+			&i.MenuType,
 			&i.Type,
 		); err != nil {
 			return nil, err
@@ -90,15 +125,15 @@ const getAllType = `-- name: GetAllType :many
 SELECT type FROM menu
 `
 
-func (q *Queries) GetAllType(ctx context.Context) ([]string, error) {
+func (q *Queries) GetAllType(ctx context.Context) ([]sql.NullString, error) {
 	rows, err := q.db.QueryContext(ctx, getAllType)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []string
+	var items []sql.NullString
 	for rows.Next() {
-		var type_ string
+		var type_ sql.NullString
 		if err := rows.Scan(&type_); err != nil {
 			return nil, err
 		}
@@ -114,7 +149,7 @@ func (q *Queries) GetAllType(ctx context.Context) ([]string, error) {
 }
 
 const getMenuByID = `-- name: GetMenuByID :one
-SELECT menu_id, name, price, type FROM menu
+SELECT menu_id, name, price, menu_type, type FROM menu
 WHERE menu_id = ?
 `
 
@@ -125,13 +160,14 @@ func (q *Queries) GetMenuByID(ctx context.Context, menuID int64) (Menu, error) {
 		&i.MenuID,
 		&i.Name,
 		&i.Price,
+		&i.MenuType,
 		&i.Type,
 	)
 	return i, err
 }
 
 const getMenuByName = `-- name: GetMenuByName :one
-SELECT menu_id, name, price, type FROM menu
+SELECT menu_id, name, price, menu_type, type FROM menu
 WHERE name = ?
 `
 
@@ -142,6 +178,7 @@ func (q *Queries) GetMenuByName(ctx context.Context, name string) (Menu, error) 
 		&i.MenuID,
 		&i.Name,
 		&i.Price,
+		&i.MenuType,
 		&i.Type,
 	)
 	return i, err
@@ -149,21 +186,23 @@ func (q *Queries) GetMenuByName(ctx context.Context, name string) (Menu, error) 
 
 const updateMenuByID = `-- name: UpdateMenuByID :one
 UPDATE menu
-SET name = ?, type = ?, price = ?
+SET name = ?, menu_type = ? ,type = ?, price = ?
 WHERE menu_id = ?
-RETURNING menu_id, name, price, type
+RETURNING menu_id, name, price, menu_type, type
 `
 
 type UpdateMenuByIDParams struct {
-	Name   string
-	Type   string
-	Price  float64
-	MenuID int64
+	Name     string
+	MenuType string
+	Type     sql.NullString
+	Price    float64
+	MenuID   int64
 }
 
 func (q *Queries) UpdateMenuByID(ctx context.Context, arg UpdateMenuByIDParams) (Menu, error) {
 	row := q.db.QueryRowContext(ctx, updateMenuByID,
 		arg.Name,
+		arg.MenuType,
 		arg.Type,
 		arg.Price,
 		arg.MenuID,
@@ -173,6 +212,7 @@ func (q *Queries) UpdateMenuByID(ctx context.Context, arg UpdateMenuByIDParams) 
 		&i.MenuID,
 		&i.Name,
 		&i.Price,
+		&i.MenuType,
 		&i.Type,
 	)
 	return i, err
@@ -180,21 +220,23 @@ func (q *Queries) UpdateMenuByID(ctx context.Context, arg UpdateMenuByIDParams) 
 
 const updateMenuByName = `-- name: UpdateMenuByName :one
 UPDATE menu
-SET name = ?, type = ?, price = ?
+SET name = ?, menu_type = ? ,type = ?, price = ?
 WHERE name = ? 
-RETURNING menu_id, name, price, type
+RETURNING menu_id, name, price, menu_type, type
 `
 
 type UpdateMenuByNameParams struct {
-	SetName string
-	Type    string
-	Price   float64
-	Name    string
+	SetName  string
+	MenuType string
+	Type     sql.NullString
+	Price    float64
+	Name     string
 }
 
 func (q *Queries) UpdateMenuByName(ctx context.Context, arg UpdateMenuByNameParams) (Menu, error) {
 	row := q.db.QueryRowContext(ctx, updateMenuByName,
 		arg.SetName,
+		arg.MenuType,
 		arg.Type,
 		arg.Price,
 		arg.Name,
@@ -204,6 +246,7 @@ func (q *Queries) UpdateMenuByName(ctx context.Context, arg UpdateMenuByNamePara
 		&i.MenuID,
 		&i.Name,
 		&i.Price,
+		&i.MenuType,
 		&i.Type,
 	)
 	return i, err
