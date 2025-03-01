@@ -32,13 +32,13 @@ WHERE menu_id = ?;
 
 -- name: UpdateMenuByName :one
 UPDATE menu
-SET name = @set_name, type = ?, price = ?
+SET name = @set_name, menu_type = ? ,type = ?, price = ?
 WHERE name = @name 
 RETURNING *;
 
 -- name: UpdateMenuByID :one
 UPDATE menu
-SET name = ?, type = ?, price = ?
+SET name = ?, menu_type = ? ,type = ?, price = ?
 WHERE menu_id = ?
 RETURNING *;
 
