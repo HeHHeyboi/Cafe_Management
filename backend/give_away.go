@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
@@ -53,7 +54,52 @@ func AddNewGiveAway(cfg *Config, ctx *gin.Context) {
 }
 
 func GetAllGiveAways(cfg *Config, ctx *gin.Context) {
+	query_id := ctx.DefaultQuery("id", "-1")
+	name := ctx.DefaultQuery("name", "")
+	id, err := strconv.Atoi(query_id)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "invalid id"})
+		return
+	}
+
+	if name != "" {
+		data, err := cfg.db.GetGiveAwayByName(ctx.Request.Context(), name)
+		date, err := time.Parse(time.DateOnly, data.Date.(string))
+		if err != nil {
+			msg := checkDataBaseError(err)
+			ctx.JSON(500, gin.H{"error": msg})
+		}
+		giveAway := GiveAway{
+			ID:     data.ID,
+			Name:   data.Name,
+			Amount: data.Amount,
+			Remain: data.Remain,
+			Desc:   data.Desc.String,
+			Date:   date,
+		}
+		ctx.JSON(200, giveAway)
+		return
+	} else if id != -1 {
+		data, err := cfg.db.GetGiveAwayByID(ctx.Request.Context(), int64(id))
+		date, err := time.Parse(time.DateOnly, data.Date.(string))
+		if err != nil {
+			msg := checkDataBaseError(err)
+			ctx.JSON(500, gin.H{"error": msg})
+		}
+		giveAway := GiveAway{
+			ID:     data.ID,
+			Name:   data.Name,
+			Amount: data.Amount,
+			Remain: data.Remain,
+			Desc:   data.Desc.String,
+			Date:   date,
+		}
+		ctx.JSON(200, giveAway)
+		return
+	}
+
 	data, err := cfg.db.GetAllGiveAways(ctx.Request.Context())
+
 	if err != nil {
 		msg := checkDataBaseError(err)
 		ctx.JSON(500, gin.H{"error": msg})
