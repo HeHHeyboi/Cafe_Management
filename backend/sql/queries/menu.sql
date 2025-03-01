@@ -1,12 +1,15 @@
 -- name: AddMenu :exec
-INSERT INTO menu(name,price,type) 
-VALUES(?,?,?);
+INSERT INTO menu(name,price,type,menu_type) 
+VALUES(?,?,?,?);
 
 -- name: GetAllMenus :many
 SELECT * FROM menu;
 
 -- name: GetAllType :many
 SELECT type FROM menu;
+
+-- name: GetAllMenuType :many
+SELECT menu_type FROM menu;
 
 -- name: GetMenuByName :one
 SELECT * FROM menu
@@ -29,13 +32,13 @@ WHERE menu_id = ?;
 
 -- name: UpdateMenuByName :one
 UPDATE menu
-SET name = @set_name, type = ?, price = ?
+SET name = @set_name, menu_type = ? ,type = ?, price = ?
 WHERE name = @name 
 RETURNING *;
 
 -- name: UpdateMenuByID :one
 UPDATE menu
-SET name = ?, type = ?, price = ?
+SET name = ?, menu_type = ? ,type = ?, price = ?
 WHERE menu_id = ?
 RETURNING *;
 

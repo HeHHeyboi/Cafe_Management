@@ -27,10 +27,11 @@ type GiveAway struct {
 }
 
 type Menu struct {
-	MenuID int64
-	Name   string
-	Price  float64
-	Type   string
+	MenuID   int64
+	Name     string
+	Price    float64
+	MenuType string
+	Type     sql.NullString
 }
 
 type User struct {
