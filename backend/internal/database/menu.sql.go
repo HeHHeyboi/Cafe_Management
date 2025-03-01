@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 )
 
 const addMenu = `-- name: AddMenu :exec
@@ -17,7 +18,7 @@ VALUES(?,?,?,?)
 type AddMenuParams struct {
 	Name     string
 	Price    float64
-	Type     string
+	Type     sql.NullString
 	MenuType string
 }
 
@@ -124,15 +125,15 @@ const getAllType = `-- name: GetAllType :many
 SELECT type FROM menu
 `
 
-func (q *Queries) GetAllType(ctx context.Context) ([]string, error) {
+func (q *Queries) GetAllType(ctx context.Context) ([]sql.NullString, error) {
 	rows, err := q.db.QueryContext(ctx, getAllType)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []string
+	var items []sql.NullString
 	for rows.Next() {
-		var type_ string
+		var type_ sql.NullString
 		if err := rows.Scan(&type_); err != nil {
 			return nil, err
 		}
@@ -185,21 +186,23 @@ func (q *Queries) GetMenuByName(ctx context.Context, name string) (Menu, error) 
 
 const updateMenuByID = `-- name: UpdateMenuByID :one
 UPDATE menu
-SET name = ?, type = ?, price = ?
+SET name = ?, menu_type = ? ,type = ?, price = ?
 WHERE menu_id = ?
 RETURNING menu_id, name, price, menu_type, type
 `
 
 type UpdateMenuByIDParams struct {
-	Name   string
-	Type   string
-	Price  float64
-	MenuID int64
+	Name     string
+	MenuType string
+	Type     sql.NullString
+	Price    float64
+	MenuID   int64
 }
 
 func (q *Queries) UpdateMenuByID(ctx context.Context, arg UpdateMenuByIDParams) (Menu, error) {
 	row := q.db.QueryRowContext(ctx, updateMenuByID,
 		arg.Name,
+		arg.MenuType,
 		arg.Type,
 		arg.Price,
 		arg.MenuID,
@@ -217,21 +220,23 @@ func (q *Queries) UpdateMenuByID(ctx context.Context, arg UpdateMenuByIDParams) 
 
 const updateMenuByName = `-- name: UpdateMenuByName :one
 UPDATE menu
-SET name = ?, type = ?, price = ?
+SET name = ?, menu_type = ? ,type = ?, price = ?
 WHERE name = ? 
 RETURNING menu_id, name, price, menu_type, type
 `
 
 type UpdateMenuByNameParams struct {
-	SetName string
-	Type    string
-	Price   float64
-	Name    string
+	SetName  string
+	MenuType string
+	Type     sql.NullString
+	Price    float64
+	Name     string
 }
 
 func (q *Queries) UpdateMenuByName(ctx context.Context, arg UpdateMenuByNameParams) (Menu, error) {
 	row := q.db.QueryRowContext(ctx, updateMenuByName,
 		arg.SetName,
+		arg.MenuType,
 		arg.Type,
 		arg.Price,
 		arg.Name,
