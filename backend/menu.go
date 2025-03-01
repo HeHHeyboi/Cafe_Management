@@ -43,14 +43,11 @@ func AddNewMenu(cfg *Config, ctx *gin.Context) {
 		},
 		MenuType: newMenu.MenuType,
 	}
-	fmt.Println(data)
 
 	if !data.Type.Valid {
 		data.Type.String = "-"
 		data.Type.Valid = true
 	}
-
-	fmt.Println(data)
 
 	err = cfg.db.AddMenu(ctx.Request.Context(), data)
 
