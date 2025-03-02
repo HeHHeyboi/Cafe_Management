@@ -7,10 +7,13 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gin-contrib/cors"
+
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/pressly/goose/v3"
+
 	// _ "github.com/mattn/go-sqlite3"
 	_ "modernc.org/sqlite"
 )
@@ -56,6 +59,12 @@ func main() {
 	}
 	r := gin.New()
 	r.Use(gin.Logger())
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Content-Type", "Authorization", "X-Requested-With"},
+		AllowCredentials: true,
+	}))
 
 	r.POST("/user", func(ctx *gin.Context) {
 		createUser(&cfg, ctx)
