@@ -10,26 +10,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Usericon from './usericon';
+import { Item } from '@radix-ui/react-dropdown-menu';
+import Link from 'next/link';
+import { links } from '../../../../utils/link';
+
+
+
 
 const dropdownlist = () => {
   return (
-   
-
   <DropdownMenu>
-  <DropdownMenuTrigger>
-  <button className="flex items-center justify-center rounded-full gap-4 p-2">
+  <DropdownMenuTrigger asChild>
+  <button  variant ="outline "className="flex items-center justify-center rounded-full gap-4 p-2">
   <Usericon />
   <Menu />
   </button>
   
-  </DropdownMenuTrigger>
+  </DropdownMenuTrigger >
   <DropdownMenuContent>
     <DropdownMenuLabel>My Account</DropdownMenuLabel>
     <DropdownMenuSeparator />
-    <DropdownMenuItem>Profile</DropdownMenuItem>
-    <DropdownMenuItem>Billing</DropdownMenuItem>
-    <DropdownMenuItem>Team</DropdownMenuItem>
-    <DropdownMenuItem>Subscription</DropdownMenuItem>
+    {
+      links.map((item,index) => {
+        return (<DropdownMenuItem key={index}>
+          <Link href={item.href}>{item.label}</Link>
+        </DropdownMenuItem>)
+      })}
   </DropdownMenuContent>
 </DropdownMenu>
 
