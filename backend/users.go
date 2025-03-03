@@ -121,6 +121,30 @@ func loginUser(cfg *Config, ctx *gin.Context) {
 }
 
 func logoutUser(cfg *Config, ctx *gin.Context) {
-	ctx.SetCookie("id", "", -1, "/", "localhost", false, true)
+	_, status, err := checkCookie(cfg, ctx)
+	if err != nil {
+		ctx.JSON(status, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Println("user logout")
+	ctx.SetCookie("id", "", -1, "/", "localhost", false, false)
 	ctx.JSON(200, gin.H{"msg": "logout success"})
+}
+
+func checkCookie(cfg *Config, ctx *gin.Context) (string, int, error) {
+	cookie, err := ctx.Request.Cookie("id")
+	if err != nil {
+		return "0", 400, fmt.Errorf("User didn't login")
+	}
+
+	id, err := auth.ReadCookie(cookie, cfg.secret)
+	if err != nil {
+		return "0", 400, fmt.Errorf("Invalid Cookie")
+	}
+
+	data, err := cfg.db.GetUserByID(ctx.Request.Context(), id)
+	if data.UserID == nil {
+		return "0", 400, fmt.Errorf("Please Login first")
+	}
+	return data.UserID.(string), 200, nil
 }
