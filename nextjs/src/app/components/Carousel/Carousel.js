@@ -11,7 +11,11 @@ const Carousel = () => {
   const settings = {
     infinite: true,
     speed: 500,
+<<<<<<< Updated upstream
     slidesToShow: 1,
+=======
+    slidesToShow: 4,
+>>>>>>> Stashed changes
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 2000,
@@ -26,6 +30,7 @@ const Carousel = () => {
   ];
 
   return (
+<<<<<<< Updated upstream
     <div className="carousel-container">
       <Slider {...settings}>
         {images.map((img, index) => (
@@ -44,6 +49,13 @@ const Carousel = () => {
         ))}
       </Slider>
     </div>
+=======
+    <div style={{ width: "80%", margin: "auto" }}>
+    <Slider {...settings}>
+    <div><img src="/Test1.jpg" alt="test1"/></div>
+  </Slider>
+  </div>
+>>>>>>> Stashed changes
   );
 };
 
