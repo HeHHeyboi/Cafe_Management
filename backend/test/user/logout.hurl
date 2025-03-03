@@ -23,7 +23,7 @@ output: -
 	"email":"{{ email }}",
 	"password":"123"
 }
-HTTP 201
+HTTP 201 
 
 POST http://localhost:8080/gallery
 [Options]
@@ -42,12 +42,10 @@ output: -
 HTTP 200
 
 POST http://localhost:8080/gallery
-[Options]
-delay: 3s
 {
 	"name": "gallery_Name",
 	"start_date":"2025-01-25",
 	"end_date":"2025-01-30",
 	"description":"this is gallery"
 }
-HTTP 401
+HTTP 400
