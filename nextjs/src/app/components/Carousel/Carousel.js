@@ -32,7 +32,7 @@ const PrevArrow = (props) => {
 const Carousel = () => {
   const settings = {
     infinite: true,
-    speed: 700,
+    speed: 1000,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
