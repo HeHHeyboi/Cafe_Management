@@ -2,28 +2,48 @@
 
 import React from "react";
 import Slider from "react-slick";
+import Image from "next/image";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import "./Carousel.css";
 
 const Carousel = () => {
   const settings = {
-    dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 2000,
   };
 
+  const images = [
+    { src: "/Note.jpg", alt: "Test 1" },
+    { src: "/Jaemin.jpg", alt: "Test 2" },
+    { src: "/Note.jpg", alt: "Test 3" },
+    { src: "/Note.jpg", alt: "Test 4" },
+    { src: "/Note.jpg", alt: "Test 5" },
+  ];
+
   return (
-    <Slider {...settings}>
-      <div><h3>🍎 Apple</h3></div>
-      <div><h3>🍌 Banana</h3></div>
-      <div><h3>🍒 Cherry</h3></div>
-      <div><h3>🍇 Grape</h3></div>
-      <div><h3>🍉 Watermelon</h3></div>
-    </Slider>
+    <div className="carousel-container">
+      <Slider {...settings}>
+        {images.map((img, index) => (
+          <div key={index} className="carousel-slide">
+            <div className="relative w-full h-[31.25vw] max-h-[500px]">
+              <Image 
+                src={img.src} 
+                alt={img.alt} 
+                fill 
+                className="object-cover "
+                priority={index === 0} 
+                sizes="100vw"
+              />
+            </div>
+          </div>
+        ))}
+      </Slider>
+    </div>
   );
 };
 
