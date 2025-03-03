@@ -6,6 +6,9 @@ VALUES( ?, ?, ?, ?, ?);
 select user_id,password from users
 WHERE email = ?;
 
+-- name: GetUserByID :one
+select * from users
+Where user_id = ?;
 
 -- name: GetAllUser :many
 SELECT * from users;
