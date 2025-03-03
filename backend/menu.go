@@ -133,10 +133,11 @@ func getMenuByID(cfg *Config, ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, gin.H{
-		"menu_id": data.MenuID,
-		"name":    data.Name,
-		"type":    data.Type,
-		"price":   data.Price,
+		"menu_id":   data.MenuID,
+		"name":      data.Name,
+		"menu_type": data.MenuType,
+		"type":      data.Type,
+		"price":     data.Price,
 	})
 }
 
