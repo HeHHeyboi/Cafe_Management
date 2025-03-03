@@ -34,7 +34,7 @@ func AddNewMenu(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
-	data := database.AddMenuParams{
+	input_data := database.AddMenuParams{
 		Name:  newMenu.Name,
 		Price: newMenu.Price,
 		Type: sql.NullString{
@@ -44,19 +44,25 @@ func AddNewMenu(cfg *Config, ctx *gin.Context) {
 		MenuType: newMenu.MenuType,
 	}
 
-	if !data.Type.Valid {
-		data.Type.String = "-"
-		data.Type.Valid = true
+	if !input_data.Type.Valid {
+		input_data.Type.String = "-"
+		input_data.Type.Valid = true
 	}
 
-	err = cfg.db.AddMenu(ctx.Request.Context(), data)
+	data, err := cfg.db.AddMenu(ctx.Request.Context(), input_data)
 
 	if err != nil {
 		ctx.JSON(401, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(200, gin.H{"msg": "Add menu Success"})
+	ctx.JSON(200, gin.H{
+		"menu_id":   data.MenuID,
+		"name":      data.Name,
+		"menu_type": data.MenuType,
+		"type":      data.Type.String,
+		"price":     data.Price,
+	})
 }
 
 func GetAllMenu(cfg *Config, ctx *gin.Context) {
