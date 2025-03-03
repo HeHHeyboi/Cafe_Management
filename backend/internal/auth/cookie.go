@@ -29,7 +29,8 @@ func CreateCookie(name, value, secret string) (*http.Cookie, error) {
 		Path:     "/",
 		Domain:   "localhost",
 		Expires:  expireDate,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
+		HttpOnly: false,
 	}
 
 	return cookie, nil
