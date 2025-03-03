@@ -2,7 +2,7 @@ const Logo = () => {
   return (
     <div className="flex items-center ">
       <a href="/">
-        <img src="/Logo.png" alt="Logo" className="h-30 w-30"/>
+        <img src="/Logo.png" alt="Logo" className="h-25 w-25"/>
       </a>
     </div>
   );
