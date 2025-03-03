@@ -17,7 +17,7 @@ import { links } from '../../../../utils/link';
 
 
 
-const dropdownlist = () => {
+const Dropdownlist = () => {
   return (
   <DropdownMenu>
   <DropdownMenuTrigger asChild>
@@ -44,4 +44,4 @@ const dropdownlist = () => {
   )
 }
 
-export default dropdownlist
+export default Dropdownlist;
