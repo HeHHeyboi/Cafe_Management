@@ -10,20 +10,18 @@ const Carousel = () => {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: 4,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 2000,
   };
 
   return (
+    <div style={{ width: "80%", margin: "auto" }}>
     <Slider {...settings}>
-      <div><h3>🍎 Apple</h3></div>
-      <div><h3>🍌 Banana</h3></div>
-      <div><h3>🍒 Cherry</h3></div>
-      <div><h3>🍇 Grape</h3></div>
-      <div><h3>🍉 Watermelon</h3></div>
-    </Slider>
+    <div><img src="/Test1.jpg" alt="test1"/></div>
+  </Slider>
+  </div>
   );
 };
 
