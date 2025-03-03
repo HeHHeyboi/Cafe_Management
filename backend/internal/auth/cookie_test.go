@@ -13,7 +13,7 @@ func TestCreateCookie(t *testing.T) {
 		t.Fatalf(`Test Fail: Error in CreateCookie, %s`, err)
 	}
 
-	value, err := ReadCookie(&new_cookie, secret)
+	value, err := ReadCookie(new_cookie, secret)
 	if err != nil {
 		t.Fatalf(`Test Fail: Error in ReadCookie, %s`, err)
 	}
