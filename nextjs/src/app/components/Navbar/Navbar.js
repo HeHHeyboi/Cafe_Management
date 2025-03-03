@@ -3,11 +3,12 @@ import Dropdownlist from './dropdownlist'
 
 const Navbar = () => {
   return (
-    <nav className="container flex justify-between py-4 px-4 sm:px-8"> 
-      <Logo />
-
-      <div className="flex gap-3 items-center">
-        <Dropdownlist />
+    <nav className="w-full h-27  bg-[#F9F3E7] mt-[-20px]"> 
+      <div className="container flex justify-between items-center px-4">
+        <Logo />
+        <div className="flex gap-3 items-center">
+          <Dropdownlist />
+        </div>
       </div>
     </nav>
   )
