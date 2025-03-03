@@ -10,9 +10,10 @@ import (
 	"database/sql"
 )
 
-const addMenu = `-- name: AddMenu :exec
+const addMenu = `-- name: AddMenu :one
 INSERT INTO menu(name,price,type,menu_type) 
 VALUES(?,?,?,?)
+RETURNING menu_id, name, price, menu_type, type
 `
 
 type AddMenuParams struct {
@@ -22,14 +23,22 @@ type AddMenuParams struct {
 	MenuType string
 }
 
-func (q *Queries) AddMenu(ctx context.Context, arg AddMenuParams) error {
-	_, err := q.db.ExecContext(ctx, addMenu,
+func (q *Queries) AddMenu(ctx context.Context, arg AddMenuParams) (Menu, error) {
+	row := q.db.QueryRowContext(ctx, addMenu,
 		arg.Name,
 		arg.Price,
 		arg.Type,
 		arg.MenuType,
 	)
-	return err
+	var i Menu
+	err := row.Scan(
+		&i.MenuID,
+		&i.Name,
+		&i.Price,
+		&i.MenuType,
+		&i.Type,
+	)
+	return i, err
 }
 
 const deleteAllMenu = `-- name: DeleteAllMenu :exec

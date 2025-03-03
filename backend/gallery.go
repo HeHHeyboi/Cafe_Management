@@ -23,16 +23,6 @@ type Gallery struct {
 func BookGallery(cfg *Config, ctx *gin.Context) {
 	var param Gallery
 
-	// cookie, err := ctx.Request.Cookie("id")
-	// if err != nil {
-	// 	ctx.JSON(401, gin.H{"error": "Please login first"})
-	// 	return
-	// }
-	//
-	// user_id, err := auth.ReadCookie(cookie, cfg.secret)
-	// if err != nil {
-	// 	ctx.JSON(401, gin.H{"error": err.Error()})
-	// }
 	user_id, status, err := checkCookie(cfg, ctx)
 	if err != nil {
 		ctx.JSON(status, gin.H{"error": err.Error()})
