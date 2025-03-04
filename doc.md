@@ -221,6 +221,7 @@ Example:
 	"menu_type": "เครือ่งดื่ม",
 	"type": "ร้อน",
 	"price": 85.00
+	"img_url": "/upload/ชื่อไฟล์"
 },
 ```
 - `menu_id`: id ของเมนู
@@ -228,6 +229,7 @@ Example:
 - `menu_type` : ประเภทของเมนู
 - `type` : ร้อน,เย็น
 - `price` : ราคาของเมนู
+- `img_url` : url ไปที่ไฟล์รูปภาพ
 
 
 ## [PUT /menu](#put-menu)
