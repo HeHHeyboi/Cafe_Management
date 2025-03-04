@@ -23,7 +23,7 @@ function MenuList({ menuItems, onEdit, onDelete }) { // Receive props
             <Button variant="outline" onClick={() => onEdit(item)}>
               Edit
             </Button>
-            <Button variant="destructive" onClick={() => onDelete(item.id)}>
+            <Button variant="destructive" onClick={() => onDelete(item.name)}>
               Delete
             </Button>
           </div>
