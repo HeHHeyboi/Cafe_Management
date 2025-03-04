@@ -118,12 +118,19 @@ func getMenuByName(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
+	url, err := getImage(cfg, ctx, uploadIMGArg{menu_id: data.MenuID})
+	if err != nil {
+		ctx.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
 	ctx.JSON(200, gin.H{
 		"menu_id":   data.MenuID,
 		"name":      data.Name,
 		"menu_type": data.MenuType,
 		"type":      data.Type,
 		"price":     data.Price,
+		"img_url":   url,
 	})
 
 }
@@ -145,15 +152,23 @@ func getMenuByID(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
+	url, err := getImage(cfg, ctx, uploadIMGArg{menu_id: data.MenuID})
+	if err != nil {
+		ctx.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
 	ctx.JSON(200, gin.H{
 		"menu_id":   data.MenuID,
 		"name":      data.Name,
 		"menu_type": data.MenuType,
 		"type":      data.Type,
 		"price":     data.Price,
+		"img_url":   url,
 	})
 }
 
+// FIX: need to fix when delete menu, delete img too.
 func DeleteMenuByName(cfg *Config, ctx *gin.Context) {
 	name := ctx.Param("name")
 
@@ -167,6 +182,7 @@ func DeleteMenuByName(cfg *Config, ctx *gin.Context) {
 	ctx.JSON(204, gin.H{"msg": "Delete Success"})
 }
 
+// FIX: need to fix when delete menu, delete img too.
 func DeleteMenuByID(cfg *Config, ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -195,6 +211,7 @@ func UpdateMenu(c *Config) func(*gin.Context) {
 	}
 }
 
+// FIX: need to fix when update menu, update img too.
 func updateMenuByID(cfg *Config, ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -234,15 +251,23 @@ func updateMenuByID(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
+	url, err := getImage(cfg, ctx, uploadIMGArg{menu_id: data.MenuID})
+	if err != nil {
+		ctx.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
 	ctx.JSON(200, gin.H{
 		"menu_id":   data.MenuID,
 		"name":      data.Name,
 		"menu_type": data.MenuType,
 		"type":      data.Type,
 		"price":     data.Price,
+		"img_url":   url,
 	})
 }
 
+// FIX: need to fix when update menu, update img too.
 func updateMenuByName(cfg *Config, ctx *gin.Context) {
 	name := ctx.Param("name")
 
@@ -279,11 +304,18 @@ func updateMenuByName(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
+	url, err := getImage(cfg, ctx, uploadIMGArg{menu_id: data.MenuID})
+	if err != nil {
+		ctx.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
 	ctx.JSON(200, gin.H{
 		"menu_id":   data.MenuID,
 		"name":      data.Name,
 		"menu_type": data.MenuType,
 		"type":      data.Type,
 		"price":     data.Price,
+		"img_url":   url,
 	})
 }
