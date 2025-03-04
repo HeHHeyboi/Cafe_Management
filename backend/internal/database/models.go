@@ -33,7 +33,13 @@ type GiveAway struct {
 	Remain int64
 	Desc   sql.NullString
 	Date   time.Time
-	ImgUrl sql.NullString
+}
+
+type Image struct {
+	MenuID      sql.NullInt64
+	GiveawayID  sql.NullInt64
+	GalleryName sql.NullString
+	ImgUrl      string
 }
 
 type Menu struct {
@@ -42,7 +48,6 @@ type Menu struct {
 	Price    float64
 	MenuType string
 	Type     sql.NullString
-	ImgUrl   sql.NullString
 }
 
 type User struct {
