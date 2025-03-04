@@ -28,7 +28,7 @@ func uploadIMG(cfg *Config, ctx *gin.Context) (string, error) {
 	}
 	ctx.SaveUploadedFile(file, uploadDir+file.Filename)
 
-	url := "/upload" + file.Filename
+	url := "/upload/" + file.Filename
 
 	return url, nil
 }
