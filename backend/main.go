@@ -86,6 +86,9 @@ func main() {
 	}))
 
 	r.Static("/upload", uploadDir)
+	r.GET("/checkAuth", func(ctx *gin.Context) {
+		checkAuth(&cfg, ctx)
+	})
 	r.POST("/user", func(ctx *gin.Context) {
 		createUser(&cfg, ctx)
 	})
