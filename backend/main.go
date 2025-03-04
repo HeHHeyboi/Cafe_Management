@@ -62,7 +62,7 @@ func main() {
 		fmt.Println("Doesn't have SECRET in enviroment variable")
 	}
 
-	_ = os.MkdirAll(uploadDir, os.ModeDir)
+	_ = os.MkdirAll(uploadDir, 0777)
 
 	dbQuery := database.New(db)
 	cfg := Config{
