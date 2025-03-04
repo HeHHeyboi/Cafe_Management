@@ -42,6 +42,7 @@ type Menu struct {
 	Price    float64
 	MenuType string
 	Type     sql.NullString
+	ImgUrl   sql.NullString
 }
 
 type User struct {
