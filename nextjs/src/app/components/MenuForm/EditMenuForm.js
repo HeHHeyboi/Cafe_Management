@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
 import {
   Select,
   SelectContent,
@@ -12,67 +11,66 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea"; // ไม่จำเป็นต้องใช้ในกรณีนี้ แต่เผื่อไว้
 
 function EditMenuForm({ item, onMenuUpdated, onCancel }) {
-  const [name, setName] = useState(item.name);
-  const [menuType, setMenuType] = useState(item.menu_type);
-  const [type, setType] = useState(item.type);
-  const [price, setPrice] = useState(item.price.toFixed(2)); // Format price
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+    const [name, setName] = useState(item.name);
+    const [menuType, setMenuType] = useState(item.menu_type);
+    const [type, setType] = useState(item.type);
+    const [price, setPrice] = useState(item.price.toFixed(2));
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(false);
 
-  // ใช้ useEffect เพื่อ update form fields เมื่อ `item` prop เปลี่ยนแปลง
-  useEffect(() => {
-    setName(item.name);
-    setMenuType(item.menu_type);
-    setType(item.type);
-    setPrice(item.price.toFixed(2));
-    setSuccess(false); // Reset success state เมื่อ item เปลี่ยน
-    setError(null); // Clear error เมื่อ item เปลี่ยน
-  }, [item]);
+    useEffect(() => {
+        setName(item.name);
+        setMenuType(item.menu_type);
+        setType(item.type);
+        setPrice(item.price.toFixed(2));
+        setSuccess(false);
+        setError(null);
+    }, [item]);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-    setSuccess(false);
 
-    const updatedMenuItem = {
-      name,
-      menu_type: menuType,
-      type,
-      price: parseFloat(price),
-    };
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        setIsSubmitting(true);
+        setError(null);
+        setSuccess(false);
 
-    try {
-      const response = await fetch(
-        `http://localhost:8080/menu/name/${item.name}`, // ใช้ item.id จาก prop
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedMenuItem),
+        const updatedMenuItem = {
+            name,
+            menu_type: menuType,
+            type,
+            price: parseFloat(price),
+        };
+
+        try {
+            const response = await fetch(
+                `http://localhost:8080/menu/id/${item.id}`, // ใช้ item.id จาก prop
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(updatedMenuItem),
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(
+                    errorData.message || `HTTP error! status: ${response.status}`
+                );
+            }
+             const responseData = await response.json() //get response
+            setSuccess(true);
+            onMenuUpdated(responseData); // แจ้ง MenuList ว่ามีการ update ข้อมูล
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setIsSubmitting(false);
         }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.message || `HTTP error! status: ${response.status}`
-        );
-      }
-
-      setSuccess(true);
-      onMenuUpdated(); // แจ้ง MenuList ว่ามีการ update ข้อมูล
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    };
 
   return (
     <div className="p-4 border rounded-lg bg-white">
@@ -122,7 +120,7 @@ function EditMenuForm({ item, onMenuUpdated, onCancel }) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="อาหาร">อาหาร</SelectItem>
-              <SelectItem value="เครื่องดื่ม">เครือ่งดื่ม</SelectItem>
+              <SelectItem value="เครื่องดื่ม">เครื่องดื่ม</SelectItem>
               <SelectItem value="ของหวาน">ของหวาน</SelectItem>
             </SelectContent>
           </Select>
