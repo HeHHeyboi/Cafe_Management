@@ -51,7 +51,7 @@ func createUser(cfg *Config, ctx *gin.Context) {
 		ctx.Error(err)
 		return
 	}
-	ctx.JSON(200, user)
+	ctx.JSON(201, user)
 }
 
 func getUser(cfg *Config, ctx *gin.Context) {
