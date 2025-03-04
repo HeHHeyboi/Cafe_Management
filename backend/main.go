@@ -26,7 +26,7 @@ type Config struct {
 //go:embed sql/schema/*.sql
 var embedMigration embed.FS
 
-const uploadDir = "upload"
+const uploadDir = "upload/"
 
 func main() {
 	godotenv.Load()
