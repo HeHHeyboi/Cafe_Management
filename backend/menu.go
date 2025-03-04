@@ -34,11 +34,6 @@ func AddNewMenu(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
 	input_data := database.AddMenuParams{
 		Name:  newMenu.Name,
 		Price: newMenu.Price,
