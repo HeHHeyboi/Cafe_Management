@@ -276,7 +276,8 @@ http://localhost:8080/giveAway?name=สักชื่อ
     "amount": 100,
     "remain": 100,
     "desc": "someone birthday",
-    "date": "2025-03-01T00:00:00Z"
+    "date": "2025-03-01T00:00:00Z",
+	"img_url" : "/upload/ชื่อไฟล์"
   },
 ...
 ]
@@ -287,6 +288,7 @@ http://localhost:8080/giveAway?name=สักชื่อ
 - `remain` : จำนวนยอดคงเหลือของ GiveAway
 - `desc` : คำอธิบาย
 - `date` : วันที่เพิ่ม GiveAway เข้ามา
+- `img_url` : url ไปที่ไฟล์รูปภาพ
 
 ## [POST /giveAway](#post-giveaway)
 ใช้สำหรับเพิ่ม GiveAway ใหม่
@@ -301,3 +303,22 @@ http://localhost:8080/giveAway?name=สักชื่อ
 - `name` : ชื่อของ GiveAway
 - `amount` : จำนวนของ GiveAway ทั้งหมด
 - `desc` : คำอธิบาย
+จะได้
+```
+{
+    "id": 1,
+    "name": "someone",
+    "amount": 100,
+    "remain": 100,
+    "desc": "someone birthday",
+    "date": "2025-03-01T00:00:00Z",
+	"img_url" : "/upload/ชื่อไฟล์"
+},
+```
+- `id` : id ของ GiveAway
+- `name` : ชื่อของ GiveAway
+- `amount` : จำนวนของ GiveAway ทั้งหมด
+- `remain` : จำนวนยอดคงเหลือของ GiveAway
+- `desc` : คำอธิบาย
+- `date` : วันที่เพิ่ม GiveAway เข้ามา
+- `img_url` : url ไปที่ไฟล์รูปภาพ
