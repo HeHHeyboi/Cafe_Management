@@ -26,6 +26,8 @@ type Config struct {
 //go:embed sql/schema/*.sql
 var embedMigration embed.FS
 
+const uploadDir = "upload"
+
 func main() {
 	godotenv.Load()
 	dbName := "main.db"
@@ -42,7 +44,15 @@ func main() {
 	} else if os.Args[1] == "test" {
 		gin.SetMode(gin.DebugMode)
 	} else if os.Args[1] == "reset" {
-		goose.Reset(db, "sql/schema")
+		goose.SetBaseFS(embedMigration)
+		if err := goose.SetDialect("sqlite"); err != nil {
+			panic(err)
+		}
+		err = goose.Reset(db, "sql/schema")
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Reset Success")
 		return
 	}
 
@@ -51,6 +61,8 @@ func main() {
 	if !ok {
 		fmt.Println("Doesn't have SECRET in enviroment variable")
 	}
+
+	_ = os.Mkdir(uploadDir, os.ModeDir)
 
 	dbQuery := database.New(db)
 	cfg := Config{
@@ -66,6 +78,7 @@ func main() {
 		AllowCredentials: true,
 	}))
 
+	r.Static("/upload", uploadDir)
 	r.POST("/user", func(ctx *gin.Context) {
 		createUser(&cfg, ctx)
 	})
@@ -112,11 +125,17 @@ func main() {
 	r.POST("/giveAway", func(ctx *gin.Context) {
 		AddNewGiveAway(&cfg, ctx)
 	})
+
+	r.POST("/bill", func(ctx *gin.Context) {
+
+	})
+
 	r.GET("/reset", func(ctx *gin.Context) {
 		err := cfg.db.DeleteAllUser(ctx.Request.Context())
 		err = cfg.db.DeleteGallery(ctx.Request.Context())
 		err = cfg.db.DeleteAllMenu(ctx.Request.Context())
 		err = cfg.db.DeleteGiveAways(ctx.Request.Context())
+		err = cfg.db.DeleteBill(ctx.Request.Context())
 
 		if err != nil {
 			ctx.Error(err)

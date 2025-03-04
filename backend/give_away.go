@@ -20,6 +20,18 @@ type GiveAway struct {
 	Date   time.Time `json:"date"`
 }
 
+func uploadIMG(cfg *Config, ctx *gin.Context, name string) (string, int, error) {
+	file, err := ctx.FormFile("file")
+	if err != nil {
+		return "", 500, fmt.Errorf("File Error")
+	}
+	ctx.SaveUploadedFile(file, uploadDir+name)
+
+	url := "/upload"
+
+	return url, 200, nil
+}
+
 func AddNewGiveAway(cfg *Config, ctx *gin.Context) {
 	type Param struct {
 		Name   string `json:"name" form:"name" binding:"required"`
