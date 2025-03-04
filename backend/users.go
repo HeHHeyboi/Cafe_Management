@@ -146,5 +146,16 @@ func checkCookie(cfg *Config, ctx *gin.Context) (string, int, error) {
 	if data.UserID == nil {
 		return "0", 400, fmt.Errorf("Please Login first")
 	}
-	return data.UserID.(string), 200, nil
+	return data.UserID.(string), 201, nil
+}
+
+func checkAuth(cfg *Config, ctx *gin.Context) {
+	_, status, err := checkCookie(cfg, ctx)
+
+	if err != nil {
+		ctx.String(status, err.Error())
+		return
+	}
+
+	ctx.Status(status)
 }
