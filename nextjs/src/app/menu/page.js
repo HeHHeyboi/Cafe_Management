@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button" // Import Shadcn Button
 
 export default function MenuPage() {
   const [menuItems, setMenuItems] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]);
   const [quantities, setQuantities] = useState({}); // { "กาแฟ": 2, "ชาไทย": 1 }
 
   // Fetch menu items from API
@@ -130,9 +129,9 @@ export default function MenuPage() {
         <div className="grid grid-cols-2 gap-2">
           {menuItems.map((item) => (
             <div
-              key={item.name}
+              key={item.id}
               className={`cursor-pointer p-4 text-center rounded-lg ${
-                quantities[item.name] > 0 ? "bg-green-200" : "bg-gray-100 hover:bg-gray-200"
+                quantities[item.id] > 0 ? "bg-green-200" : "bg-gray-100 hover:bg-gray-200"
               }`}
               onClick={() => handleSelect(item)}
             >
