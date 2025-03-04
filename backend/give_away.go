@@ -18,18 +18,19 @@ type GiveAway struct {
 	Remain int64     `json:"remain"`
 	Desc   string    `json:"desc"`
 	Date   time.Time `json:"date"`
+	ImgUrl string    `json:"img_url"`
 }
 
-func uploadIMG(cfg *Config, ctx *gin.Context, name string) (string, int, error) {
+func uploadIMG(cfg *Config, ctx *gin.Context) (string, error) {
 	file, err := ctx.FormFile("file")
 	if err != nil {
-		return "", 500, fmt.Errorf("File Error")
+		return "", fmt.Errorf("File Error")
 	}
-	ctx.SaveUploadedFile(file, uploadDir+name)
+	ctx.SaveUploadedFile(file, uploadDir+file.Filename)
 
-	url := "/upload" + name
+	url := "/upload" + file.Filename
 
-	return url, 200, nil
+	return url, nil
 }
 
 func AddNewGiveAway(cfg *Config, ctx *gin.Context) {
@@ -40,19 +41,28 @@ func AddNewGiveAway(cfg *Config, ctx *gin.Context) {
 	}
 
 	var param Param
-
 	if err := ctx.ShouldBind(&param); err != nil {
 		bindingErrorMsg(err.(validator.ValidationErrors), ctx)
 		return
 	}
 
-	err := cfg.db.AddNewGiveAway(ctx.Request.Context(), database.AddNewGiveAwayParams{
+	url, err := uploadIMG(cfg, ctx)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": "Upload File Error = " + err.Error()})
+		return
+	}
+
+	data, err := cfg.db.AddNewGiveAway(ctx.Request.Context(), database.AddNewGiveAwayParams{
 		Name:   param.Name,
 		Amount: int64(param.Amount),
 		Remain: int64(param.Amount),
 		Desc: sql.NullString{
 			String: param.Desc,
 			Valid:  param.Desc != "",
+		},
+		ImgUrl: sql.NullString{
+			String: url,
+			Valid:  url != "",
 		},
 	})
 
@@ -62,7 +72,15 @@ func AddNewGiveAway(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(201, gin.H{"msg": "success"})
+	ctx.JSON(201, gin.H{
+		"id":      data.ID,
+		"name":    data.Name,
+		"amount":  data.Amount,
+		"remain":  data.Remain,
+		"desc":    data.Desc.String,
+		"date":    data.Date,
+		"img_url": data.ImgUrl.String,
+	})
 }
 
 func GetAllGiveAways(cfg *Config, ctx *gin.Context) {
@@ -88,6 +106,7 @@ func GetAllGiveAways(cfg *Config, ctx *gin.Context) {
 			Remain: data.Remain,
 			Desc:   data.Desc.String,
 			Date:   date,
+			ImgUrl: data.ImgUrl.String,
 		}
 		ctx.JSON(200, giveAway)
 		return
@@ -105,6 +124,7 @@ func GetAllGiveAways(cfg *Config, ctx *gin.Context) {
 			Remain: data.Remain,
 			Desc:   data.Desc.String,
 			Date:   date,
+			ImgUrl: data.ImgUrl.String,
 		}
 		ctx.JSON(200, giveAway)
 		return
@@ -132,6 +152,7 @@ func GetAllGiveAways(cfg *Config, ctx *gin.Context) {
 			Remain: v.Remain,
 			Desc:   v.Desc.String,
 			Date:   date,
+			ImgUrl: v.ImgUrl.String,
 		}
 
 		giveAways = append(giveAways, g)
