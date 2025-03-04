@@ -1,19 +1,19 @@
 -- name: AddNewGiveAway :one
-INSERT INTO giveAway(name, amount, remain, desc, date,img_url)
-VALUES (?, ?, ?, ?, date('now'),?)
+INSERT INTO giveAway(name, amount, remain, desc, date)
+VALUES (?, ?, ?, ?, date('now'))
 RETURNING *;
 
 -- name: GetAllGiveAways :many
-SELECT id,name,amount,remain,desc,date(date) as date,img_url
+SELECT id,name,amount,remain,desc,date(date) as date
 FROM giveAway;
 
 -- name: GetGiveAwayByName :one
-SELECT id,name,amount,remain,desc,date(date) as date,img_url 
+SELECT id,name,amount,remain,desc,date(date) as date
 FROM giveAway
 WHERE name = ?;
 
 -- name: GetGiveAwayByID :one
-SELECT id,name,amount,remain,desc,date(date) as date,img_url 
+SELECT id,name,amount,remain,desc,date(date) as date
 FROM giveAway
 WHERE id = ?;
 

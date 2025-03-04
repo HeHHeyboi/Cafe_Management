@@ -11,9 +11,9 @@ import (
 )
 
 const addNewGiveAway = `-- name: AddNewGiveAway :one
-INSERT INTO giveAway(name, amount, remain, desc, date,img_url)
-VALUES (?, ?, ?, ?, date('now'),?)
-RETURNING id, name, amount, remain, "desc", date, img_url
+INSERT INTO giveAway(name, amount, remain, desc, date)
+VALUES (?, ?, ?, ?, date('now'))
+RETURNING id, name, amount, remain, "desc", date
 `
 
 type AddNewGiveAwayParams struct {
@@ -21,7 +21,6 @@ type AddNewGiveAwayParams struct {
 	Amount int64
 	Remain int64
 	Desc   sql.NullString
-	ImgUrl sql.NullString
 }
 
 func (q *Queries) AddNewGiveAway(ctx context.Context, arg AddNewGiveAwayParams) (GiveAway, error) {
@@ -30,7 +29,6 @@ func (q *Queries) AddNewGiveAway(ctx context.Context, arg AddNewGiveAwayParams) 
 		arg.Amount,
 		arg.Remain,
 		arg.Desc,
-		arg.ImgUrl,
 	)
 	var i GiveAway
 	err := row.Scan(
@@ -40,7 +38,6 @@ func (q *Queries) AddNewGiveAway(ctx context.Context, arg AddNewGiveAwayParams) 
 		&i.Remain,
 		&i.Desc,
 		&i.Date,
-		&i.ImgUrl,
 	)
 	return i, err
 }
@@ -55,7 +52,7 @@ func (q *Queries) DeleteGiveAways(ctx context.Context) error {
 }
 
 const getAllGiveAways = `-- name: GetAllGiveAways :many
-SELECT id,name,amount,remain,desc,date(date) as date,img_url
+SELECT id,name,amount,remain,desc,date(date) as date
 FROM giveAway
 `
 
@@ -66,7 +63,6 @@ type GetAllGiveAwaysRow struct {
 	Remain int64
 	Desc   sql.NullString
 	Date   interface{}
-	ImgUrl sql.NullString
 }
 
 func (q *Queries) GetAllGiveAways(ctx context.Context) ([]GetAllGiveAwaysRow, error) {
@@ -85,7 +81,6 @@ func (q *Queries) GetAllGiveAways(ctx context.Context) ([]GetAllGiveAwaysRow, er
 			&i.Remain,
 			&i.Desc,
 			&i.Date,
-			&i.ImgUrl,
 		); err != nil {
 			return nil, err
 		}
@@ -101,7 +96,7 @@ func (q *Queries) GetAllGiveAways(ctx context.Context) ([]GetAllGiveAwaysRow, er
 }
 
 const getGiveAwayByID = `-- name: GetGiveAwayByID :one
-SELECT id,name,amount,remain,desc,date(date) as date,img_url 
+SELECT id,name,amount,remain,desc,date(date) as date
 FROM giveAway
 WHERE id = ?
 `
@@ -113,7 +108,6 @@ type GetGiveAwayByIDRow struct {
 	Remain int64
 	Desc   sql.NullString
 	Date   interface{}
-	ImgUrl sql.NullString
 }
 
 func (q *Queries) GetGiveAwayByID(ctx context.Context, id int64) (GetGiveAwayByIDRow, error) {
@@ -126,13 +120,12 @@ func (q *Queries) GetGiveAwayByID(ctx context.Context, id int64) (GetGiveAwayByI
 		&i.Remain,
 		&i.Desc,
 		&i.Date,
-		&i.ImgUrl,
 	)
 	return i, err
 }
 
 const getGiveAwayByName = `-- name: GetGiveAwayByName :one
-SELECT id,name,amount,remain,desc,date(date) as date,img_url 
+SELECT id,name,amount,remain,desc,date(date) as date
 FROM giveAway
 WHERE name = ?
 `
@@ -144,7 +137,6 @@ type GetGiveAwayByNameRow struct {
 	Remain int64
 	Desc   sql.NullString
 	Date   interface{}
-	ImgUrl sql.NullString
 }
 
 func (q *Queries) GetGiveAwayByName(ctx context.Context, name string) (GetGiveAwayByNameRow, error) {
@@ -157,7 +149,6 @@ func (q *Queries) GetGiveAwayByName(ctx context.Context, name string) (GetGiveAw
 		&i.Remain,
 		&i.Desc,
 		&i.Date,
-		&i.ImgUrl,
 	)
 	return i, err
 }

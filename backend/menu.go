@@ -11,12 +11,12 @@ import (
 )
 
 type Menu struct {
-	MenuID   int64   `json:"menu_id"`
-	Name     string  `json:"name" form:"name" binding:"required"`
-	MenuType string  `json:"menu_type" form:"menu_type" binding:"required"`
-	Price    float64 `json:"price" form:"price" binding:"required"`
-	Type     string  `json:"type" form:"type"`
-	ImgUrl   string  `json:"img_url"`
+	MenuID   int64    `json:"menu_id"`
+	Name     string   `json:"name" form:"name" binding:"required"`
+	MenuType string   `json:"menu_type" form:"menu_type" binding:"required"`
+	Price    float64  `json:"price" form:"price" binding:"required"`
+	Type     string   `json:"type" form:"type"`
+	ImgUrl   []string `json:"img_url"`
 }
 
 func AddNewMenu(cfg *Config, ctx *gin.Context) {
@@ -34,7 +34,6 @@ func AddNewMenu(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
-	url, err := uploadIMG(cfg, ctx)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -48,10 +47,6 @@ func AddNewMenu(cfg *Config, ctx *gin.Context) {
 			Valid:  newMenu.Type != "",
 		},
 		MenuType: newMenu.MenuType,
-		ImgUrl: sql.NullString{
-			String: url,
-			Valid:  url != "",
-		},
 	}
 
 	if !input_data.Type.Valid {
@@ -66,13 +61,17 @@ func AddNewMenu(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
+	url, err := uploadIMG(cfg, ctx, uploadIMGArg{
+		menu_id: data.MenuID,
+	})
+
 	ctx.JSON(201, gin.H{
 		"menu_id":   data.MenuID,
 		"name":      data.Name,
 		"menu_type": data.MenuType,
 		"type":      data.Type,
 		"price":     data.Price,
-		"img_url":   data.ImgUrl.String,
+		"img_url":   url,
 	})
 }
 
@@ -84,13 +83,14 @@ func GetAllMenu(cfg *Config, ctx *gin.Context) {
 	}
 	menus := []Menu{}
 	for _, m := range data {
+		url, _ := getImage(cfg, ctx, uploadIMGArg{menu_id: m.MenuID})
 		menu := Menu{
 			m.MenuID,
 			m.Name,
 			m.MenuType,
 			m.Price,
 			m.Type.String,
-			m.ImgUrl.String,
+			url,
 		}
 		menus = append(menus, menu)
 	}
@@ -129,7 +129,6 @@ func getMenuByName(cfg *Config, ctx *gin.Context) {
 		"menu_type": data.MenuType,
 		"type":      data.Type,
 		"price":     data.Price,
-		"img_url":   data.ImgUrl.String,
 	})
 
 }
@@ -157,7 +156,6 @@ func getMenuByID(cfg *Config, ctx *gin.Context) {
 		"menu_type": data.MenuType,
 		"type":      data.Type,
 		"price":     data.Price,
-		"img_url":   data.ImgUrl.String,
 	})
 }
 
@@ -247,7 +245,6 @@ func updateMenuByID(cfg *Config, ctx *gin.Context) {
 		"menu_type": data.MenuType,
 		"type":      data.Type,
 		"price":     data.Price,
-		"img_url":   data.ImgUrl.String,
 	})
 }
 
@@ -293,6 +290,5 @@ func updateMenuByName(cfg *Config, ctx *gin.Context) {
 		"menu_type": data.MenuType,
 		"type":      data.Type,
 		"price":     data.Price,
-		"img_url":   data.ImgUrl.String,
 	})
 }

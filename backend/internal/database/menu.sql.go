@@ -11,9 +11,9 @@ import (
 )
 
 const addMenu = `-- name: AddMenu :one
-INSERT INTO menu(name,price,type,menu_type,img_url) 
-VALUES(?,?,?,?,?)
-RETURNING menu_id, name, price, menu_type, type, img_url
+INSERT INTO menu(name,price,type,menu_type) 
+VALUES(?,?,?,?)
+RETURNING menu_id, name, price, menu_type, type
 `
 
 type AddMenuParams struct {
@@ -21,7 +21,6 @@ type AddMenuParams struct {
 	Price    float64
 	Type     sql.NullString
 	MenuType string
-	ImgUrl   sql.NullString
 }
 
 func (q *Queries) AddMenu(ctx context.Context, arg AddMenuParams) (Menu, error) {
@@ -30,7 +29,6 @@ func (q *Queries) AddMenu(ctx context.Context, arg AddMenuParams) (Menu, error) 
 		arg.Price,
 		arg.Type,
 		arg.MenuType,
-		arg.ImgUrl,
 	)
 	var i Menu
 	err := row.Scan(
@@ -39,7 +37,6 @@ func (q *Queries) AddMenu(ctx context.Context, arg AddMenuParams) (Menu, error) 
 		&i.Price,
 		&i.MenuType,
 		&i.Type,
-		&i.ImgUrl,
 	)
 	return i, err
 }
@@ -101,7 +98,7 @@ func (q *Queries) GetAllMenuType(ctx context.Context) ([]string, error) {
 }
 
 const getAllMenus = `-- name: GetAllMenus :many
-SELECT menu_id, name, price, menu_type, type, img_url FROM menu
+SELECT menu_id, name, price, menu_type, type FROM menu
 `
 
 func (q *Queries) GetAllMenus(ctx context.Context) ([]Menu, error) {
@@ -119,7 +116,6 @@ func (q *Queries) GetAllMenus(ctx context.Context) ([]Menu, error) {
 			&i.Price,
 			&i.MenuType,
 			&i.Type,
-			&i.ImgUrl,
 		); err != nil {
 			return nil, err
 		}
@@ -162,7 +158,7 @@ func (q *Queries) GetAllType(ctx context.Context) ([]sql.NullString, error) {
 }
 
 const getMenuByID = `-- name: GetMenuByID :one
-SELECT menu_id, name, price, menu_type, type, img_url FROM menu
+SELECT menu_id, name, price, menu_type, type FROM menu
 WHERE menu_id = ?
 `
 
@@ -175,13 +171,12 @@ func (q *Queries) GetMenuByID(ctx context.Context, menuID int64) (Menu, error) {
 		&i.Price,
 		&i.MenuType,
 		&i.Type,
-		&i.ImgUrl,
 	)
 	return i, err
 }
 
 const getMenuByName = `-- name: GetMenuByName :one
-SELECT menu_id, name, price, menu_type, type, img_url FROM menu
+SELECT menu_id, name, price, menu_type, type FROM menu
 WHERE name = ?
 `
 
@@ -194,7 +189,6 @@ func (q *Queries) GetMenuByName(ctx context.Context, name string) (Menu, error) 
 		&i.Price,
 		&i.MenuType,
 		&i.Type,
-		&i.ImgUrl,
 	)
 	return i, err
 }
@@ -203,7 +197,7 @@ const updateMenuByID = `-- name: UpdateMenuByID :one
 UPDATE menu
 SET name = ?, menu_type = ? ,type = ?, price = ?
 WHERE menu_id = ?
-RETURNING menu_id, name, price, menu_type, type, img_url
+RETURNING menu_id, name, price, menu_type, type
 `
 
 type UpdateMenuByIDParams struct {
@@ -229,7 +223,6 @@ func (q *Queries) UpdateMenuByID(ctx context.Context, arg UpdateMenuByIDParams) 
 		&i.Price,
 		&i.MenuType,
 		&i.Type,
-		&i.ImgUrl,
 	)
 	return i, err
 }
@@ -238,7 +231,7 @@ const updateMenuByName = `-- name: UpdateMenuByName :one
 UPDATE menu
 SET name = ?, menu_type = ? ,type = ?, price = ?
 WHERE name = ? 
-RETURNING menu_id, name, price, menu_type, type, img_url
+RETURNING menu_id, name, price, menu_type, type
 `
 
 type UpdateMenuByNameParams struct {
@@ -264,7 +257,6 @@ func (q *Queries) UpdateMenuByName(ctx context.Context, arg UpdateMenuByNamePara
 		&i.Price,
 		&i.MenuType,
 		&i.Type,
-		&i.ImgUrl,
 	)
 	return i, err
 }
