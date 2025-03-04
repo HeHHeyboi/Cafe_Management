@@ -1,6 +1,6 @@
 -- name: AddMenu :one
-INSERT INTO menu(name,price,type,menu_type,img_url) 
-VALUES(?,?,?,?,?)
+INSERT INTO menu(name,price,type,menu_type) 
+VALUES(?,?,?,?)
 RETURNING *;
 
 -- name: GetAllMenus :many

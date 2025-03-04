@@ -48,11 +48,18 @@ func main() {
 		if err := goose.SetDialect("sqlite"); err != nil {
 			panic(err)
 		}
+
 		err = goose.Reset(db, "sql/schema")
 		if err != nil {
 			panic(err)
 		}
+
 		fmt.Println("Reset Success")
+		err := os.RemoveAll(uploadDir)
+		if err != nil {
+			panic(err)
+		}
+
 		return
 	}
 
