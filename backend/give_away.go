@@ -24,7 +24,7 @@ type GiveAway struct {
 func uploadIMG(cfg *Config, ctx *gin.Context) (string, error) {
 	file, err := ctx.FormFile("image")
 	if err != nil {
-		return "", fmt.Errorf("File Error")
+		return "", err
 	}
 	ctx.SaveUploadedFile(file, uploadDir+file.Filename)
 
