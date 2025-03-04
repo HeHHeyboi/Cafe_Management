@@ -24,7 +24,7 @@ func AddNewMenu(cfg *Config, ctx *gin.Context) {
 		Name     string  `json:"name" form:"name" binding:"required"`
 		MenuType string  `json:"menu_type" form:"menu_type" binding:"required"`
 		Price    float64 `json:"price" form:"price" binding:"required"`
-		Type     string  `json:"type" form:"price"`
+		Type     string  `json:"type" form:"type"`
 	}
 
 	var newMenu Param
