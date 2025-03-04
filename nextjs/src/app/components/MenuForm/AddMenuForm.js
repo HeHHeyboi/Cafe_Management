@@ -111,7 +111,7 @@ function AddMenuForm({ onMenuAdded }) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="อาหาร">อาหาร</SelectItem>
-              <SelectItem value="เครือ่งดื่ม">เครือ่งดื่ม</SelectItem>
+              <SelectItem value="เครื่องดื่ม">เครื่องดื่ม</SelectItem>
               <SelectItem value="ของหวาน">ของหวาน</SelectItem>
             </SelectContent>
           </Select>
