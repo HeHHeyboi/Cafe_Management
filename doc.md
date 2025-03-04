@@ -1,6 +1,8 @@
 # API Documentation
 [/reset Endpoint](#get-reset)
 
+[/checkAuth Endpoint](#get-checkauth)
+
 [/user Endpoint](#user)
 
 - [GET /user: แสดง Account ทั้งหมด](#get-user)
@@ -34,6 +36,10 @@ Reset ข้อมูลใน Data Base
 ```
 http://localhost:8080/reset
 ```
+
+## [GET /checkAuth](#get-checkauth)
+เอาไว้เช็คว่า login หรือยัง
+
 # [/user](#user)
 
 ## [GET /user](#get-user)
@@ -174,6 +180,7 @@ List เมนู จะได้ออกมาเป็น
 		"menu_type": "เครือ่งดื่ม",
 		"type": "ร้อน",
 		"price": 85.00
+		"img_url": [/upload/ชื่อไฟล์, ...]
 	},
     ...
 ]
@@ -182,6 +189,7 @@ List เมนู จะได้ออกมาเป็น
 - `menu_type` : ประเภทของเมนู
 - `type` : ร้อน,เย็น
 - `price` : ราคาของเมนู
+- `img_url`:  List ของ url รูปภาพ
 
 แบบนี้จะได้ขเมนูทั้งหมดถ้าอยากได้
 อีกแบบนึงคือ
@@ -198,6 +206,7 @@ List เมนู จะได้ออกมาเป็น
 	"menu_type": "เครือ่งดื่ม",
 	"type": "ร้อน",
 	"price": 85.00
+	"img_url": [/upload/ชื่อไฟล์, ...]
 },
 ```
 ## [POST /menu](#post-menu)
@@ -233,7 +242,7 @@ Example:
 
 
 ## [PUT /menu](#put-menu)
-แก้ไขข้อมูลเมนูมี 2 แบบ
+แก้ไขข้อมูลเมนูมี 2 แบบ (ยังไม่ได้ทำสำหรับ upload รูปภาพ)
 
 `PUT http://localhost:8080/menu/id/{menu_id}`
 `PUT http://localhost:8080/menu/name/{name}`
@@ -279,7 +288,7 @@ http://localhost:8080/giveAway?name=สักชื่อ
     "remain": 100,
     "desc": "someone birthday",
     "date": "2025-03-01T00:00:00Z",
-	"img_url" : "/upload/ชื่อไฟล์"
+	"img_url" : ["/upload/ชื่อไฟล์",...]
   },
 ...
 ]
@@ -290,7 +299,7 @@ http://localhost:8080/giveAway?name=สักชื่อ
 - `remain` : จำนวนยอดคงเหลือของ GiveAway
 - `desc` : คำอธิบาย
 - `date` : วันที่เพิ่ม GiveAway เข้ามา
-- `img_url` : url ไปที่ไฟล์รูปภาพ
+- `img_url` : List ของ url ไปที่ไฟล์รูปภาพ
 
 ## [POST /giveAway](#post-giveaway)
 ใช้สำหรับเพิ่ม GiveAway ใหม่
@@ -314,7 +323,7 @@ http://localhost:8080/giveAway?name=สักชื่อ
     "remain": 100,
     "desc": "someone birthday",
     "date": "2025-03-01T00:00:00Z",
-	"img_url" : "/upload/ชื่อไฟล์"
+	"img_url" : ["/upload/ชื่อไฟล์",...]
 },
 ```
 - `id` : id ของ GiveAway
@@ -323,4 +332,4 @@ http://localhost:8080/giveAway?name=สักชื่อ
 - `remain` : จำนวนยอดคงเหลือของ GiveAway
 - `desc` : คำอธิบาย
 - `date` : วันที่เพิ่ม GiveAway เข้ามา
-- `img_url` : url ไปที่ไฟล์รูปภาพ
+- `img_url` : List ของ url ไปที่ไฟล์รูปภาพ
