@@ -21,18 +21,6 @@ type GiveAway struct {
 	ImgUrl string    `json:"img_url"`
 }
 
-func uploadIMG(cfg *Config, ctx *gin.Context) (string, error) {
-	file, err := ctx.FormFile("image")
-	if err != nil {
-		return "", err
-	}
-	ctx.SaveUploadedFile(file, uploadDir+file.Filename)
-
-	url := "/upload/" + file.Filename
-
-	return url, nil
-}
-
 func AddNewGiveAway(cfg *Config, ctx *gin.Context) {
 	type Param struct {
 		Name   string `json:"name" form:"name" binding:"required"`

@@ -66,7 +66,7 @@ func BookGallery(cfg *Config, ctx *gin.Context) {
 		data.Desc.String,
 		uuid.MustParse(data.UserID.(string)),
 	}
-	ctx.JSON(http.StatusOK, book)
+	ctx.JSON(201, book)
 }
 
 func listBooking(cfg *Config, ctx *gin.Context) {
