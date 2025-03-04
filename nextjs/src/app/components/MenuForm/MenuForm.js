@@ -11,34 +11,33 @@ function MenuForm() {
   const [error, setError] = useState(null);
   const [editingItem, setEditingItem] = useState(null);
 
-
-   const fetchMenuItems = async () => {
-        setLoading(true);
-        setError(null)
-        try {
-            const response = await fetch("http://localhost:8080/menu")
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch menu")
-            }
-            const data = await response.json();
-            setMenuItems(data)
-
-        } catch (error) {
-            setError(error.message)
-        } finally {
-            setLoading(false)
-        }
+  const fetchMenuItems = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("http://localhost:8080/menu");
+      if (!response.ok) {
+        throw new Error("Failed to fetch menu");
+      }
+      const data = await response.json();
+      setMenuItems(data);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
+  };
 
   useEffect(() => {
     fetchMenuItems();
   }, []);
 
+  const handleMenuAdded = (newItem) => { // รับ newItem
+    //  เพิ่ม item ใหม่เข้าไปใน state (optimistic update):
+    setMenuItems(prevItems => [...prevItems, newItem]);
 
-    const handleMenuAdded = () => {
-        fetchMenuItems() // Re-fetch after adding
-    }
+    // fetchMenuItems() // ไม่ต้อง fetch ใหม่แล้ว
+  };
 
   const handleEdit = (item) => {
     setEditingItem(item);
@@ -48,28 +47,37 @@ function MenuForm() {
     setEditingItem(null);
   };
 
-  const handleMenuUpdated = () => {
-    fetchMenuItems(); // Re-fetch after updating
-    setEditingItem(null)
+  const handleMenuUpdated = (updatedItem) => {
+    // Optimistic update:  Update state ทันที
+    setMenuItems(prevItems =>
+      prevItems.map(item => (item.menu_id === updatedItem.menu_id ? updatedItem : item))
+    );
+    setEditingItem(null); // Clear editing state
+    // fetchMenuItems(); // ไม่ต้อง fetch ใหม่แล้ว
   };
+
 
   const handleDelete = async (name) => {
     if (!confirm("Are you sure you want to delete this item?")) {
-        return
+      return;
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/menu/name/${name}`,{
-            method: 'DELETE'
-        })
-        if(!response.ok){
-            throw new Error("Failed to fetch menu")
-        }
-        fetchMenuItems() //Re-Fetch
+      const response = await fetch(`http://localhost:8080/menu/name/${name}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        const errorData = await response.json(); // อ่าน error message
+        throw new Error(errorData.message || "Failed to delete menu item");
+      }
+
+      // Optimistic update: ลบออกจาก state ทันที
+      setMenuItems(prevItems => prevItems.filter(item => item.name !== name));
+
     } catch (error) {
-        setError(error)
+      setError(error.message);
     }
-  }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -78,7 +86,6 @@ function MenuForm() {
   if (error) {
     return <div>Error: {error}</div>;
   }
-
 
   return (
     <div>
@@ -92,7 +99,7 @@ function MenuForm() {
         />
       )}
 
-      <MenuList menuItems={menuItems} onEdit={handleEdit} onDelete={handleDelete}  />
+      <MenuList menuItems={menuItems} onEdit={handleEdit} onDelete={handleDelete} />
     </div>
   );
 }

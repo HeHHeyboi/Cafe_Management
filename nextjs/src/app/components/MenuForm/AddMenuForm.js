@@ -11,10 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 
 function AddMenuForm({ onMenuAdded }) {
-  // Add onMenuAdded prop
   const [name, setName] = useState("");
   const [menuType, setMenuType] = useState("");
   const [type, setType] = useState("");
@@ -31,7 +29,7 @@ function AddMenuForm({ onMenuAdded }) {
 
     const newMenuItem = {
       name,
-      menu_type: menuType,
+      menu_type: menuType, // snake_case
       type,
       price: parseFloat(price),
     };
@@ -40,9 +38,9 @@ function AddMenuForm({ onMenuAdded }) {
       const response = await fetch("http://localhost:8080/menu", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json", // ส่ง JSON
         },
-        body: JSON.stringify(newMenuItem),
+        body: JSON.stringify(newMenuItem), // ส่ง JSON
       });
 
       if (!response.ok) {
@@ -52,12 +50,13 @@ function AddMenuForm({ onMenuAdded }) {
         );
       }
 
+      const responseData = await response.json(); // รับข้อมูล item ที่เพิ่มจาก server (อาจจะมี id)
       setSuccess(true);
       setName("");
       setMenuType("");
       setType("");
       setPrice("");
-      onMenuAdded(); // Call the callback function
+      onMenuAdded(responseData); // ส่งข้อมูล item ใหม่ไปให้ parent
     } catch (error) {
       setError(error.message);
     } finally {
@@ -103,7 +102,7 @@ function AddMenuForm({ onMenuAdded }) {
           <Label htmlFor="menuType">Menu Type:</Label>
           <Select
             onValueChange={setMenuType}
-            defaultValue={menuType}
+            value={menuType} // ใช้ value
             disabled={isSubmitting}
           >
             <SelectTrigger id="menuType">
@@ -116,12 +115,11 @@ function AddMenuForm({ onMenuAdded }) {
             </SelectContent>
           </Select>
         </div>
-
         <div>
           <Label htmlFor="type">Type:</Label>
           <Select
             onValueChange={setType}
-            defaultValue={type}
+            value={type} // ใช้ value
             disabled={isSubmitting}
           >
             <SelectTrigger id="type">
