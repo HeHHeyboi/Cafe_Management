@@ -53,13 +53,13 @@ function MenuForm() {
     setEditingItem(null)
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (name) => {
     if (!confirm("Are you sure you want to delete this item?")) {
         return
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/menu/id/${id}`,{
+        const response = await fetch(`http://localhost:8080/menu/name/${name}`,{
             method: 'DELETE'
         })
         if(!response.ok){
