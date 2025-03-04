@@ -33,6 +33,7 @@ type GiveAway struct {
 	Remain int64
 	Desc   sql.NullString
 	Date   time.Time
+	ImgUrl sql.NullString
 }
 
 type Menu struct {
