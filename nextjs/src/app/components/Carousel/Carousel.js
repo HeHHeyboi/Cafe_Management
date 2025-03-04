@@ -42,11 +42,11 @@ const Carousel = () => {
   };
 
   const images = [
-    { src: "/Note.jpg", alt: "Test 1" },
-    { src: "/Jaemin.jpg", alt: "Test 2" },
-    { src: "/Note.jpg", alt: "Test 3" },
-    { src: "/Note.jpg", alt: "Test 4" },
-    { src: "/Note.jpg", alt: "Test 5" },
+    { src: "/Note.jpg", alt: "Note" },
+    { src: "/Jaemin.jpg", alt: "Jaemin" },
+    { src: "/Valentine.jpg", alt: "Valentine" },
+    { src: "/JHope.jpg", alt: "JHope" },
+    { src: "/BTS.jpg", alt: "BTS" },
   ];
 
   return (
