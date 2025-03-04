@@ -5,6 +5,8 @@ import AddMenuForm from "./AddMenuForm";
 import EditMenuForm from "./EditMenuForm";
 import MenuList from "./MenuList";
 
+// src/app/components/MenuForm/MenuForm.js
+
 function MenuForm() {
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +22,7 @@ function MenuForm() {
         throw new Error("Failed to fetch menu");
       }
       const data = await response.json();
+      
       setMenuItems(data);
     } catch (error) {
       setError(error.message);

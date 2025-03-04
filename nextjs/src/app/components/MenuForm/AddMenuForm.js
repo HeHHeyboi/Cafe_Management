@@ -11,12 +11,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+// import { Textarea } from "@/components/ui/textarea"; // Remove Textarea
 
 function AddMenuForm({ onMenuAdded }) {
   const [name, setName] = useState("");
   const [menuType, setMenuType] = useState("");
   const [type, setType] = useState("");
   const [price, setPrice] = useState("");
+  const [image, setImage] = useState(null); // State for the image file
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -27,20 +29,21 @@ function AddMenuForm({ onMenuAdded }) {
     setError(null);
     setSuccess(false);
 
-    const newMenuItem = {
-      name,
-      menu_type: menuType, // snake_case
-      type,
-      price: parseFloat(price),
-    };
+    // Use FormData for multipart/form-data
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("menu_type", menuType);
+    formData.append("type", type);
+    formData.append("price", price); // No need to parseFloat here
+    if (image) {
+      formData.append("image", image); // Append the image file
+    }
 
     try {
       const response = await fetch("http://localhost:8080/menu", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json", // ส่ง JSON
-        },
-        body: JSON.stringify(newMenuItem), // ส่ง JSON
+        // No Content-Type header!  Let the browser set it automatically with FormData
+        body: formData, // Send FormData, not JSON
       });
 
       if (!response.ok) {
@@ -49,14 +52,14 @@ function AddMenuForm({ onMenuAdded }) {
           errorData.message || `HTTP error! status: ${response.status}`
         );
       }
-
-      const responseData = await response.json(); // รับข้อมูล item ที่เพิ่มจาก server (อาจจะมี id)
+        const responseData = await response.json() //get response
       setSuccess(true);
       setName("");
       setMenuType("");
       setType("");
       setPrice("");
-      onMenuAdded(responseData); // ส่งข้อมูล item ใหม่ไปให้ parent
+      setImage(null); // Reset image after successful upload
+      onMenuAdded(responseData); // Pass new data
     } catch (error) {
       setError(error.message);
     } finally {
@@ -64,28 +67,34 @@ function AddMenuForm({ onMenuAdded }) {
     }
   };
 
+    const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      // Optional:  Preview image (see below)
+    }
+  };
+
   return (
     <div className="p-4 border rounded-lg">
       <h2 className="text-lg font-semibold mb-4">Add New Menu Item</h2>
+
+      {/* Success and Error Messages (same as before) */}
       {success && (
-        <div
-          className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
-          role="alert"
-        >
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
           <strong className="font-bold">Success!</strong>
-          <span className="block sm:inline"> Menu item added.</span>
+          <span>Menu item added.</span>
         </div>
       )}
       {error && (
-        <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-          role="alert"
-        >
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
           <strong className="font-bold">Error!</strong>
-          <span className="block sm:inline"> {error}</span>
+          <span>{error}</span>
         </div>
       )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Name, Menu Type, Type, Price (same as before) */}
         <div>
           <Label htmlFor="name">Name:</Label>
           <Input
@@ -100,11 +109,7 @@ function AddMenuForm({ onMenuAdded }) {
         </div>
         <div>
           <Label htmlFor="menuType">Menu Type:</Label>
-          <Select
-            onValueChange={setMenuType}
-            value={menuType} // ใช้ value
-            disabled={isSubmitting}
-          >
+          <Select onValueChange={setMenuType} value={menuType} disabled={isSubmitting}>
             <SelectTrigger id="menuType">
               <SelectValue placeholder="Select a menu type" />
             </SelectTrigger>
@@ -117,11 +122,7 @@ function AddMenuForm({ onMenuAdded }) {
         </div>
         <div>
           <Label htmlFor="type">Type:</Label>
-          <Select
-            onValueChange={setType}
-            value={type} // ใช้ value
-            disabled={isSubmitting}
-          >
+          <Select onValueChange={setType} value={type} disabled={isSubmitting}>
             <SelectTrigger id="type">
               <SelectValue placeholder="Select type" />
             </SelectTrigger>
@@ -145,6 +146,26 @@ function AddMenuForm({ onMenuAdded }) {
             step="0.01"
           />
         </div>
+
+
+        {/* *** Image Upload Input *** */}
+        <div>
+          <Label htmlFor="image">Image:</Label>
+          <input
+            type="file"
+            id="image"
+            accept="image/*" // Important:  Accept only image files
+            onChange={handleFileChange}
+            disabled={isSubmitting}
+          />
+
+            {/* Image Preview (Optional) */}
+            {image && (
+                <img src={URL.createObjectURL(image)} alt="Preview" className="mt-2 h-20 w-20 object-cover" />
+            )}
+        </div>
+
+
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Adding..." : "Add Menu Item"}
         </Button>
