@@ -9,6 +9,15 @@ import (
 	"time"
 )
 
+type Bill struct {
+	BillID     string
+	Total      int64
+	Status     bool
+	PayDate    string
+	UserID     interface{}
+	GiveawayID sql.NullInt64
+}
+
 type Gallery struct {
 	Gname     string
 	Startdate string
