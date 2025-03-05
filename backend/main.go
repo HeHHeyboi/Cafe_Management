@@ -30,7 +30,7 @@ type Config struct {
 //go:embed sql/schema/*.sql
 var embedMigration embed.FS
 
-const DURATION = 10 * time.Second
+var duration time.Duration = 24 * time.Hour
 
 const uploadDir = "upload/"
 
@@ -48,6 +48,7 @@ func main() {
 	if len(os.Args) < 2 {
 		gin.SetMode(gin.ReleaseMode)
 	} else if os.Args[1] == "test" {
+		duration = 10 * time.Second
 		gin.SetMode(gin.DebugMode)
 	} else if os.Args[1] == "reset" {
 		goose.SetBaseFS(embedMigration)
@@ -78,14 +79,14 @@ func main() {
 	_ = os.MkdirAll(uploadDir, 0777)
 
 	dbQuery := database.New(db)
-	ticker := interval.InitTimeTick(DURATION)
+	ticker := interval.InitTimeTick(duration)
 	cfg := Config{
 		db:     dbQuery,
 		secret: secret,
 		ticker: ticker,
 	}
 
-	go resetCounter(&cfg, DURATION)
+	go resetCounter(&cfg, duration)
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(cors.New(cors.Config{
