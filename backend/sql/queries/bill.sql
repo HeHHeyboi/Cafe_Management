@@ -1,6 +1,6 @@
 -- name: CreateBill :one
-INSERT INTO bill(bill_id, total, status, pay_date)
-VALUES (?, ?, ?, ?)
+INSERT INTO bill(bill_id, total,  pay_date)
+VALUES (?, ?, ? )
 RETURNING *;
 
 -- name: ListBill :many

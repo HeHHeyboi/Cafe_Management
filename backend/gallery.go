@@ -26,6 +26,7 @@ func BookGallery(cfg *Config, ctx *gin.Context) {
 	user_id, status, err := checkCookie(cfg, ctx)
 	if err != nil {
 		ctx.JSON(status, gin.H{"error": err.Error()})
+		ctx.Error(err)
 		return
 	}
 

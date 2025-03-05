@@ -10,30 +10,23 @@ import (
 )
 
 const createBill = `-- name: CreateBill :one
-INSERT INTO bill(bill_id, total, status, pay_date)
-VALUES (?, ?, ?, ?)
-RETURNING bill_id, total, status, pay_date, user_id, giveaway_id
+INSERT INTO bill(bill_id, total,  pay_date)
+VALUES (?, ?, ? )
+RETURNING bill_id, total, pay_date, user_id, giveaway_id
 `
 
 type CreateBillParams struct {
 	BillID  string
 	Total   int64
-	Status  bool
 	PayDate string
 }
 
 func (q *Queries) CreateBill(ctx context.Context, arg CreateBillParams) (Bill, error) {
-	row := q.db.QueryRowContext(ctx, createBill,
-		arg.BillID,
-		arg.Total,
-		arg.Status,
-		arg.PayDate,
-	)
+	row := q.db.QueryRowContext(ctx, createBill, arg.BillID, arg.Total, arg.PayDate)
 	var i Bill
 	err := row.Scan(
 		&i.BillID,
 		&i.Total,
-		&i.Status,
 		&i.PayDate,
 		&i.UserID,
 		&i.GiveawayID,
@@ -51,7 +44,7 @@ func (q *Queries) DeleteBill(ctx context.Context) error {
 }
 
 const listBill = `-- name: ListBill :many
-SELECT bill_id, total, status, pay_date, user_id, giveaway_id FROM bill
+SELECT bill_id, total, pay_date, user_id, giveaway_id FROM bill
 `
 
 func (q *Queries) ListBill(ctx context.Context) ([]Bill, error) {
@@ -66,7 +59,6 @@ func (q *Queries) ListBill(ctx context.Context) ([]Bill, error) {
 		if err := rows.Scan(
 			&i.BillID,
 			&i.Total,
-			&i.Status,
 			&i.PayDate,
 			&i.UserID,
 			&i.GiveawayID,
