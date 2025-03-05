@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS bill(
 	pay_date TEXT NOT NULL,
 	user_id UUID,
 	giveAway_id INTEGER,
-	PRIMARY KEY (bill_id,pay_date),
+	-- PRIMARY KEY (bill_id,pay_date),
 	FOREIGN KEY (user_id) REFERENCES users(user_id),
 	FOREIGN KEY (giveAway_id) REFERENCES giveAway(id)
 );

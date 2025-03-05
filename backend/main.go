@@ -21,15 +21,16 @@ import (
 )
 
 type Config struct {
-	db     *database.Queries
-	timer  *time.Timer
-	secret string
+	db      *database.Queries
+	ticker  *time.Ticker
+	secret  string
+	counter int
 }
 
 //go:embed sql/schema/*.sql
 var embedMigration embed.FS
 
-const DURATION = 24 * time.Hour
+const DURATION = 10 * time.Second
 
 const uploadDir = "upload/"
 
@@ -77,14 +78,14 @@ func main() {
 	_ = os.MkdirAll(uploadDir, 0777)
 
 	dbQuery := database.New(db)
-	timer := interval.InitTimeTick(DURATION)
+	ticker := interval.InitTimeTick(DURATION)
 	cfg := Config{
 		db:     dbQuery,
 		secret: secret,
-		timer:  timer,
+		ticker: ticker,
 	}
 
-	go resetCounter(cfg.timer, DURATION)
+	go resetCounter(&cfg, DURATION)
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(cors.New(cors.Config{
@@ -151,8 +152,8 @@ func main() {
 		UpdateGiveAway(&cfg, ctx)
 	})
 
-	r.POST("/bill", func(ctx *gin.Context) {
-
+	r.GET("/bill", func(ctx *gin.Context) {
+		CreateNewBill(&cfg, ctx)
 	})
 
 	r.GET("/reset", func(ctx *gin.Context) {
@@ -174,11 +175,11 @@ func main() {
 	r.Run()
 }
 
-func resetCounter(timer *time.Timer, duration time.Duration) {
+func resetCounter(cfg *Config, duration time.Duration) {
 	for {
-		<-timer.C
+		<-cfg.ticker.C
 		fmt.Println("Reset Counter")
-		timer.Reset(500 * time.Millisecond)
+		cfg.counter = 0
 	}
 }
 
