@@ -43,7 +43,7 @@ func AddNewGiveAway(cfg *Config, ctx *gin.Context) {
 			Valid:  param.Desc != "",
 		},
 	})
-	url, err := uploadIMG(cfg, ctx, uploadIMGArg{giveAway_id: data.ID})
+	// url, err := uploadIMG(cfg, ctx, uploadIMGArg{giveAway_id: data.ID})
 
 	if err != nil {
 		errMsg := checkDataBaseError(err)
@@ -52,13 +52,13 @@ func AddNewGiveAway(cfg *Config, ctx *gin.Context) {
 	}
 
 	ctx.JSON(201, gin.H{
-		"id":      data.ID,
-		"name":    data.Name,
-		"amount":  data.Amount,
-		"remain":  data.Remain,
-		"desc":    data.Desc.String,
-		"date":    data.Date,
-		"img_url": url,
+		"id":     data.ID,
+		"name":   data.Name,
+		"amount": data.Amount,
+		"remain": data.Remain,
+		"desc":   data.Desc.String,
+		"date":   data.Date,
+		// "img_url": url,
 	})
 }
 
@@ -140,4 +140,114 @@ func GetAllGiveAways(cfg *Config, ctx *gin.Context) {
 		giveAways = append(giveAways, g)
 	}
 	ctx.JSON(200, giveAways)
+}
+
+func UpdateGiveAway(cfg *Config, ctx *gin.Context) {
+	_, id_exist := ctx.Params.Get("id")
+	if id_exist {
+		updateGiveAwayByID(cfg, ctx)
+	} else {
+		updateGiveAwayByName(cfg, ctx)
+	}
+}
+
+// FIX: need to fix when update menu, update img too.
+func updateGiveAwayByID(cfg *Config, ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(400, "Invalid id")
+		return
+	}
+
+	type Param struct {
+		Name   string `json:"name"`
+		Amount int64  `json:"amount"`
+		Desc   string `json:"desc"`
+	}
+
+	var param Param
+	if err := ctx.ShouldBind(&param); err != nil {
+		bindingErrorMsg(err.(validator.ValidationErrors), ctx)
+		return
+	}
+	fmt.Println(param)
+
+	data, err := cfg.db.UpdateGiveAwayByID(ctx.Request.Context(), database.UpdateGiveAwayByIDParams{
+		Name:   param.Name,
+		Amount: param.Amount,
+		Remain: param.Amount,
+		Desc: sql.NullString{
+			String: param.Desc,
+			Valid:  param.Desc != "",
+		},
+		ID: int64(id),
+	})
+	fmt.Println(data)
+
+	if err != nil {
+		msg := checkDataBaseError(err)
+		if err.Error() == noResult {
+			msg += fmt.Sprintf("giveAway ที่มี id %d", id)
+		}
+		ctx.JSON(404, gin.H{"err": msg})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"id":     data.ID,
+		"name":   data.Name,
+		"amount": data.Amount,
+		"remain": data.Remain,
+		"desc":   data.Desc.String,
+		"date":   data.Date,
+	})
+}
+
+// FIX: need to fix when update menu, update img too.
+func updateGiveAwayByName(cfg *Config, ctx *gin.Context) {
+	name := ctx.Param("name")
+
+	type Param struct {
+		SetName string `json:"set_name"`
+		Amount  int64  `json:"amount"`
+		Desc    string `json:"desc"`
+	}
+
+	var param Param
+	if err := ctx.ShouldBind(&param); err != nil {
+		bindingErrorMsg(err.(validator.ValidationErrors), ctx)
+		return
+	}
+	fmt.Println(param)
+
+	data, err := cfg.db.UpdateGiveAwayByName(ctx.Request.Context(), database.UpdateGiveAwayByNameParams{
+		Setname: param.SetName,
+		Amount:  param.Amount,
+		Remain:  param.Amount,
+		Desc: sql.NullString{
+			String: param.Desc,
+			Valid:  param.Desc != "",
+		},
+		Name: name,
+	})
+	fmt.Println(data)
+
+	if err != nil {
+		msg := checkDataBaseError(err)
+		if err.Error() == noResult {
+			msg += fmt.Sprintf("giveAway ที่มีชื่อ %s", name)
+		}
+
+		ctx.JSON(404, gin.H{"err": msg})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"id":     data.ID,
+		"name":   data.Name,
+		"amount": data.Amount,
+		"remain": data.Remain,
+		"desc":   data.Desc.String,
+		"date":   data.Date,
+	})
 }
