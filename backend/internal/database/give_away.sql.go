@@ -42,6 +42,26 @@ func (q *Queries) AddNewGiveAway(ctx context.Context, arg AddNewGiveAwayParams) 
 	return i, err
 }
 
+const deleteByID = `-- name: DeleteByID :exec
+DELETE FROM giveAway
+WHERE id = ?
+`
+
+func (q *Queries) DeleteByID(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteByID, id)
+	return err
+}
+
+const deleteByName = `-- name: DeleteByName :exec
+DELETE FROM giveAway
+WHERE name = ?
+`
+
+func (q *Queries) DeleteByName(ctx context.Context, name string) error {
+	_, err := q.db.ExecContext(ctx, deleteByName, name)
+	return err
+}
+
 const deleteGiveAways = `-- name: DeleteGiveAways :exec
 DELETE FROM giveAway
 `
@@ -142,6 +162,76 @@ type GetGiveAwayByNameRow struct {
 func (q *Queries) GetGiveAwayByName(ctx context.Context, name string) (GetGiveAwayByNameRow, error) {
 	row := q.db.QueryRowContext(ctx, getGiveAwayByName, name)
 	var i GetGiveAwayByNameRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Amount,
+		&i.Remain,
+		&i.Desc,
+		&i.Date,
+	)
+	return i, err
+}
+
+const updateGiveAwayByID = `-- name: UpdateGiveAwayByID :one
+UPDATE giveAway
+SET name=?, amount=?, desc=?,remain=?
+WHERE id = ?
+RETURNING id, name, amount, remain, "desc", date
+`
+
+type UpdateGiveAwayByIDParams struct {
+	Name   string
+	Amount int64
+	Desc   sql.NullString
+	Remain int64
+	ID     int64
+}
+
+func (q *Queries) UpdateGiveAwayByID(ctx context.Context, arg UpdateGiveAwayByIDParams) (GiveAway, error) {
+	row := q.db.QueryRowContext(ctx, updateGiveAwayByID,
+		arg.Name,
+		arg.Amount,
+		arg.Desc,
+		arg.Remain,
+		arg.ID,
+	)
+	var i GiveAway
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Amount,
+		&i.Remain,
+		&i.Desc,
+		&i.Date,
+	)
+	return i, err
+}
+
+const updateGiveAwayByName = `-- name: UpdateGiveAwayByName :one
+UPDATE giveAway
+SET name=?, amount=?, desc=?,remain=?
+WHERE name=?
+RETURNING id, name, amount, remain, "desc", date
+`
+
+type UpdateGiveAwayByNameParams struct {
+	Setname string
+	Amount  int64
+	Desc    sql.NullString
+	Remain  int64
+	Name    string
+}
+
+func (q *Queries) UpdateGiveAwayByName(ctx context.Context, arg UpdateGiveAwayByNameParams) (GiveAway, error) {
+	row := q.db.QueryRowContext(ctx, updateGiveAwayByName,
+		arg.Setname,
+		arg.Amount,
+		arg.Desc,
+		arg.Remain,
+		arg.Name,
+	)
+	var i GiveAway
 	err := row.Scan(
 		&i.ID,
 		&i.Name,

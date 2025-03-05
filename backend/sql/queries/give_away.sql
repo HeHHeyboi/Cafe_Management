@@ -17,5 +17,26 @@ SELECT id,name,amount,remain,desc,date(date) as date
 FROM giveAway
 WHERE id = ?;
 
+-- name: UpdateGiveAwayByID :one
+UPDATE giveAway
+SET name=?, amount=?, desc=?,remain=?
+WHERE id = ?
+RETURNING *;
+
+
+-- name: UpdateGiveAwayByName :one
+UPDATE giveAway
+SET name=@setname, amount=?, desc=?,remain=?
+WHERE name=@name
+RETURNING *;
+
 -- name: DeleteGiveAways :exec
 DELETE FROM giveAway;
+
+-- name: DeleteByID :exec
+DELETE FROM giveAway
+WHERE id = ?;
+
+-- name: DeleteByName :exec
+DELETE FROM giveAway
+WHERE name = ?;
