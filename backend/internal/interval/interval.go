@@ -4,15 +4,15 @@ import (
 	"time"
 )
 
-func InitTimeTick(duration time.Duration) *time.Timer {
+func InitTimeTick(duration time.Duration) *time.Ticker {
 	now := time.Now().Local()
 	y, m, d := now.Date()
 	start_day := time.Date(y, m, d, 0, 0, 0, 0, time.Local)
 	sub := now.Sub(start_day)
-	var timer *time.Timer
+	var ticker *time.Ticker
 	if sub < duration {
-		timer = time.NewTimer(sub)
+		ticker = time.NewTicker(sub)
 	}
-	timer = time.NewTimer(duration)
-	return timer
+	ticker = time.NewTicker(duration)
+	return ticker
 }
