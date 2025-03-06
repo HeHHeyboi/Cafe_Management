@@ -61,27 +61,47 @@ function GiveAwayShow() {
     }
 
     if (giveaways.length === 0) {
-        return <div className="flex justify-center items-center h-screen">ไม่มีรายการแจกของในขณะนี้</div>;
+        return (
+            <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+                <div className="flex justify-between items-center mb-4">
+                    <h1 className="text-2xl font-bold">GiveAwayList</h1>
+                    <Button onClick={() => router.push('/GiveAway')}>
+                        เพิ่มรายการ GiveAway
+                    </Button>
+                </div>
+                <div className="text-center py-8 text-gray-600">
+                    ยังไม่มีรายการ GiveAway ในขณะนี้
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
-            {/* ใช้ flex จัดตำแหน่งให้หัวข้อกับปุ่มอยู่ข้างๆ กัน */}
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">GiveAwayList</h1>
+        <>
+            <div className="max-w-4xl mx-auto mb-4 flex justify-end">
                 <Button onClick={() => router.push('/GiveAway')}>
                     เพิ่มรายการ GiveAway
                 </Button>
             </div>
-    
-            <div className="space-y-4">
-                {giveaways.map(giveaway => (
-                    <GiveawayCard key={giveaway.id} giveaway={giveaway} />
-                ))}
+            
+            <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+                <h1 className="text-2xl font-bold mb-4">GiveAwayList</h1>
+                
+                <div className="space-y-4">
+                    {giveaways.map(giveaway => (
+                        <div 
+                            key={giveaway.id} 
+                            onClick={() => router.push(`/GiveAwayDetail/${giveaway.id}`)}
+                            className="cursor-pointer hover:shadow-lg transition-shadow duration-300"
+                        >
+                            <GiveawayCard giveaway={giveaway} />
+                        </div>
+                    ))}
+                </div>
             </div>
-        </div>
+        </>
     );
     
 }
 
-export default GiveAwayShow;
+export default GiveAwayShow; 
