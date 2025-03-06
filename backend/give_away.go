@@ -42,6 +42,7 @@ func AddNewGiveAway(cfg *Config, ctx *gin.Context) {
 			String: param.Desc,
 			Valid:  param.Desc != "",
 		},
+		Date: time.Now().Format(time.DateOnly),
 	})
 	// url, err := uploadIMG(cfg, ctx, uploadIMGArg{giveAway_id: data.ID})
 
