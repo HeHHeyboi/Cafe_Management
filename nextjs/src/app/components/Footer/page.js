@@ -26,22 +26,7 @@ const Footer = () => {
                                         </div>
 
                                         {/* Quick Links */}
-                    <div>
-                        <h3 className="text-xl font-bold mb-6 text-amber-400">Quick Links</h3>
-                        <ul className="space-y-3">
-                            {['Home', 'Menu', 'About Us', 'Contact'].map((item) => (
-                                <li key={item}>
-                                    <a 
-                                        href={`/${item.toLowerCase().replace(' ', '')}`}
-                                        className="text-gray-300 hover:text-amber-400 transition-colors flex items-center space-x-2"
-                                    >
-                                        <span>→</span>
-                                        <span>{item}</span>
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                    
 
                     {/* Contact Info */}
                     <div>
