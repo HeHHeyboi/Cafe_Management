@@ -1,51 +1,181 @@
 // src/app/components/MenuForm/MenuList.js
-"use client"
+"use client";
 
+import { useState } from "react"; // Import useState
 import { Button } from "@/components/ui/button";
-import Image from "next/image"; // Import Image
+import { Input } from "@/components/ui/input"; // Import Input
+import Image from "next/image";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function MenuList({ menuItems, onEdit, onDelete }) {
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
+  const [filterType, setFilterType] = useState("all"); // State for filter type
+
+  // Create a unique list of menu types for the filter dropdown.
+  const menuTypes = [
+    "all",
+    ...new Set(menuItems.map((item) => item.menu_type)),
+  ];
+
+  // Filter the menu items based on search term and filter type.
+  const filteredMenuItems = menuItems.filter((item) => {
+    const searchLower = searchTerm.toLowerCase();
+    const nameMatch = item.name.toLowerCase().includes(searchLower);
+    const typeMatch = item.menu_type.toLowerCase().includes(searchLower);
+    const filterMatch =
+      filterType === "all" || item.menu_type === filterType;
+
+    return filterMatch && (nameMatch || typeMatch);
+  });
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {menuItems.map((item) => (
-        <div
-          key={item.menu_id}  // ใช้ item.menu_id
-          className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
-        >
-          <h2 className="text-lg font-semibold">{item.name}</h2>
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      <h2 className="text-xl font-semibold mb-4">รายการเมนู</h2>
 
-          {/* แสดงรูปภาพ */}
-          {item.img_url && ( // ตรวจสอบว่ามี img_url ก่อน
-            <Image
-                src={"http://localhost:8080"+item.img_url}
-                alt={item.name}
-                width={500}  // กำหนด width และ height *หรือ* ใช้ layout
-                height={300}
-                className="w-full h-48 object-cover mb-4 rounded-t-lg" // Style
-                // layout="responsive" // หรือ "fill" (ดูคำอธิบายเพิ่มเติมด้านล่าง)
-                // priority={item.menu_id < 3} // Optional: เพิ่ม priority ให้รูปแรกๆ
-            />
-          )}
+      {/* Search and Filter Controls */}
+      <div className="flex flex-col md:flex-row items-center justify-between mb-4">
+        <Input
+          type="text"
+          placeholder="ค้นหาเมนู..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="mb-2 md:mb-0 md:mr-2" // Responsive styling
+        />
 
-          <p>
-            Type: {item.menu_type}, {item.type}
-          </p>
-          <p>Price: ฿{item.price ? item.price.toFixed(2) : 'N/A'}</p>
-
-          <div className="mt-2 flex gap-2">
-            <Button variant="outline" onClick={() => onEdit(item)}>
-              Edit
-            </Button>
-            <Button variant="destructive" onClick={() => onDelete(item.name)}>
-              Delete
-            </Button>
-          </div>
+        <div className="flex items-center">
+          <span className="mr-2">ประเภท:</span>
+          <Select
+            onValueChange={(value) => setFilterType(value)}
+            value={filterType}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="ทั้งหมด" />
+            </SelectTrigger>
+            <SelectContent>
+              {menuTypes.map((type) => (
+                <SelectItem key={type} value={type}>
+                  {type === "all" ? "ทั้งหมด" : type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      ))}
+      </div>
+
+      {filteredMenuItems.length === 0 ? (
+        <p>ไม่มีรายการเมนูที่ตรงกับคำค้นหา</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  รูป
+                </th>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  ชื่อเมนู
+                </th>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  ประเภท
+                </th>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  ชนิด
+                </th>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  ราคา
+                </th>
+                <th scope="col" className="relative px-6 py-3">
+                  <span className="sr-only">Edit</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredMenuItems.map((item) => (
+                <tr key={item.menu_id}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {item.img_url && (
+                      <div className="flex-shrink-0 h-10 w-10">
+                        <Image
+                          src={
+                            item.img_url.startsWith("http")
+                              ? item.img_url
+                              : `http://localhost:8080${item.img_url}`
+                          }
+                          alt={item.name}
+                          width={40}
+                          height={40}
+                          className="h-10 w-10 rounded-full object-cover"
+                        />
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">
+                      {item.name}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">
+                      {item.menu_type}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">
+                      {item.type || "-"}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      ฿
+                      {item.price ? item.price.toFixed(2) : "N/A"}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onEdit(item)}
+                      className="mr-2"
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => onDelete(item.name)}
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
 
 export default MenuList;
-
