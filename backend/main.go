@@ -11,7 +11,6 @@ import (
 	"github.com/gin-contrib/cors"
 
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
-	"github.com/HeHHeyboi/Cafe_Management/backend/internal/interval"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/pressly/goose/v3"
@@ -21,10 +20,8 @@ import (
 )
 
 type Config struct {
-	db      *database.Queries
-	ticker  *time.Ticker
-	secret  string
-	counter int
+	db     *database.Queries
+	secret string
 }
 
 //go:embed sql/schema/*.sql
@@ -79,14 +76,11 @@ func main() {
 	_ = os.MkdirAll(uploadDir, 0777)
 
 	dbQuery := database.New(db)
-	ticker := interval.InitTimeTick(duration)
 	cfg := Config{
 		db:     dbQuery,
 		secret: secret,
-		ticker: ticker,
 	}
 
-	go resetCounter(&cfg, duration)
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(cors.New(cors.Config{
@@ -174,14 +168,6 @@ func main() {
 		})
 	})
 	r.Run()
-}
-
-func resetCounter(cfg *Config, duration time.Duration) {
-	for {
-		<-cfg.ticker.C
-		fmt.Println("Reset Counter")
-		cfg.counter = 0
-	}
 }
 
 func setUpDB(db *sql.DB) {
