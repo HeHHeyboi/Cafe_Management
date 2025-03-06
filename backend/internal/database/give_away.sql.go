@@ -12,7 +12,7 @@ import (
 
 const addNewGiveAway = `-- name: AddNewGiveAway :one
 INSERT INTO giveAway(name, amount, remain, desc, date)
-VALUES (?, ?, ?, ?, date('now'))
+VALUES (?, ?, ?, ?, date(?))
 RETURNING id, name, amount, remain, "desc", date
 `
 
@@ -21,6 +21,7 @@ type AddNewGiveAwayParams struct {
 	Amount int64
 	Remain int64
 	Desc   sql.NullString
+	Date   interface{}
 }
 
 func (q *Queries) AddNewGiveAway(ctx context.Context, arg AddNewGiveAwayParams) (GiveAway, error) {
@@ -29,6 +30,7 @@ func (q *Queries) AddNewGiveAway(ctx context.Context, arg AddNewGiveAwayParams) 
 		arg.Amount,
 		arg.Remain,
 		arg.Desc,
+		arg.Date,
 	)
 	var i GiveAway
 	err := row.Scan(
