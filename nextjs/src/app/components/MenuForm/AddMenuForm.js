@@ -1,6 +1,7 @@
 // src/app/components/MenuForm/AddMenuForm.js
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,25 +16,56 @@ import {
 
 function AddMenuForm({ onMenuAdded }) {
   const [name, setName] = useState("");
-  const [menuType, setMenuType] = useState("");
+  const [menuType, setMenuType] = useState(""); // State for select
   const [type, setType] = useState("");
   const [price, setPrice] = useState("");
   const [image, setImage] = useState(null); // State for the image file
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Loading state
+  const [error, setError] = useState(null); // Error state
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const menuTypeOptions = ["อาหาร", "เครื่องดื่ม", "ของหวาน"]; // Options for select
+  const typeOptions = ["ร้อน", "เย็น", "ปั่น"];
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setIsSubmitting(true);
     setError(null);
     setSuccess(false);
+
+
+    // --- Validation ---
+    if (!name.trim()) {
+        setError("กรุณากรอกชื่อเมนู");
+        setIsSubmitting(false);
+        return;
+    }
+     if (!menuType) {
+        setError("กรุณาเลือกประเภทเมนู");
+        setIsSubmitting(false);
+        return;
+    }
+    if (!price) {
+        setError("กรุณากรอกราคา");
+        setIsSubmitting(false);
+        return;
+    }
+    const priceNum = parseFloat(price);
+    if (isNaN(priceNum)) {
+        setError("ราคาต้องเป็นตัวเลข");
+        setIsSubmitting(false);
+        return;
+    }
+    // Add more validation as needed (e.g., type validation, image size limits)
+
 
     // Use FormData for multipart/form-data
     const formData = new FormData();
     formData.append("name", name);
     formData.append("menu_type", menuType);
-    formData.append("type", type);
+     if (type) {  // Only append type if it's not empty
+        formData.append("type", type);
+    }
     formData.append("price", price); // No need to parseFloat here
     if (image) {
       formData.append("image", image); // Append the image file
@@ -42,7 +74,7 @@ function AddMenuForm({ onMenuAdded }) {
     try {
       const response = await fetch("http://localhost:8080/menu", {
         method: "POST",
-        // No Content-Type header!  Let the browser set it automatically with FormData
+        // No Content-Type header!  Let the browser set it automatically with FormData
         body: formData, // Send FormData, not JSON
       });
 
@@ -52,7 +84,7 @@ function AddMenuForm({ onMenuAdded }) {
           errorData.message || `HTTP error! status: ${response.status}`
         );
       }
-        const responseData = await response.json() //get response
+      const responseData = await response.json() //get response
       setSuccess(true);
       setName("");
       setMenuType("");
@@ -67,107 +99,144 @@ function AddMenuForm({ onMenuAdded }) {
     }
   };
 
+
     const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-      // Optional:  Preview image (see below)
-    }
-  };
+        const file = e.target.files[0];
+         // Basic file type validation
+        if (file && !file.type.startsWith("image/")) {
+            setError("กรุณาเลือกไฟล์รูปภาพเท่านั้น");
+            return;
+        }
+        setError(null); // Clear previous error
+        if (file) {
+          setImage(file);
+        }
+    };
+
+
+    // Image Preview (using URL.createObjectURL)
+    const [previewUrl, setPreviewUrl] = useState(null);
+    useEffect(() => {
+        if (image) {
+            setPreviewUrl(URL.createObjectURL(image));
+        } else {
+            setPreviewUrl(null); // Clear preview when image is reset
+        }
+
+        // Clean up the URL when the component unmounts or the image changes
+        return () => {
+          if (previewUrl) {
+                URL.revokeObjectURL(previewUrl)
+            }
+        };
+    }, [image]);
+
 
   return (
-    <div className="p-4 border rounded-lg">
-      <h2 className="text-lg font-semibold mb-4">Add New Menu Item</h2>
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      <h2 className="text-xl font-semibold mb-4">เพิ่มเมนูใหม่</h2>
 
-      {/* Success and Error Messages (same as before) */}
+      {/* Success and Error Messages */}
       {success && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-          <strong className="font-bold">Success!</strong>
-          <span>Menu item added.</span>
+          <strong className="font-bold">สำเร็จ!</strong>
+          <span> เพิ่มเมนูเรียบร้อยแล้ว</span>
         </div>
       )}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-          <strong className="font-bold">Error!</strong>
-          <span>{error}</span>
+          <strong className="font-bold">เกิดข้อผิดพลาด!</strong>
+          <span> {error}</span>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Name, Menu Type, Type, Price (same as before) */}
+        {/* Name Input */}
         <div>
-          <Label htmlFor="name">Name:</Label>
+          <Label htmlFor="name">ชื่อเมนู:</Label>
           <Input
             type="text"
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            required
-            placeholder="Enter menu item name"
+            placeholder="กรอกชื่อเมนู"
+            className="mt-1"
             disabled={isSubmitting}
           />
         </div>
+
+        {/* Menu Type Select */}
         <div>
-          <Label htmlFor="menuType">Menu Type:</Label>
+          <Label htmlFor="menuType">ประเภทเมนู:</Label>
           <Select onValueChange={setMenuType} value={menuType} disabled={isSubmitting}>
-            <SelectTrigger id="menuType">
-              <SelectValue placeholder="Select a menu type" />
+            <SelectTrigger id="menuType" className="w-full">
+              <SelectValue placeholder="เลือกประเภทเมนู" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="อาหาร">อาหาร</SelectItem>
-              <SelectItem value="เครื่องดื่ม">เครื่องดื่ม</SelectItem>
-              <SelectItem value="ของหวาน">ของหวาน</SelectItem>
+              {menuTypeOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
+
+        {/* Type Select */}
         <div>
-          <Label htmlFor="type">Type:</Label>
+          <Label htmlFor="type">ชนิด (ร้อน/เย็น/ปั่น):</Label>
           <Select onValueChange={setType} value={type} disabled={isSubmitting}>
-            <SelectTrigger id="type">
-              <SelectValue placeholder="Select type" />
+            <SelectTrigger id="type" className="w-full">
+              <SelectValue placeholder="เลือกชนิด (ถ้ามี)" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ร้อน">ร้อน</SelectItem>
-              <SelectItem value="เย็น">เย็น</SelectItem>
-              <SelectItem value="ปั่น">ปั่น</SelectItem>
+              {typeOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
+
+        {/* Price Input */}
         <div>
-          <Label htmlFor="price">Price:</Label>
+          <Label htmlFor="price">ราคา:</Label>
           <Input
-            type="number"
+            type="text" // Keep type as text for easier input
             id="price"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            required
-            placeholder="Enter price"
+            placeholder="กรอกราคา"
+            className="mt-1"
             disabled={isSubmitting}
-            step="0.01"
           />
         </div>
 
-
-        {/* *** Image Upload Input *** */}
+        {/* Image Upload */}
         <div>
-          <Label htmlFor="image">Image:</Label>
+          <Label htmlFor="image">รูปภาพ:</Label>
           <input
             type="file"
             id="image"
-            accept="image/*" // Important:  Accept only image files
+            accept="image/*"
             onChange={handleFileChange}
             disabled={isSubmitting}
+            className="mt-1"
           />
-
-            {/* Image Preview (Optional) */}
-            {image && (
-                <img src={URL.createObjectURL(image)} alt="Preview" className="mt-2 h-20 w-20 object-cover" />
+           {/* Image Preview */}
+            {previewUrl && (
+                <img
+                    src={previewUrl}
+                    alt="Preview"
+                    className="mt-2 w-32 h-32 object-cover rounded"
+                />
             )}
         </div>
 
-
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Adding..." : "Add Menu Item"}
+        {/* Submit Button */}
+        <Button type="submit" variant="default" disabled={isSubmitting}>
+          {isSubmitting ? "กำลังเพิ่ม..." : "เพิ่มเมนู"}
         </Button>
       </form>
     </div>
