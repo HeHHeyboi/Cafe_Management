@@ -1,6 +1,6 @@
 -- name: AddNewGiveAway :one
 INSERT INTO giveAway(name, amount, remain, desc, date)
-VALUES (?, ?, ?, ?, date('now'))
+VALUES (?, ?, ?, ?, date(?))
 RETURNING *;
 
 -- name: GetAllGiveAways :many

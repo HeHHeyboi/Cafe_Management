@@ -10,8 +10,8 @@ import (
 )
 
 const createBill = `-- name: CreateBill :one
-INSERT INTO bill(bill_id, total,  pay_date)
-VALUES (?, ?, ? )
+INSERT INTO bill(bill_id, total, pay_date)
+VALUES (?, ?, ?)
 RETURNING bill_id, total, pay_date, user_id, giveaway_id
 `
 

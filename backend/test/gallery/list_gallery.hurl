@@ -11,7 +11,7 @@ output: -
 	"email":"example@gmail.com",
 	"password":"123"
 }
-HTTP 200
+HTTP 201
 
 POST http://localhost:8080/user/login
 [Options]
@@ -41,7 +41,7 @@ output: -
 	"email":"thana@gmail.com",
 	"password":"321"
 }
-HTTP 200
+HTTP 201
 
 POST http://localhost:8080/user/login
 [Options]
