@@ -59,6 +59,10 @@ func AddNewMenu(cfg *Config, ctx *gin.Context) {
 	url, err := uploadIMG(cfg, ctx, uploadIMGArg{
 		menu_id: data.MenuID,
 	})
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 
 	ctx.JSON(201, gin.H{
 		"menu_id":   data.MenuID,
@@ -173,13 +177,14 @@ func getMenuByID(cfg *Config, ctx *gin.Context) {
 func DeleteMenuByName(cfg *Config, ctx *gin.Context) {
 	name := ctx.Param("name")
 
-	err := cfg.db.DeleteMenuByName(ctx.Request.Context(), name)
+	menu_id, err := cfg.db.DeleteMenuByName(ctx.Request.Context(), name)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		ctx.Error(err)
 		return
 	}
 
+	deleteIMG(cfg, ctx, uploadIMGArg{menu_id: menu_id})
 	ctx.JSON(204, gin.H{"msg": "Delete Success"})
 }
 
@@ -198,6 +203,7 @@ func DeleteMenuByID(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
+	deleteIMG(cfg, ctx, uploadIMGArg{menu_id: int64(id)})
 	ctx.JSON(204, "Delete Success")
 }
 
@@ -252,9 +258,9 @@ func updateMenuByID(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
-	url, err := getImage(cfg, ctx, uploadIMGArg{menu_id: data.MenuID})
+	url, err := updateIMG(cfg, ctx, uploadIMGArg{menu_id: data.MenuID})
 	if err != nil {
-		ctx.JSON(401, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -305,9 +311,9 @@ func updateMenuByName(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
-	url, err := getImage(cfg, ctx, uploadIMGArg{menu_id: data.MenuID})
+	url, err := updateIMG(cfg, ctx, uploadIMGArg{menu_id: data.MenuID})
 	if err != nil {
-		ctx.JSON(401, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
