@@ -14,16 +14,15 @@ type uploadIMGArg struct {
 	gallery_name string
 }
 
+const image_value = "images"
+
 func uploadIMG(cfg *Config, ctx *gin.Context, arg uploadIMGArg) ([]string, error) {
 	form, err := ctx.MultipartForm()
 	if err != nil {
 		return nil, err
 	}
 
-	files := form.File["image[]"]
-	if err != nil {
-		return nil, err
-	}
+	files := form.File["images"]
 
 	var url []string
 	var datas []database.Image
