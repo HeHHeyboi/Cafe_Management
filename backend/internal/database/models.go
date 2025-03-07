@@ -49,6 +49,13 @@ type Menu struct {
 	Type     sql.NullString
 }
 
+type Order struct {
+	BillID     string
+	MenuID     int64
+	Amount     int64
+	TotalPrice float64
+}
+
 type User struct {
 	UserID   interface{}
 	Fname    sql.NullString

@@ -49,6 +49,44 @@ func (q *Queries) DeleteIMG(ctx context.Context) error {
 	return err
 }
 
+const deleteIMGFromKey = `-- name: DeleteIMGFromKey :exec
+DELETE FROM image
+WHERE menu_id = ? OR giveAway_id = ? OR gallery_name = ?
+`
+
+type DeleteIMGFromKeyParams struct {
+	MenuID      sql.NullInt64
+	GiveawayID  sql.NullInt64
+	GalleryName sql.NullString
+}
+
+func (q *Queries) DeleteIMGFromKey(ctx context.Context, arg DeleteIMGFromKeyParams) error {
+	_, err := q.db.ExecContext(ctx, deleteIMGFromKey, arg.MenuID, arg.GiveawayID, arg.GalleryName)
+	return err
+}
+
+const deleteOneIMG = `-- name: DeleteOneIMG :exec
+DELETE FROM image
+WHERE (menu_id = ? OR giveAway_id = ? OR gallery_name = ?) AND img_url = ?
+`
+
+type DeleteOneIMGParams struct {
+	MenuID      sql.NullInt64
+	GiveawayID  sql.NullInt64
+	GalleryName sql.NullString
+	ImgUrl      string
+}
+
+func (q *Queries) DeleteOneIMG(ctx context.Context, arg DeleteOneIMGParams) error {
+	_, err := q.db.ExecContext(ctx, deleteOneIMG,
+		arg.MenuID,
+		arg.GiveawayID,
+		arg.GalleryName,
+		arg.ImgUrl,
+	)
+	return err
+}
+
 const getGalleryNameIMG = `-- name: GetGalleryNameIMG :many
 select img_url from image
 WHERE gallery_name = ?
