@@ -11,7 +11,6 @@ export default function Home() {
       <dropdownlist />
       <Carousel />
       <Menu />
-        <h1>Home</h1>
         <EventShow />
       <Footer />
 
