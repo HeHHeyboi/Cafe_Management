@@ -124,7 +124,7 @@ export default function BillOrderPage() {
         </div>
 
         <div className="mt-4 flex justify-end space-x-4">
-          <Link href="/Menu">
+          <Link href="/menu">
             <Button variant="outline">Add New Order</Button>
           </Link>
             {/* <Button variant="default">Print</Button> */}
