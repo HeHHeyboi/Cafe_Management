@@ -112,9 +112,10 @@ func getMenuByName(cfg *Config, ctx *gin.Context) {
 		msg := checkDataBaseError(err)
 		if err.Error() == noResult {
 			msg += fmt.Sprintf("menu ที่มีชื่อ %s", name)
+			ctx.JSON(404, gin.H{"err": msg})
+			return
 		}
-
-		ctx.JSON(404, gin.H{"err": msg})
+		ctx.JSON(500, gin.H{"err": msg})
 		return
 	}
 
