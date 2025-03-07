@@ -172,7 +172,6 @@ func updateGiveAwayByID(cfg *Config, ctx *gin.Context) {
 		bindingErrorMsg(err.(validator.ValidationErrors), ctx)
 		return
 	}
-	fmt.Println(param)
 
 	data, err := cfg.db.UpdateGiveAwayByID(ctx.Request.Context(), database.UpdateGiveAwayByIDParams{
 		Name:   param.Name,
@@ -184,24 +183,31 @@ func updateGiveAwayByID(cfg *Config, ctx *gin.Context) {
 		},
 		ID: int64(id),
 	})
-	fmt.Println(data)
 
 	if err != nil {
 		msg := checkDataBaseError(err)
 		if err.Error() == noResult {
 			msg += fmt.Sprintf("giveAway ที่มี id %d", id)
+			ctx.JSON(404, gin.H{"error": msg})
+			return
 		}
-		ctx.JSON(404, gin.H{"err": msg})
+		ctx.JSON(500, gin.H{"error": msg})
 		return
 	}
 
+	url, err := updateIMG(cfg, ctx, uploadIMGArg{giveAway_id: data.ID})
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 	ctx.JSON(200, gin.H{
-		"id":     data.ID,
-		"name":   data.Name,
-		"amount": data.Amount,
-		"remain": data.Remain,
-		"desc":   data.Desc.String,
-		"date":   data.Date,
+		"id":      data.ID,
+		"name":    data.Name,
+		"amount":  data.Amount,
+		"remain":  data.Remain,
+		"desc":    data.Desc.String,
+		"date":    data.Date,
+		"img_url": url,
 	})
 }
 
@@ -244,12 +250,18 @@ func updateGiveAwayByName(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
+	url, err := updateIMG(cfg, ctx, uploadIMGArg{giveAway_id: data.ID})
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 	ctx.JSON(200, gin.H{
-		"id":     data.ID,
-		"name":   data.Name,
-		"amount": data.Amount,
-		"remain": data.Remain,
-		"desc":   data.Desc.String,
-		"date":   data.Date,
+		"id":      data.ID,
+		"name":    data.Name,
+		"amount":  data.Amount,
+		"remain":  data.Remain,
+		"desc":    data.Desc.String,
+		"date":    data.Date,
+		"img_url": url,
 	})
 }

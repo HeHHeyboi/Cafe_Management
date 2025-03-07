@@ -18,6 +18,7 @@ type Gallery struct {
 	Enddate     string    `form:"end_date" json:"end_date" binding:"required"`
 	Description string    `form:"description" json:"description" binding:"required"`
 	UserID      uuid.UUID `json:"user_id"`
+	Img_url     []string  `json:"img_url"`
 }
 
 func BookGallery(cfg *Config, ctx *gin.Context) {
@@ -59,6 +60,7 @@ func BookGallery(cfg *Config, ctx *gin.Context) {
 		ctx.Error(fmt.Errorf("%v", msg))
 		return
 	}
+	url, _ := uploadIMG(cfg, ctx, uploadIMGArg{gallery_name: data.Gname})
 
 	book := Gallery{
 		data.Gname,
@@ -66,6 +68,7 @@ func BookGallery(cfg *Config, ctx *gin.Context) {
 		data.Enddate,
 		data.Desc.String,
 		uuid.MustParse(data.UserID.(string)),
+		url,
 	}
 	ctx.JSON(201, book)
 }
@@ -98,12 +101,14 @@ func listBooking(cfg *Config, ctx *gin.Context) {
 
 	var galleries []Gallery
 	for _, book := range data {
+		url, _ := uploadIMG(cfg, ctx, uploadIMGArg{gallery_name: book.Gname})
 		gallery := Gallery{
 			Name:        book.Gname,
 			Startdate:   book.Startdate,
 			Enddate:     book.Enddate,
 			Description: book.Desc.String,
 			UserID:      uuid.MustParse(book.UserID.(string)),
+			Img_url:     url,
 		}
 		galleries = append(galleries, gallery)
 	}
