@@ -1,59 +1,170 @@
-'use client'
+// app/MenuOrder/page.js
+"use client";
 
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useRouter } from 'next/navigation';
 
-export default function MenuOrder() {
-  // สร้างข้อมูลจำลอง (dummy data)
-  const sampleOrderItems = [
-    { menu_id: 1, name: 'กาแฟ', menu_type: 'เครื่องดื่ม', type: 'ร้อน', price: 85.00, quantity: 2 },
-    { menu_id: 2, name: 'ข้าวผัด', menu_type: 'อาหาร', type: '', price: 60, quantity: 1 },
-    { menu_id: 3, name: 'ส้มตำ', menu_type: 'อาหาร', type: '', price: 40, quantity: 3 },
-    { menu_id: 4, name: 'ชาเขียวเย็น', menu_type: 'เครื่องดื่ม', type: 'เย็น', price: 70, quantity: 1 },
-  ];
-  
-  // คำนวณราคารวม
-  const totalPrice = sampleOrderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  
+
+export default function BillOrderPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [orderData, setOrderData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const orderParam = searchParams.get('order');
+    if (orderParam) {
+      try {
+        const decodedOrder = decodeURIComponent(orderParam);
+        const parsedOrder = JSON.parse(decodedOrder);
+        setOrderData(parsedOrder);
+      } catch (e) {
+        setError("Invalid order data received.");
+        console.error("Error parsing order data:", e);
+      } finally {
+          setLoading(false)
+      }
+    } else {
+        setError("No order data provided.");
+        setLoading(false)
+    }
+  }, [searchParams]);
+
+
+  const handleCreateBill = async () => {
+    if (!orderData) return;
+
+    try {
+      // Calculate total price (same logic as in MenuOrder page)
+      const totalPrice = orderData.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+
+       // Format the current date as a string (YYYY-MM-DD)
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0];
+
+      const billData = {
+        total: totalPrice, // Use the calculated total
+        pay_date: formattedDate, // Or any other date string format your backend expects
+        // Add user_id and giveaway_id if you have them, e.g., from a session
+      };
+
+
+      const billRes = await fetch("/api/bills", { // Make sure your API route is correct
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(billData),
+      });
+
+      if (!billRes.ok) {
+          const errorData = await billRes.json();
+          throw new Error(errorData.message || "Failed to create bill");
+      }
+       const createdBill = await billRes.json();
+
+        // Link Menu Item with bill
+        const promises = orderData.map(async item => {
+            const response = await fetch('/api/bill_items', { // You MUST create this API
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    bill_id: createdBill.bill_id, // Use ID from created bill
+                    menu_id: item.menu_id,
+                    quantity: item.quantity,
+                    price: item.price
+                })
+            });
+
+            if (!response.ok) {
+               const errorData = await response.json(); // Read error message
+               throw new Error("Failed to add menu item to bill" + errorData.message);
+            }
+           return response.json();
+        })
+
+        await Promise.all(promises) //wait all item be insert
+        alert("Bill and Order Items created successfully!");
+        router.push('/BillOrder'); // Redirect to a bill list page or similar
+
+
+    } catch (error) {
+      setError(error.message);
+      console.error("Error creating bill:", error);
+       alert("Error creating bill." + error.message);
+    }
+  };
+
+
+  if (loading) {
+    return <div className="container mx-auto p-4">Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-4 text-red-500">Error: {error}</div>
+    );
+  }
+
+  if (!orderData) {
+    return <div className="container mx-auto p-4">No order data found.</div>;
+  }
+
+    const totalPrice = orderData.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+
   return (
-    <div className="bg-gray-100 min-h-screen p-2 md:p-4">
-      <div className="flex flex-col lg:flex-row gap-4">
-        {/* Left Column: Order Details */}
-        <div className="w-full lg:w-2/3 bg-white rounded-lg shadow-md p-3 md:p-6">
-          <h1 className="text-xl md:text-2xl font-bold mb-2 md:mb-4">รายการสั่งซื้อ</h1>
-          
-          <div className="overflow-y-auto max-h-[40vh] md:max-h-[60vh]">
-            {sampleOrderItems.length > 0 ? (
-              <>
-                {sampleOrderItems.map((item) => (
-                  <div key={item.menu_id} className="flex justify-between items-center border-b py-2">
-                    <div className="flex-1 min-w-0"> {/* min-width prevents text overflow */}
-                      <p className="font-semibold truncate">{item.name}</p>
-                      <p className="text-xs md:text-sm text-gray-600">{item.menu_type} {item.type && `(${item.type})`}</p>
-                    </div>
-                    <p className="text-gray-600 mx-2 md:mx-4 whitespace-nowrap">x{item.quantity}</p>
-                    <p className="font-bold whitespace-nowrap">{item.price.toFixed(2)}</p>
-                  </div>
-                ))}
-              </>
-            ) : (
-              <p>ไม่มีรายการสินค้า</p>
-            )}
-          </div>
-          
-          <div className="mt-4 pt-4 border-t">
-            <p className="text-base md:text-lg font-bold">ราคารวม: {totalPrice.toFixed(2)} บาท</p>
-          </div>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Bill Order</h1>
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Menu Item</TableHead>
+            <TableHead>Type</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Quantity</TableHead>
+            <TableHead>Subtotal</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {orderData.map((item) => (
+            <TableRow key={item.menu_id}>
+              <TableCell>{item.name}</TableCell>
+              <TableCell>
+                {item.menu_type} {item.type ? `(${item.type})` : ""}
+              </TableCell>
+              <TableCell>{item.price.toFixed(2)}</TableCell>
+              <TableCell>{item.quantity}</TableCell>
+              <TableCell>{(item.price * item.quantity).toFixed(2)}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+        <div className="mt-4">
+            <p className="text-lg font-bold">Total Price: {totalPrice.toFixed(2)}</p>
         </div>
-        
-        {/* Right Column: Action Buttons */}
-        <div className="w-full lg:w-1/3 mt-4 lg:mt-0">
-          <div className="bg-white rounded-lg shadow-md p-3 md:p-6 space-y-2 md:space-y-4">
-            <Button variant="default" className="w-full py-2 md:py-4 text-base md:text-lg">ชำระเงิน</Button>
-            <Button variant="outline" className="w-full py-2 md:py-4 text-base md:text-lg">ยกเลิกรายการ</Button>
-            {/* เพิ่มปุ่มอื่นๆ ตามต้องการ */}
-            <Button variant="secondary" className="w-full py-2 md:py-4 text-base md:text-lg">พิมพ์ใบเสร็จ</Button>
-          </div>
-        </div>
+      <div className="mt-4">
+        <Button onClick={handleCreateBill} variant="default">
+          Create Bill
+        </Button>
       </div>
     </div>
   );

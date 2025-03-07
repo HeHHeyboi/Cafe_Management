@@ -24,7 +24,7 @@ function AddMenuForm({ onMenuAdded }) {
   const [error, setError] = useState(null); // Error state
   const [success, setSuccess] = useState(false);
 
-  const menuTypeOptions = ["อาหาร", "เครื่องดื่ม", "ของหวาน"]; // Options for select
+  const menuTypeOptions = ["เครื่องดื่ม", "ของหวาน"]; // Options for select
   const typeOptions = ["ร้อน", "เย็น", "ปั่น"];
 
   const handleSubmit = async (e) => {
