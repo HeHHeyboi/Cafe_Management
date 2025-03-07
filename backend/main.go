@@ -147,8 +147,11 @@ func main() {
 		UpdateGiveAway(&cfg, ctx)
 	})
 
-	r.GET("/bill", func(ctx *gin.Context) {
+	r.POST("/bill", func(ctx *gin.Context) {
 		CreateNewBill(&cfg, ctx)
+	})
+	r.GET("/bill", func(ctx *gin.Context) {
+		GetBill(&cfg, ctx)
 	})
 
 	r.GET("/reset", func(ctx *gin.Context) {
@@ -157,6 +160,7 @@ func main() {
 		err = cfg.db.DeleteAllMenu(ctx.Request.Context())
 		err = cfg.db.DeleteGiveAways(ctx.Request.Context())
 		err = cfg.db.DeleteBill(ctx.Request.Context())
+		err = cfg.db.DeleteIMG(ctx.Request.Context())
 
 		if err != nil {
 			ctx.Error(err)

@@ -14,6 +14,12 @@ type Bill struct {
 	PayDate string  `json:"pay_date"`
 }
 
+type Order struct {
+	Bill_ID string `json:"bill_id"`
+	Menu_ID string `json:"menu_id"`
+	Amount  string `json:"amount"`
+}
+
 func CreateNewBill(cfg *Config, ctx *gin.Context) {
 	type Param struct {
 		Total float32 `json:"total"`
