@@ -44,7 +44,7 @@ func (q *Queries) DeleteAllUser(ctx context.Context) error {
 }
 
 const getAllUser = `-- name: GetAllUser :many
-SELECT user_id, fname, lname, email, password from users
+SELECT user_id, fname, lname, email, password, role from users
 `
 
 func (q *Queries) GetAllUser(ctx context.Context) ([]User, error) {
@@ -62,6 +62,7 @@ func (q *Queries) GetAllUser(ctx context.Context) ([]User, error) {
 			&i.Lname,
 			&i.Email,
 			&i.Password,
+			&i.Role,
 		); err != nil {
 			return nil, err
 		}
@@ -94,7 +95,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEm
 }
 
 const getUserByID = `-- name: GetUserByID :one
-select user_id, fname, lname, email, password from users
+select user_id, fname, lname, email, password, role from users
 Where user_id = ?
 `
 
@@ -107,6 +108,7 @@ func (q *Queries) GetUserByID(ctx context.Context, userID interface{}) (User, er
 		&i.Lname,
 		&i.Email,
 		&i.Password,
+		&i.Role,
 	)
 	return i, err
 }

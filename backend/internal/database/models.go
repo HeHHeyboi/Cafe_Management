@@ -55,4 +55,5 @@ type User struct {
 	Lname    sql.NullString
 	Email    string
 	Password string
+	Role     sql.NullString
 }
