@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 const GiveAwayPage = () => {
@@ -8,32 +8,38 @@ const GiveAwayPage = () => {
         name: "",
         desc: "",
         amount: "",
-        image: null,
+        images: []
     });
 
     const [error, setError] = useState(null);
     const router = useRouter();
+    const fileInputRef = useRef(null);
 
     const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        if (name === "image") {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+    };
+
+    const handleImageSelect = (e) => {
+        if (e.target.files.length > 0) {
+            // Convert FileList to Array and add to existing images
+            const newImages = Array.from(e.target.files);
             setFormData({
                 ...formData,
-                image: files[0],
+                images: [...formData.images, ...newImages]
             });
-        } else {
-            setFormData({
-                ...formData,
-                [name]: value,
-            });
+            // Reset file input so same file can be selected again
+            e.target.value = '';
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Submitting form data:", formData);
-
-        if (!formData.name || !formData.desc || !formData.amount || !formData.image) {
+        
+        if (!formData.name || !formData.desc || !formData.amount || formData.images.length === 0) {
             setError("กรุณากรอกข้อมูลให้ครบถ้วน");
             return;
         }
@@ -42,7 +48,11 @@ const GiveAwayPage = () => {
         formDataToSend.append("name", formData.name);
         formDataToSend.append("desc", formData.desc);
         formDataToSend.append("amount", parseInt(formData.amount));
-        formDataToSend.append("image", formData.image);
+        
+        // Append each image to the FormData
+        formData.images.forEach((image) => {
+            formDataToSend.append("images", image);
+        });
 
         try {
             const response = await fetch("http://localhost:8080/giveAway", {
@@ -52,17 +62,22 @@ const GiveAwayPage = () => {
             });
 
             if (response.ok) {
-                console.log("Successfully submitted giveaway details");
                 router.push("/GiveAwayShow");
             } else {
                 const errorData = await response.json();
-                console.error("Failed to submit giveaway details", errorData);
                 setError("ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
             }
         } catch (error) {
-            console.error("An error occurred while submitting giveaway details:", error);
             setError("เกิดข้อผิดพลาดในการส่งข้อมูล");
         }
+    };
+
+    // Function to remove an image
+    const removeImage = (indexToRemove) => {
+        setFormData({
+            ...formData,
+            images: formData.images.filter((_, index) => index !== indexToRemove)
+        });
     };
 
     return (
@@ -92,7 +107,7 @@ const GiveAwayPage = () => {
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">จำนวณ:</label>
+                    <label className="block text-sm font-medium text-gray-700">จำนวน:</label>
                     <input
                         type="number"
                         name="amount"
@@ -104,26 +119,52 @@ const GiveAwayPage = () => {
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-700">อัพโหลดรูปภาพ:</label>
-                    <input
-                        type="file"
-                        name="image"
-                        onChange={handleChange}
-                        required
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-                    />
-                    {formData.image && (
-                        <div className="mt-3 text-sm text-gray-600">
-                            <img
-                                src={URL.createObjectURL(formData.image)}
-                                alt="Preview"
-                                className="w-32 h-32 object-cover rounded-md shadow-md"
-                            />
+                    
+                    {/* ปุ่มเพิ่มรูปภาพ */}
+                    <div className="mt-2">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageSelect}
+                            className="hidden"
+                            id="image-upload"
+                            ref={fileInputRef}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => fileInputRef.current.click()}
+                            className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        >
+                            + เพิ่มรูปภาพ
+                        </button>
+                    </div>
+                    
+                    {/* แสดงรูปภาพที่เลือก */}
+                    {formData.images.length > 0 && (
+                        <div className="mt-4 grid grid-cols-2 gap-2">
+                            {formData.images.map((image, index) => (
+                                <div key={index} className="relative border rounded p-1">
+                                    <img
+                                        src={URL.createObjectURL(image)}
+                                        alt={`รูปภาพ ${index + 1}`}
+                                        className="w-full h-24 object-cover"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => removeImage(index)}
+                                        className="absolute top-0 right-0 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center"
+                                        title="ลบรูปภาพ"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>
                 <button
                     type="submit"
-                    className="w-full py-2 px-4 border border-transparent rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                    className="w-full py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
                 >
                     Submit
                 </button>
