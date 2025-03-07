@@ -1,6 +1,6 @@
 -- name: CreateBill :one
 INSERT INTO bill(bill_id, total, pay_date)
-VALUES (?, ?, ?)
+VALUES (lower(hex(randomblob(8))), ?, ?)
 RETURNING *;
 
 -- name: ListBill :many
