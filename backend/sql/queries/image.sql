@@ -15,5 +15,13 @@ WHERE giveAway_id = ?;
 select img_url from image
 WHERE gallery_name = ?;
 
+-- name: DeleteOneIMG :exec
+DELETE FROM image
+WHERE (menu_id = ? OR giveAway_id = ? OR gallery_name = ?) AND img_url = ?;
+
+-- name: DeleteIMGFromKey :exec
+DELETE FROM image
+WHERE menu_id = ? OR giveAway_id = ? OR gallery_name = ?;
+
 -- name: DeleteIMG :exec
 DELETE FROM image;
