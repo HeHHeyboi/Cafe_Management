@@ -23,9 +23,10 @@ WHERE menu_id = ?;
 -- name: DeleteAllMenu :exec
 DELETE FROM menu;
 
--- name: DeleteMenuByName :exec
+-- name: DeleteMenuByName :one
 DELETE FROM menu
-WHERE name = ?;
+WHERE name = ?
+RETURNING menu_id;
 
 -- name: DeleteMenuByID :exec
 DELETE FROM menu

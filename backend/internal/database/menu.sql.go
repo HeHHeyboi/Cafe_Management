@@ -60,14 +60,17 @@ func (q *Queries) DeleteMenuByID(ctx context.Context, menuID int64) error {
 	return err
 }
 
-const deleteMenuByName = `-- name: DeleteMenuByName :exec
+const deleteMenuByName = `-- name: DeleteMenuByName :one
 DELETE FROM menu
 WHERE name = ?
+RETURNING menu_id
 `
 
-func (q *Queries) DeleteMenuByName(ctx context.Context, name string) error {
-	_, err := q.db.ExecContext(ctx, deleteMenuByName, name)
-	return err
+func (q *Queries) DeleteMenuByName(ctx context.Context, name string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, deleteMenuByName, name)
+	var menu_id int64
+	err := row.Scan(&menu_id)
+	return menu_id, err
 }
 
 const getAllMenuType = `-- name: GetAllMenuType :many
