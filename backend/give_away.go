@@ -49,6 +49,7 @@ func AddNewGiveAway(cfg *Config, ctx *gin.Context) {
 	if err != nil {
 		errMsg := checkDataBaseError(err)
 		ctx.JSON(500, gin.H{"error": errMsg})
+		ctx.Error(err)
 		return
 	}
 
