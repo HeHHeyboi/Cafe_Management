@@ -19,9 +19,10 @@ WHERE gallery_name = ?;
 DELETE FROM image
 WHERE (menu_id = ? OR giveAway_id = ? OR gallery_name = ?) AND img_url = ?;
 
--- name: DeleteIMGFromKey :exec
+-- name: DeleteIMGFromKey :many
 DELETE FROM image
-WHERE menu_id = ? OR giveAway_id = ? OR gallery_name = ?;
+WHERE menu_id = ? OR giveAway_id = ? OR gallery_name = ?
+RETURNING img_url;
 
 -- name: DeleteIMG :exec
 DELETE FROM image;
