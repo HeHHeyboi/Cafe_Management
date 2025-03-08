@@ -1,5 +1,5 @@
 
-import dropdownlist from "./components/Navbar/dropdownlist";
+import Dropdownlist from "./components/Navbar/Dropdownlist";
 import React from "react";
 import Carousel from "./components/Carousel/Carousel";
 import Menu from "./components/MenuBar/page";
@@ -8,7 +8,7 @@ import EventShow from "./components/EventShow/page";
 export default function Home() {
   return (
     <div >
-      <dropdownlist />
+      
       <Carousel />
       <Menu />
         <EventShow />
