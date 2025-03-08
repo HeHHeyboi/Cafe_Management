@@ -206,12 +206,15 @@ func test_updateIMG(old_url, new_url []string) []string {
 
 func deleteIMG(cfg *Config, ctx *gin.Context, arg uploadIMGArg) {
 	menu_id, giveAway_id, gallery_name := createNullVar(arg)
-	err := cfg.db.DeleteIMGFromKey(ctx.Request.Context(), database.DeleteIMGFromKeyParams{
+	url, err := cfg.db.DeleteIMGFromKey(ctx.Request.Context(), database.DeleteIMGFromKeyParams{
 		MenuID:      menu_id,
 		GiveawayID:  giveAway_id,
 		GalleryName: gallery_name,
 	})
-	if err != nil{
-		ctx.Error(err
+	if err != nil {
+		ctx.Error(err)
+	}
+	for _, v := range url {
+		os.Remove(v)
 	}
 }
