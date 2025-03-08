@@ -1,7 +1,7 @@
 -- +goose Up
 CREATE TABLE IF NOT EXISTS bill(
 	bill_id TEXT NOT NULL PRIMARY KEY,
-	total INTEGER NOT NULL,
+	total FLOAT NOT NULL,
 	pay_date TEXT NOT NULL,
 	user_id UUID,
 	giveAway_id INTEGER,

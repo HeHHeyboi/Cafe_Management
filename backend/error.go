@@ -33,12 +33,11 @@ func bindingErrorMsg(err validator.ValidationErrors, ctx *gin.Context) {
 	for _, e := range err {
 		switch e.Tag() {
 		case requireTag:
-			ctx.Error(e)
 			msg = fmt.Sprint("ไม่มีข้อมูลหรือชื่อผิดที่ ", strings.ToLower(e.Field()))
 		default:
-			ctx.Error(e)
 			msg = e.Error()
 		}
+		ctx.Error(fmt.Errorf(msg))
 		ctx.JSON(400, gin.H{"error": msg})
 	}
 }
