@@ -16,7 +16,7 @@ const MenuItem = ({ Icon, label, href }) => {
 const Menu = () => {
     const items = [
         { Icon: Coffee, label: "Menu", href: "/menu" },
-        { Icon: Image, label: "Gallery", href: "/gallery" },
+        { Icon: Image, label: "Gallery", href: "/GalleryShow" },
         { Icon: Gift, label: "GiveAway", href: "/GiveAwayShow" },
     ];
 
