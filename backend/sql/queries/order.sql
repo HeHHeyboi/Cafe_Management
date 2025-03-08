@@ -1,9 +1,10 @@
--- CreateNewOrder :one
+-- name: CreateNewOrder :one
 INSERT INTO "order"(bill_id, menu_id, amount, total_price)
 SELECT ?,?,?,@calAmount * price FROM menu
-	WHERE menu_id = ?;
+	WHERE menu.menu_id = @target_menu_id
+RETURNING *;
 
--- GetOrderFromBill :many
+-- name: GetOrderFromBill :many
 SELECT * FROM "order" 
 WHERE bill_id = ?;
 
