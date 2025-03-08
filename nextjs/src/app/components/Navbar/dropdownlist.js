@@ -1,3 +1,4 @@
+'use client'
 import { Menu } from 'lucide-react';
 import { CircleUser } from 'lucide-react';
 
@@ -18,6 +19,10 @@ import { links } from '../../../../utils/link';
 
 
 const Dropdownlist = () => {
+  const logout = async () => {
+    const res = await fetch("http://localhost:8080/user/logout")
+    console.log("Response: ", res);
+  }
   return (
   <DropdownMenu>
   <DropdownMenuTrigger asChild>
@@ -36,12 +41,14 @@ const Dropdownlist = () => {
           <Link href={item.href}>{item.label}</Link>
         </DropdownMenuItem>)
       })}
+      <DropdownMenuSeparator/>
+      <DropdownMenuItem key="logout" className="font-medium text-red-500">
+        <button onClick={() => logout()}>Logout</button>
+      </DropdownMenuItem>
   </DropdownMenuContent>
 </DropdownMenu>
-
-    
-
   )
 }
 
 export default Dropdownlist;
+
