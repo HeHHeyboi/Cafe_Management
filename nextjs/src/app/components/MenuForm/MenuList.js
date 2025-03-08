@@ -111,65 +111,25 @@ function MenuList({ menuItems, onEdit, onDelete }) {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredMenuItems.map((item) => (
-                <tr key={item.menu_id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {item.img_url && (
-                      <div className="flex-shrink-0 h-10 w-10">
-                        <Image
-                          src={
-                            item.img_url.startsWith("http")
-                              ? item.img_url
-                              : `http://localhost:8080${item.img_url}`
-                          }
-                          alt={item.name}
-                          width={40}
-                          height={40}
-                          className="h-10 w-10 rounded-full object-cover"
-                        />
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {item.name}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {item.menu_type}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {item.type || "-"}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      ฿
-                      {item.price ? item.price.toFixed(2) : "N/A"}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onEdit(item)}
-                      className="mr-2"
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => onDelete(item.name)}
-                    >
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+            {filteredMenuItems.map((item) => (
+  <tr key={item.menu_id}>
+    <td>
+      {item.image_url ? (
+        <Image src={item.image_url} alt={item.name} width={50} height={50} />
+      ) : (
+        "No Image"
+      )}
+    </td>
+    <td>{item.name || "Unnamed"}</td>
+    <td>{item.menu_type || "Unknown"}</td>
+    <td>{item.price ? `${item.price} บาท` : "N/A"}</td>
+    <td>
+      <Button onClick={() => onEdit(item)}>Edit</Button>
+      <Button onClick={() => onDelete(item.name)}>Delete</Button>
+    </td>
+  </tr>
+))}
+
             </tbody>
           </table>
         </div>
