@@ -333,3 +333,65 @@ http://localhost:8080/giveAway?name=สักชื่อ
 - `desc` : คำอธิบาย
 - `date` : วันที่เพิ่ม GiveAway เข้ามา
 - `img_url` : List ของ url ไปที่ไฟล์รูปภาพ
+
+# [/bill](#bill)
+
+## [GET /bill](#get-bill)
+ใช้สำหรับ List Bill ทั้งหมด จะได้
+```
+[
+	{
+		"bill_id": "e88a1fa2ec9bf245",
+		"total": 500.00,
+		"pay_date": "2025-03-01T00:00:00Z",
+		"orders : [
+			{
+				"menu_id": 1,
+				"amount": 2,
+				"total_price": 100
+			},
+			...
+		]
+	}
+]
+```
+- `bill_id`: หมายเลขบิล
+- `total`:  ยอดรวม
+- `pay_date`: วันที่สร้าง bill
+- `orders`: List ของ order
+	- `menu_id`: id ของเมนู
+ 	- `amount`: จำนวนเมนูที่สั่ง
+  	- `total_price`: amount * menu.price	
+
+## [POST /bill](#post-bill)
+ใช่สำหรับสร้าง bill โดยข้อมูลที่ต้องส่งมาคือ
+```
+{
+	"orders": [
+		{
+			"menu_id": 1,
+			"amount": 2
+		},
+		...		
+	]
+}
+```
+- `orders`: List ของ order
+	- `menu_id`: id ของเมนู
+ 	- `amount`: จำนวนเมนูที่สั่ง
+จากนั้นจะส่งข้อมูลนี้กลับมา
+```
+{
+	"bill_id": "e88a1fa2ec9bf245",
+	"total": 500.00,
+	"pay_date": "2025-03-01T00:00:00Z",
+	"orders : [
+		{
+			"menu_id": 1,
+			"amount": 2,
+			"total_price": 100
+		},
+		...
+	]
+}
+```
