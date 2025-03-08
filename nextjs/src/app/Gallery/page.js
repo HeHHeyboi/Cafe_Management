@@ -1,103 +1,129 @@
 'use client';
-
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 export default function GalleryPage() {
-    const [galleries, setGalleries] = useState([]);
-    const [formData, setFormData] = useState({
-        name: '',
-        start_date: '',
-        end_date: '',
-        description: ''
-    });
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+  const [name, setName] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [description, setDescription] = useState('');
+  const [message, setMessage] = useState('');
+  const router = useRouter(); // Initialize useRouter
 
-    // Fetch galleries for the current month
-    useEffect(() => {
-        const currentMonth = new Date().getMonth() + 1;
-        fetchGalleries(currentMonth);
-    }, []);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-    const fetchGalleries = async (month) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await axios.get(`http://localhost:8080/gallery?month=${month}`);
-            setGalleries(Array.isArray(response.data) ? response.data : []);
-        } catch (error) {
-            console.error('Error fetching galleries:', error);
-            setError('Failed to load galleries.');
-            setGalleries([]);
-        } finally {
-            setLoading(false);
-        }
+    const galleryData = {
+      name: name,
+      start_date: startDate,
+      end_date: endDate,
+      description: description,
+      // user_id: 123, // แทนที่ด้วย user_id จริง
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            await axios.post('http://localhost:8080/gallery', formData);
-            const currentMonth = new Date().getMonth() + 1;
-            fetchGalleries(currentMonth);
-            setFormData({ name: '', start_date: '', end_date: '', description: '' });
-        } catch (error) {
-            console.error('Error submitting gallery:', error);
-        }
-    };
+    try {
+      const response = await fetch('http://localhost:8080/gallery', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(galleryData),
+      });
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+      const data = await response.json();
 
-    return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-6">Gallery Booking</h1>
-            
-            {/* Booking Form */}
-            <form onSubmit={handleSubmit} className="mb-8 space-y-4">
-                <div>
-                    <label className="block mb-2">Gallery Name:</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full p-2 border rounded" required />
-                </div>
-                <div>
-                    <label className="block mb-2">Start Date:</label>
-                    <input type="date" name="start_date" value={formData.start_date} onChange={handleChange} className="w-full p-2 border rounded" required />
-                </div>
-                <div>
-                    <label className="block mb-2">End Date:</label>
-                    <input type="date" name="end_date" value={formData.end_date} onChange={handleChange} className="w-full p-2 border rounded" required />
-                </div>
-                <div>
-                    <label className="block mb-2">Description:</label>
-                    <textarea name="description" value={formData.description} onChange={handleChange} className="w-full p-2 border rounded" required />
-                </div>
-                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Book Gallery</button>
-            </form>
+      if (response.ok) {
+        setMessage('จองแกลลอรี่สำเร็จ!');
+        // เคลียร์ฟอร์มหลังส่งสำเร็จ
+        setName('');
+        setStartDate('');
+        setEndDate('');
+        setDescription('');
 
-            {/* Galleries List */}
-            <div>
-                <h2 className="text-xl font-bold mb-4">Current Month Galleries</h2>
-                {loading ? (
-                    <p>Loading...</p>
-                ) : error ? (
-                    <p className="text-red-500">{error}</p>
-                ) : galleries.length > 0 ? (
-                    <div className="space-y-4">
-                        {galleries.map((gallery, index) => (
-                            <div key={index} className="border p-4 rounded">
-                                <h3 className="font-bold">{gallery.name}</h3>
-                                <p>Start Date: {gallery.start_date}</p>
-                                <p>End Date: {gallery.end_date}</p>
-                                <p>Description: {gallery.description}</p>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <p>No galleries found for this month.</p>
-                )}
-            </div>
+        // Redirect to GalleryShow page after successful booking
+        router.push('/GalleryShow?month=' + new Date(startDate).toISOString().slice(0, 7)); // Format to YYYY-MM
+
+      } else {
+        setMessage(`เกิดข้อผิดพลาด: ${data.message || 'ไม่สามารถจองแกลลอรี่ได้'}`);
+      }
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
+      setMessage('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
+    }
+  };
+
+  return (
+    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">จองแกลลอรี่</h1>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+            ชื่อแกลลอรี่:
+          </label>
+          <input
+            type="text"
+            id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
         </div>
-    );
+
+        <div className="space-y-2">
+          <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
+            วันที่เริ่ม:
+          </label>
+          <input
+            type="date"
+            id="startDate"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">
+            วันที่สิ้นสุด:
+          </label>
+          <input
+            type="date"
+            id="endDate"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+            คำอธิบาย:
+          </label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 h-32"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors duration-300"
+        >
+          จอง
+        </button>
+      </form>
+
+      {message && (
+        <div className={`mt-4 p-3 rounded-md ${message.includes('สำเร็จ') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+          {message}
+        </div>
+      )}
+    </div>
+  );
 }
