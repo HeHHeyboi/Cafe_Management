@@ -10,18 +10,13 @@ import (
 )
 
 const createBill = `-- name: CreateBill :one
-INSERT INTO bill(bill_id, total, pay_date)
-VALUES (lower(hex(randomblob(8))), ?, ?)
+INSERT INTO bill(bill_id, pay_date)
+VALUES (lower(hex(randomblob(8))), ?)
 RETURNING bill_id, total, pay_date, user_id, giveaway_id
 `
 
-type CreateBillParams struct {
-	Total   int64
-	PayDate string
-}
-
-func (q *Queries) CreateBill(ctx context.Context, arg CreateBillParams) (Bill, error) {
-	row := q.db.QueryRowContext(ctx, createBill, arg.Total, arg.PayDate)
+func (q *Queries) CreateBill(ctx context.Context, payDate string) (Bill, error) {
+	row := q.db.QueryRowContext(ctx, createBill, payDate)
 	var i Bill
 	err := row.Scan(
 		&i.BillID,
@@ -73,4 +68,29 @@ func (q *Queries) ListBill(ctx context.Context) ([]Bill, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateBillTotal = `-- name: UpdateBillTotal :one
+UPDATE bill
+SET total = ?
+WHERE bill_id = ?
+RETURNING bill_id, total, pay_date, user_id, giveaway_id
+`
+
+type UpdateBillTotalParams struct {
+	Total  float64
+	BillID string
+}
+
+func (q *Queries) UpdateBillTotal(ctx context.Context, arg UpdateBillTotalParams) (Bill, error) {
+	row := q.db.QueryRowContext(ctx, updateBillTotal, arg.Total, arg.BillID)
+	var i Bill
+	err := row.Scan(
+		&i.BillID,
+		&i.Total,
+		&i.PayDate,
+		&i.UserID,
+		&i.GiveawayID,
+	)
+	return i, err
 }
