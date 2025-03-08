@@ -6,14 +6,40 @@ import { useRouter } from 'next/navigation';
 function EventCard({ giveaway }) {
     if (!giveaway) return null;
     
+    // ตรวจสอบว่ามีรูปภาพหรือไม่
+    const hasImage = giveaway.img_url && Array.isArray(giveaway.img_url) && giveaway.img_url.length > 0;
+    
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden mt-5">
+            {/* แสดงรูปภาพถ้ามี */}
+            {hasImage && (
+                <div className="w-full h-48 overflow-hidden">
+                    <img 
+                        src={`http://localhost:8080/${giveaway.img_url[0]}`}
+                        alt={giveaway.name || 'Giveaway image'}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://via.placeholder.com/400x200?text=Image+Not+Available';
+                        }}
+                    />
+                </div>
+            )}
+            
             <div className="p-4">
                 <h2 className="text-xl font-semibold">{giveaway.name || 'ไม่มีชื่อ'}</h2>
-                <p className="text-gray-700">{giveaway.desc || 'ไม่มีคำอธิบาย'}</p>
-                <p className="text-gray-600">จำนวนทั้งหมด: {giveaway.amount || 0}</p>
-                <p className="text-gray-600">คงเหลือ: {giveaway.remain || 0}</p>
-                <p className="text-gray-500">วันที่เพิ่ม: {giveaway.date ? new Date(giveaway.date).toLocaleDateString() : 'ไม่ระบุ'}</p>
+                <p className="text-gray-700 mt-2 line-clamp-2">{giveaway.desc || 'ไม่มีคำอธิบาย'}</p>
+                
+                <div className="mt-3 flex justify-between">
+                    <div>
+                        <p className="text-gray-600">จำนวน: <span className="font-medium">{giveaway.amount || 0}</span></p>
+                        <p className="text-gray-600">คงเหลือ: <span className="font-medium">{giveaway.remain || 0}</span></p>
+                    </div>
+                    <div className="text-right">
+                        <p className="text-gray-500 text-sm">วันที่เพิ่ม:</p>
+                        <p className="text-gray-600">{giveaway.date ? new Date(giveaway.date).toLocaleDateString('th-TH') : 'ไม่ระบุ'}</p>
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -57,11 +83,20 @@ function EventShow() {
     }, []);
 
     if (loading) {
-        return <div className="flex justify-center items-center h-screen">กำลังโหลด...</div>;
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="animate-pulse text-gray-500">กำลังโหลด...</div>
+            </div>
+        );
     }
 
     if (error) {
-        return <div className="flex justify-center items-center h-screen">เกิดข้อผิดพลาด: {error.message}</div>;
+        return (
+            <div className="flex flex-col justify-center items-center h-screen">
+                <div className="text-red-500 mb-2">เกิดข้อผิดพลาด:</div>
+                <div>{error.message}</div>
+            </div>
+        );
     }
 
     // ตรวจสอบอีกครั้งเพื่อความมั่นใจว่า giveaways เป็น array
