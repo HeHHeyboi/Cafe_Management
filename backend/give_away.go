@@ -44,8 +44,8 @@ func AddNewGiveAway(cfg *Config, ctx *gin.Context) {
 		},
 		Date: time.Now().Format(time.DateOnly),
 	})
-	url, err := uploadIMG(cfg, ctx, uploadIMGArg{giveAway_id: data.ID})
-
+	// url, err := uploadIMG(cfg, ctx, uploadIMGArg{giveAway_id: data.ID})
+	//
 	if err != nil {
 		errMsg := checkDataBaseError(err)
 		ctx.JSON(500, gin.H{"error": errMsg})
@@ -54,13 +54,13 @@ func AddNewGiveAway(cfg *Config, ctx *gin.Context) {
 	}
 
 	ctx.JSON(201, gin.H{
-		"id":      data.ID,
-		"name":    data.Name,
-		"amount":  data.Amount,
-		"remain":  data.Remain,
-		"desc":    data.Desc.String,
-		"date":    data.Date,
-		"img_url": url,
+		"id":     data.ID,
+		"name":   data.Name,
+		"amount": data.Amount,
+		"remain": data.Remain,
+		"desc":   data.Desc.String,
+		"date":   data.Date,
+		// "img_url": url,
 	})
 }
 
