@@ -211,5 +211,7 @@ func deleteIMG(cfg *Config, ctx *gin.Context, arg uploadIMGArg) {
 		GiveawayID:  giveAway_id,
 		GalleryName: gallery_name,
 	})
-	ctx.Error(err)
+	if err != nil{
+		ctx.Error(err
+	}
 }
