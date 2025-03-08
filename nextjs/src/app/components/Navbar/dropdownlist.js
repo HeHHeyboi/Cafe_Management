@@ -20,8 +20,9 @@ import { links } from '../../../../utils/link';
 
 const Dropdownlist = () => {
   const logout = async () => {
-    const res = await fetch("http://localhost:8080/user/logout")
-    console.log("Response: ", res);
+    document.cookie = "id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+    window.location.href = "/login";
   }
   return (
   <DropdownMenu>
