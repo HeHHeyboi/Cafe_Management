@@ -1,5 +1,8 @@
 'use client'
+<<<<<<< Updated upstream
 'use client'
+=======
+>>>>>>> Stashed changes
 import { Menu } from 'lucide-react';
 import { CircleUser } from 'lucide-react';
 
@@ -21,9 +24,14 @@ import { links } from '../../../../utils/link';
 
 const Dropdownlist = () => {
   const logout = async () => {
+<<<<<<< Updated upstream
     document.cookie = "id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
     window.location.href = "/login";
+=======
+    const res = await fetch("http://localhost:8080/user/logout")
+    console.log("Response: ", res);
+>>>>>>> Stashed changes
   }
   return (
   <DropdownMenu>
