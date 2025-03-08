@@ -153,6 +153,7 @@ func checkAuth(cfg *Config, ctx *gin.Context) {
 	_, status, err := checkCookie(cfg, ctx)
 	if err != nil {
 		ctx.String(status, err.Error())
+		ctx.Error(err)
 		return
 	}
 

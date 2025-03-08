@@ -11,7 +11,7 @@ import (
 
 type Bill struct {
 	BillID     string
-	Total      int64
+	Total      float64
 	PayDate    string
 	UserID     interface{}
 	GiveawayID sql.NullInt64

@@ -153,7 +153,6 @@ func UpdateGiveAway(cfg *Config, ctx *gin.Context) {
 	}
 }
 
-// FIX: need to fix when update menu, update img too.
 func updateGiveAwayByID(cfg *Config, ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -211,7 +210,6 @@ func updateGiveAwayByID(cfg *Config, ctx *gin.Context) {
 	})
 }
 
-// FIX: need to fix when update menu, update img too.
 func updateGiveAwayByName(cfg *Config, ctx *gin.Context) {
 	name := ctx.Param("name")
 
