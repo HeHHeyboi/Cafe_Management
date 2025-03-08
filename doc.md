@@ -30,7 +30,12 @@
 - [GET /giveAway : List giveaway ทั้งหมด](#get-giveaway)
   
 - [POST /giveAway : เพิ่ม giveAway](#post-giveaway)
-  
+
+[/bill Endpoint](#bill)
+- [GET /bill : List bill ทั้งหมด](#get-bill)
+
+- [POST /bill : เพิ่ม bill](#post-bill) 
+
 ## [GET /reset](#get-reset)
 Reset ข้อมูลใน Data Base
 ```
@@ -344,6 +349,8 @@ http://localhost:8080/giveAway?name=สักชื่อ
 		"bill_id": "e88a1fa2ec9bf245",
 		"total": 500.00,
 		"pay_date": "2025-03-01T00:00:00Z",
+		"user_id": "c3eb881-1510-4f4d-8759-dc8ee5f87d72",
+		"giveaway_id": 1,
 		"orders : [
 			{
 				"menu_id": 1,
@@ -358,6 +365,8 @@ http://localhost:8080/giveAway?name=สักชื่อ
 - `bill_id`: หมายเลขบิล
 - `total`:  ยอดรวม
 - `pay_date`: วันที่สร้าง bill
+- `user_id`: id ของ user
+- `giveaway_id`: giveaway id
 - `orders`: List ของ order
 	- `menu_id`: id ของเมนู
  	- `amount`: จำนวนเมนูที่สั่ง
@@ -372,6 +381,7 @@ http://localhost:8080/giveAway?name=สักชื่อ
 			"menu_id": 1,
 			"amount": 2
 		},
+	"giveaway_id": 1,
 		...		
 	]
 }
@@ -379,12 +389,15 @@ http://localhost:8080/giveAway?name=สักชื่อ
 - `orders`: List ของ order
 	- `menu_id`: id ของเมนู
  	- `amount`: จำนวนเมนูที่สั่ง
+- `giveaway_id`: id ของ giveaway อาจจะมีหรือไม่มีก็ได้
 จากนั้นจะส่งข้อมูลนี้กลับมา
 ```
 {
 	"bill_id": "e88a1fa2ec9bf245",
 	"total": 500.00,
 	"pay_date": "2025-03-01T00:00:00Z",
+	"user_id": "c3eb881-1510-4f4d-8759-dc8ee5f87d72",
+	"giveaway_id": 1,
 	"orders : [
 		{
 			"menu_id": 1,
@@ -395,3 +408,12 @@ http://localhost:8080/giveAway?name=สักชื่อ
 	]
 }
 ```
+- `bill_id`: หมายเลขบิล
+- `total`:  ยอดรวม
+- `pay_date`: วันที่สร้าง bill
+- `user_id`: id ของ user
+- `giveaway_id`: giveaway id
+- `orders`: List ของ order
+	- `menu_id`: id ของเมนู
+ 	- `amount`: จำนวนเมนูที่สั่ง
+  	- `total_price`: amount * menu.price	

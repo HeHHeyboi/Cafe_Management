@@ -11,7 +11,7 @@ import (
 
 const createNewOrder = `-- name: CreateNewOrder :one
 INSERT INTO "order"(bill_id, menu_id, amount, total_price)
-SELECT ?,?,?,? * price FROM menu
+SELECT ?,?,?,? * menu.price FROM menu
 	WHERE menu.menu_id = ?
 RETURNING bill_id, menu_id, amount, total_price
 `
