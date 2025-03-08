@@ -108,19 +108,7 @@ export default function GalleryPage() {
             </form>
 
             {/* Galleries List */}
-            <div>
-                <h2 className="text-xl font-bold mb-4">Current Month Galleries</h2>
-                <div className="space-y-4">
-                    {galleries.map((gallery, index) => (
-                        <div key={index} className="border p-4 rounded">
-                            <h3 className="font-bold">{gallery.name}</h3>
-                            <p>Start Date: {gallery.start_date}</p>
-                            <p>End Date: {gallery.end_date}</p>
-                            <p>Description: {gallery.description}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
+        
         </div>
     );
 }
