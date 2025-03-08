@@ -1,7 +1,10 @@
 'use client'
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 'use client'
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -29,9 +32,14 @@ const Dropdownlist = () => {
   const logout = async () => {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     document.cookie = "id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
     window.location.href = "/login";
+=======
+    const res = await fetch("http://localhost:8080/user/logout")
+    console.log("Response: ", res);
+>>>>>>> Stashed changes
 =======
     const res = await fetch("http://localhost:8080/user/logout")
     console.log("Response: ", res);
