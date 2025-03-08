@@ -16,7 +16,6 @@ type Bill struct {
 }
 
 type Order struct {
-	Bill_ID    string  `json:"bill_id"`
 	Menu_ID    int64   `json:"menu_id"`
 	Amount     int64   `json:"amount"`
 	TotalPrice float64 `json:"total_price"`
@@ -62,7 +61,6 @@ func CreateNewBill(cfg *Config, ctx *gin.Context) {
 		total += order_data.TotalPrice
 
 		order := Order{
-			Bill_ID:    order_data.BillID,
 			Menu_ID:    order_data.MenuID,
 			Amount:     order_data.Amount,
 			TotalPrice: order_data.TotalPrice,
@@ -112,7 +110,6 @@ func GetBill(cfg *Config, ctx *gin.Context) {
 		for _, order_data := range orders_data {
 			total += order_data.TotalPrice
 			order := Order{
-				Bill_ID:    order_data.BillID,
 				Menu_ID:    order_data.MenuID,
 				Amount:     order_data.Amount,
 				TotalPrice: order_data.TotalPrice,
