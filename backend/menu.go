@@ -173,7 +173,6 @@ func getMenuByID(cfg *Config, ctx *gin.Context) {
 	})
 }
 
-// FIX: need to fix when delete menu, delete img too.
 func DeleteMenuByName(cfg *Config, ctx *gin.Context) {
 	name := ctx.Param("name")
 
@@ -188,7 +187,6 @@ func DeleteMenuByName(cfg *Config, ctx *gin.Context) {
 	ctx.JSON(204, gin.H{"msg": "Delete Success"})
 }
 
-// FIX: need to fix when delete menu, delete img too.
 func DeleteMenuByID(cfg *Config, ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -218,7 +216,6 @@ func UpdateMenu(c *Config) func(*gin.Context) {
 	}
 }
 
-// FIX: need to fix when update menu, update img too.
 func updateMenuByID(cfg *Config, ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -274,7 +271,6 @@ func updateMenuByID(cfg *Config, ctx *gin.Context) {
 	})
 }
 
-// FIX: need to fix when update menu, update img too.
 func updateMenuByName(cfg *Config, ctx *gin.Context) {
 	name := ctx.Param("name")
 
