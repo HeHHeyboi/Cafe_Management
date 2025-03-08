@@ -23,6 +23,13 @@ function MenuForm() {
       }
       const data = await response.json();
       
+      console.log("Fetched menu items:", data); // Debugging
+  
+      // Ensure that data is an array of valid menu items
+      if (!Array.isArray(data)) {
+        throw new Error("Invalid menu data format");
+      }
+  
       setMenuItems(data);
     } catch (error) {
       setError(error.message);
@@ -30,6 +37,7 @@ function MenuForm() {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     fetchMenuItems();
