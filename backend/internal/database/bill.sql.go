@@ -7,16 +7,23 @@ package database
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createBill = `-- name: CreateBill :one
-INSERT INTO bill(bill_id, pay_date)
-VALUES (lower(hex(randomblob(8))), ?)
+INSERT INTO bill(bill_id, pay_date, total, user_id, giveAway_id)
+VALUES (lower(hex(randomblob(8))), ?, 0 ,? ,?)
 RETURNING bill_id, total, pay_date, user_id, giveaway_id
 `
 
-func (q *Queries) CreateBill(ctx context.Context, payDate string) (Bill, error) {
-	row := q.db.QueryRowContext(ctx, createBill, payDate)
+type CreateBillParams struct {
+	PayDate    string
+	UserID     interface{}
+	GiveawayID sql.NullInt64
+}
+
+func (q *Queries) CreateBill(ctx context.Context, arg CreateBillParams) (Bill, error) {
+	row := q.db.QueryRowContext(ctx, createBill, arg.PayDate, arg.UserID, arg.GiveawayID)
 	var i Bill
 	err := row.Scan(
 		&i.BillID,
