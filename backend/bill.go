@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
@@ -9,10 +10,12 @@ import (
 )
 
 type Bill struct {
-	Bill_ID string  `json:"bill_id"`
-	Total   float64 `json:"total"`
-	PayDate string  `json:"pay_date"`
-	Orders  []Order `json:"orders"`
+	Bill_ID    string  `json:"bill_id"`
+	UserID     string  `json:"user_id"`
+	GiveAwayID int64   `json:"giveaway_id"`
+	Total      float64 `json:"total"`
+	PayDate    string  `json:"pay_date"`
+	Orders     []Order `json:"orders"`
 }
 
 type Order struct {
@@ -27,6 +30,7 @@ func CreateNewBill(cfg *Config, ctx *gin.Context) {
 			Menu_ID int64 `json:"menu_id"`
 			Amount  int64 `json:"amount"`
 		} `json:"orders"`
+		GiveAwayID int64 `json:"giveaway_id"`
 	}
 
 	var param Param
@@ -35,7 +39,20 @@ func CreateNewBill(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
-	bill_data, err := cfg.db.CreateBill(ctx.Request.Context(), time.Now().Format(time.DateTime))
+	id, status, err := checkCookie(cfg, ctx)
+	if err != nil {
+		ctx.JSON(status, gin.H{"error": err.Error()})
+		return
+	}
+
+	bill_data, err := cfg.db.CreateBill(ctx.Request.Context(), database.CreateBillParams{
+		PayDate: time.Now().Format(time.DateOnly),
+		UserID:  id,
+		GiveawayID: sql.NullInt64{
+			Int64: param.GiveAwayID,
+			Valid: param.GiveAwayID != 0,
+		},
+	})
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		ctx.Error(err)
@@ -80,10 +97,12 @@ func CreateNewBill(cfg *Config, ctx *gin.Context) {
 	}
 
 	bill := Bill{
-		Bill_ID: bill_data.BillID,
-		Total:   bill_data.Total,
-		PayDate: bill_data.PayDate,
-		Orders:  orders,
+		Bill_ID:    bill_data.BillID,
+		UserID:     bill_data.UserID.(string),
+		GiveAwayID: bill_data.GiveawayID.Int64,
+		Total:      bill_data.Total,
+		PayDate:    bill_data.PayDate,
+		Orders:     orders,
 	}
 
 	ctx.JSON(201, bill)
@@ -119,9 +138,11 @@ func GetBill(cfg *Config, ctx *gin.Context) {
 		}
 
 		bill := Bill{
-			Bill_ID: data.BillID,
-			Total:   total,
-			PayDate: data.PayDate,
+			Bill_ID:    data.BillID,
+			UserID:     data.UserID.(string),
+			GiveAwayID: data.GiveawayID.Int64,
+			Total:      total,
+			PayDate:    data.PayDate,
 		}
 
 		bills = append(bills, bill)

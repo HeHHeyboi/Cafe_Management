@@ -45,7 +45,7 @@ func AddNewGiveAway(cfg *Config, ctx *gin.Context) {
 		Date: time.Now().Format(time.DateOnly),
 	})
 	url, err := uploadIMG(cfg, ctx, uploadIMGArg{giveAway_id: data.ID})
-
+	//
 	if err != nil {
 		errMsg := checkDataBaseError(err)
 		ctx.JSON(500, gin.H{"error": errMsg})

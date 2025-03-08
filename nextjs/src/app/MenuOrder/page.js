@@ -133,6 +133,7 @@ export default function BillOrderPage() {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Menu Order</h1>
 
+      <div className="bg-white rounded-lg shadow-md p-6">
       <Table>
         <TableHeader>
           <TableRow>
@@ -157,6 +158,7 @@ export default function BillOrderPage() {
           ))}
         </TableBody>
       </Table>
+      </div>
 
         <div className="mt-4">
             <p className="text-lg font-bold">Total Price: {totalPrice.toFixed(2)}</p>
