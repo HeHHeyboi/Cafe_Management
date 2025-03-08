@@ -30,7 +30,12 @@
 - [GET /giveAway : List giveaway ทั้งหมด](#get-giveaway)
   
 - [POST /giveAway : เพิ่ม giveAway](#post-giveaway)
-  
+
+[/bill Endpoint](#bill)
+- [GET /bill : List bill ทั้งหมด](#get-bill)
+
+- [POST /bill : เพิ่ม bill](#post-bill) 
+
 ## [GET /reset](#get-reset)
 Reset ข้อมูลใน Data Base
 ```
