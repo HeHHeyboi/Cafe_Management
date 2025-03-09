@@ -34,6 +34,8 @@
 [/bill Endpoint](#bill)
 - [GET /bill : List bill ทั้งหมด](#get-bill)
 
+- [GET /bill/{id} : ดูบิลด้วย id](#get-billid)
+
 - [POST /bill : เพิ่ม bill](#post-bill) 
 
 ## [GET /reset](#get-reset)
@@ -122,6 +124,67 @@ Example:
 `GET http://localhost:8080/user/logout`
 
 ทำการลบคุกกี้ login ออก
+
+## [GET /user/bill](#get-userbill)
+List bill ของ user นี้ทั้งหมดจะได้
+```
+[
+	{
+		"bill_id": "e88a1fa2ec9bf245",
+		"total": 500.00,
+		"pay_date": "2025-03-01T00:00:00Z",
+		"user_id": "c3eb881-1510-4f4d-8759-dc8ee5f87d72",
+		"giveaway_id": 1,
+		"orders : [
+			{
+				"menu_id": 1,
+				"amount": 2,
+				"total_price": 100
+			},
+			...
+		]
+	}
+]
+```
+- `bill_id`: หมายเลขบิล
+- `total`:  ยอดรวม
+- `pay_date`: วันที่สร้าง bill
+- `user_id`: id ของ user
+- `giveaway_id`: giveaway id
+- `orders`: List ของ order
+	- `menu_id`: id ของเมนู
+ 	- `amount`: จำนวนเมนูที่สั่ง
+  	- `total_price`: amount * menu.price
+
+## [GET /user/bill/{id}](#get-userbillid)
+แสดงข้อมูล bill ของ user นี้ที่มี id นี้ (user ต้อง login และต้องมี `id` cookies)
+จะได้
+```
+{
+	"bill_id": "e88a1fa2ec9bf245",
+	"total": 500.00,
+	"pay_date": "2025-03-01T00:00:00Z",
+	"user_id": "c3eb881-1510-4f4d-8759-dc8ee5f87d72",
+	"giveaway_id": 1,
+	"orders : [
+		{
+			"menu_id": 1,
+			"amount": 2,
+			"total_price": 100
+		},
+		...
+	]
+}
+```
+- `bill_id`: หมายเลขบิล
+- `total`:  ยอดรวม
+- `pay_date`: วันที่สร้าง bill
+- `user_id`: id ของ user
+- `giveaway_id`: giveaway id
+- `orders`: List ของ order
+	- `menu_id`: id ของเมนู
+ 	- `amount`: จำนวนเมนูที่สั่ง
+  	- `total_price`: amount * menu.price	
 
 # [/gallery](#gallery)
 
@@ -361,6 +424,35 @@ http://localhost:8080/giveAway?name=สักชื่อ
 		]
 	}
 ]
+```
+- `bill_id`: หมายเลขบิล
+- `total`:  ยอดรวม
+- `pay_date`: วันที่สร้าง bill
+- `user_id`: id ของ user
+- `giveaway_id`: giveaway id
+- `orders`: List ของ order
+	- `menu_id`: id ของเมนู
+ 	- `amount`: จำนวนเมนูที่สั่ง
+  	- `total_price`: amount * menu.price	
+
+## [GET /bill/{id}](get-billid)
+เอาข้อมูลบิลจาก id จะได้
+```
+{
+	"bill_id": "e88a1fa2ec9bf245",
+	"total": 500.00,
+	"pay_date": "2025-03-01T00:00:00Z",
+	"user_id": "c3eb881-1510-4f4d-8759-dc8ee5f87d72",
+	"giveaway_id": 1,
+	"orders : [
+		{
+			"menu_id": 1,
+			"amount": 2,
+			"total_price": 100
+		},
+		...
+	]
+}
 ```
 - `bill_id`: หมายเลขบิล
 - `total`:  ยอดรวม
