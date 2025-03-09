@@ -170,15 +170,15 @@ func updateIMG(cfg *Config, ctx *gin.Context, arg uploadIMGArg) ([]string, error
 
 	for k, v := range set_new_url {
 		if v != 0 {
-			cfg.db.AddNewIMG(ctx.Request.Context(), database.AddNewIMGParams{
+			data, _ := cfg.db.AddNewIMG(ctx.Request.Context(), database.AddNewIMGParams{
 				MenuID:      menu_id,
 				GiveawayID:  giveAway_id,
 				GalleryName: gallery_name,
 				ImgUrl:      k,
 			})
+			fmt.Println("Add new IMG", data)
 			continue
 		}
-		fmt.Println("already have img")
 	}
 	fmt.Println("Update IMG ", new_url)
 
