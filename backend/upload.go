@@ -64,6 +64,7 @@ func uploadIMG(cfg *Config, ctx *gin.Context, arg uploadIMGArg) ([]string, error
 	}
 	// fmt.Println(datas)
 
+	fmt.Println("Upload IMG ", url)
 	return url, nil
 }
 
@@ -96,6 +97,7 @@ func getImage(cfg *Config, ctx *gin.Context, arg uploadIMGArg) ([]string, error)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("Get IMG ", url)
 
 	return url, nil
 }
@@ -176,6 +178,7 @@ func updateIMG(cfg *Config, ctx *gin.Context, arg uploadIMGArg) ([]string, error
 			})
 		}
 	}
+	fmt.Println("Update IMG ", new_url)
 
 	return new_url, nil
 }
@@ -211,6 +214,7 @@ func deleteIMG(cfg *Config, ctx *gin.Context, arg uploadIMGArg) {
 		GiveawayID:  giveAway_id,
 		GalleryName: gallery_name,
 	})
+	fmt.Println("Delete IMG ", url)
 	if err != nil {
 		ctx.Error(err)
 	}
