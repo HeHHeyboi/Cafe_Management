@@ -55,7 +55,6 @@ export default function BillOrderPage() {
       // สร้างข้อมูลทั้งหมดในรูปแบบ JSON
       const billData = {
         orders: orders,
-        giveaway_id: 1,  // ตัวอย่าง ใช้ 1 เป็นค่า giveaway_id
       };
   
       // ดึงค่า id จากคุกกี้
@@ -73,8 +72,14 @@ export default function BillOrderPage() {
         credentials: 'include', // ส่งคุกกี้ (ถ้ามี)
       });
   
+      // Read the response body (to log and inspect)
       const billText = await billRes.text();
       console.log("Bill API Response:", billText);
+  
+      // Check if the server response is an error message
+      if (billRes.status !== 201) {
+        throw new Error(`Error creating bill: ${billText}`);
+      }
   
       let createdBill;
       try {
@@ -84,7 +89,7 @@ export default function BillOrderPage() {
       }
   
       alert("Bill created successfully!");
-      router.push("/BillOrder");
+      router.push(`/BillOrder/${createdBill.bill_id}`);
   
     } catch (error) {
       setError(error.message);
@@ -93,6 +98,7 @@ export default function BillOrderPage() {
     }
   };
   
+
   
 
 
