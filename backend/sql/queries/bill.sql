@@ -9,6 +9,18 @@ SET total = ?
 WHERE bill_id = ?
 RETURNING *;
 
+-- name: GetBillByID :one
+SELECT * FROM bill
+WHERE bill_id = ?;
+
+-- name: GetUserBill :many
+SELECT * FROM bill
+WHERE user_id = ?;
+
+-- name: GetUserBillByID :one
+SELECT * FROM bill
+WHERE user_id = ? AND bill_id = ?;
+
 -- name: ListBill :many
 SELECT * FROM bill;
 

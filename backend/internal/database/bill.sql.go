@@ -44,6 +44,81 @@ func (q *Queries) DeleteBill(ctx context.Context) error {
 	return err
 }
 
+const getBillByID = `-- name: GetBillByID :one
+SELECT bill_id, total, pay_date, user_id, giveaway_id FROM bill
+WHERE bill_id = ?
+`
+
+func (q *Queries) GetBillByID(ctx context.Context, billID string) (Bill, error) {
+	row := q.db.QueryRowContext(ctx, getBillByID, billID)
+	var i Bill
+	err := row.Scan(
+		&i.BillID,
+		&i.Total,
+		&i.PayDate,
+		&i.UserID,
+		&i.GiveawayID,
+	)
+	return i, err
+}
+
+const getUserBill = `-- name: GetUserBill :many
+SELECT bill_id, total, pay_date, user_id, giveaway_id FROM bill
+WHERE user_id = ?
+`
+
+func (q *Queries) GetUserBill(ctx context.Context, userID interface{}) ([]Bill, error) {
+	rows, err := q.db.QueryContext(ctx, getUserBill, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Bill
+	for rows.Next() {
+		var i Bill
+		if err := rows.Scan(
+			&i.BillID,
+			&i.Total,
+			&i.PayDate,
+			&i.UserID,
+			&i.GiveawayID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUserBillByID = `-- name: GetUserBillByID :one
+SELECT bill_id, total, pay_date, user_id, giveaway_id FROM bill
+WHERE user_id = ? AND bill_id = ?
+`
+
+type GetUserBillByIDParams struct {
+	UserID interface{}
+	BillID string
+}
+
+func (q *Queries) GetUserBillByID(ctx context.Context, arg GetUserBillByIDParams) (Bill, error) {
+	row := q.db.QueryRowContext(ctx, getUserBillByID, arg.UserID, arg.BillID)
+	var i Bill
+	err := row.Scan(
+		&i.BillID,
+		&i.Total,
+		&i.PayDate,
+		&i.UserID,
+		&i.GiveawayID,
+	)
+	return i, err
+}
+
 const listBill = `-- name: ListBill :many
 SELECT bill_id, total, pay_date, user_id, giveaway_id FROM bill
 `

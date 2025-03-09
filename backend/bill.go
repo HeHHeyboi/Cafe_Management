@@ -143,10 +143,48 @@ func GetBill(cfg *Config, ctx *gin.Context) {
 			GiveAwayID: data.GiveawayID.Int64,
 			Total:      total,
 			PayDate:    data.PayDate,
+			Orders:     orders,
 		}
 
 		bills = append(bills, bill)
 	}
 
 	ctx.JSON(200, bills)
+}
+
+func GetBillByID(cfg *Config, ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	bill_data, err := cfg.db.GetBillByID(ctx.Request.Context(), id)
+	order_data, err := cfg.db.GetOrderFromBill(ctx.Request.Context(), bill_data.BillID)
+	if err != nil {
+		msg := checkDataBaseError(err)
+		if err.Error() == noResult {
+			ctx.JSON(404, gin.H{"err": msg})
+			return
+		}
+		ctx.JSON(500, gin.H{"err": msg})
+		return
+	}
+
+	var orders []Order
+	for _, v := range order_data {
+		order := Order{
+			Menu_ID:    v.MenuID,
+			Amount:     v.Amount,
+			TotalPrice: v.TotalPrice,
+		}
+		orders = append(orders, order)
+	}
+
+	bill := Bill{
+		Bill_ID:    bill_data.BillID,
+		Total:      bill_data.Total,
+		UserID:     bill_data.UserID.(string),
+		GiveAwayID: bill_data.GiveawayID.Int64,
+		PayDate:    bill_data.PayDate,
+		Orders:     orders,
+	}
+
+	ctx.JSON(200, bill)
 }
