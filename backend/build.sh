@@ -9,5 +9,5 @@ GOOS=darwin GOARCH=arm64 go build -o ../backend_mac
 echo Done
 sleep 1s
 echo "Linux Build"
-GOOS=linux GOARCH=amd64 go build -o ../backend_mac
+GOOS=linux GOARCH=amd64 go build -o ../backend_linux
 echo Done
