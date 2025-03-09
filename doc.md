@@ -11,6 +11,12 @@
 
 - [POST /user/login: user ล็อกอิน เข้า Account](#post-userlogin)
 
+- [GET /user/logout: ลบ user cookie](#get-userlogout)
+
+- [GET /user/bill: แสดงข้อมูล bill ของ user ทั้งหมด](#get-userbill)
+
+- [GET /user/bill/{id}: แสดงข้อมูล bill ของ user ที่มี id นี้](#get-userbillid)
+
 [/gallery Endpoint](#gallery)
 
 - [POST /gallery : จอง Gallery](#post-gallery)
