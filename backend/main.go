@@ -106,6 +106,12 @@ func main() {
 	r.GET("/user/logout", func(ctx *gin.Context) {
 		logoutUser(&cfg, ctx)
 	})
+	r.GET("/user/bill", func(ctx *gin.Context) {
+		GetUserBill(&cfg, ctx)
+	})
+	r.GET("/user/bill/:id", func(ctx *gin.Context) {
+		GetUserBillByID(&cfg, ctx)
+	})
 
 	r.POST("/gallery", func(ctx *gin.Context) {
 		BookGallery(&cfg, ctx)
@@ -152,6 +158,9 @@ func main() {
 	})
 	r.GET("/bill", func(ctx *gin.Context) {
 		GetBill(&cfg, ctx)
+	})
+	r.GET("/bill/:id", func(ctx *gin.Context) {
+		GetBillByID(&cfg, ctx)
 	})
 
 	r.GET("/reset", func(ctx *gin.Context) {
