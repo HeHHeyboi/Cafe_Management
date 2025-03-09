@@ -58,7 +58,7 @@ function AddMenuForm({ onMenuAdded }) {
     }
     // Add more validation as needed (e.g., type validation, image size limits)
 
-
+    console.log(`Add Image:  ${image}`)
     // Use FormData for multipart/form-data
     const formData = new FormData();
     formData.append("name", name);
@@ -68,7 +68,7 @@ function AddMenuForm({ onMenuAdded }) {
     }
     formData.append("price", price); // No need to parseFloat here
     if (image) {
-      formData.append("image", image); // Append the image file
+      formData.append("images", image); // Append the image file
     }
 
     try {
@@ -85,6 +85,7 @@ function AddMenuForm({ onMenuAdded }) {
         );
       }
       const responseData = await response.json() //get response
+      console.log(`Response: ${response}`)
       setSuccess(true);
       setName("");
       setMenuType("");
