@@ -129,16 +129,6 @@ func updateIMG(cfg *Config, ctx *gin.Context, arg uploadIMGArg) ([]string, error
 	for _, file := range files {
 		ctx.SaveUploadedFile(file, uploadDir+file.Filename)
 		new_url = append(new_url, uploadDir+file.Filename)
-		_, err := cfg.db.AddNewIMG(ctx.Request.Context(), database.AddNewIMGParams{
-			ImgUrl:      uploadDir + file.Filename,
-			MenuID:      menu_id,
-			GiveawayID:  giveAway_id,
-			GalleryName: gallery_name,
-		})
-		if err != nil {
-			ctx.Error(err)
-			return nil, err
-		}
 	}
 	set_new_url := make(map[string]int)
 	for _, p := range new_url {
