@@ -1,5 +1,5 @@
 import Logo from './Logo'
-import Dropdownlist from './Dropdownlist'
+import Dropdownlist from './dropdownlist'
 
 const Navbar = () => {
   return (

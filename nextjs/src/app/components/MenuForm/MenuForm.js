@@ -1,11 +1,10 @@
-// src/app/components/MenuForm/MenuForm.js
 "use client";
+
 import { useState, useEffect } from "react";
 import AddMenuForm from "./AddMenuForm";
 import EditMenuForm from "./EditMenuForm";
 import MenuList from "./MenuList";
 
-// src/app/components/MenuForm/MenuForm.js
 
 function MenuForm() {
   const [menuItems, setMenuItems] = useState([]);
@@ -45,9 +44,9 @@ function MenuForm() {
 
   const handleMenuAdded = (newItem) => { // รับ newItem
     //  เพิ่ม item ใหม่เข้าไปใน state (optimistic update):
-    setMenuItems(prevItems => [...prevItems, newItem]);
-
-    // fetchMenuItems() // ไม่ต้อง fetch ใหม่แล้ว
+    console.log(newItem)
+    // setMenuItems(prevItems => [...prevItems, newItem]);
+    fetchMenuItems() // ไม่ต้อง fetch ใหม่แล้ว
   };
 
   const handleEdit = (item) => {
@@ -60,21 +59,21 @@ function MenuForm() {
 
   const handleMenuUpdated = (updatedItem) => {
     // Optimistic update:  Update state ทันที
-    setMenuItems(prevItems =>
-      prevItems.map(item => (item.menu_id === updatedItem.menu_id ? updatedItem : item))
-    );
+    // setMenuItems(prevItems =>
+    //   prevItems.map(item => (Number(item.menu_id) === Number(updatedItem.menu_id) ? updatedItem : item))
+    // );
     setEditingItem(null); // Clear editing state
-    // fetchMenuItems(); // ไม่ต้อง fetch ใหม่แล้ว
+    fetchMenuItems(); // ไม่ต้อง fetch ใหม่แล้ว
   };
 
 
-  const handleDelete = async (name) => {
+  const handleDelete = async (id) => {
     if (!confirm("Are you sure you want to delete this item?")) {
       return;
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/menu/name/${name}`, {
+      const response = await fetch(`http://localhost:8080/menu/id/${Number(id)}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -83,7 +82,7 @@ function MenuForm() {
       }
 
       // Optimistic update: ลบออกจาก state ทันที
-      setMenuItems(prevItems => prevItems.filter(item => item.name !== name));
+      setMenuItems(prevItems => prevItems.filter(item => Number(item.menu_id) !== Number(id)));
 
     } catch (error) {
       setError(error.message);
