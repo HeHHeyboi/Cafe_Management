@@ -44,72 +44,56 @@ export default function BillOrderPage() {
 
   const handleCreateBill = async () => {
     if (!orderData) return;
-
+  
     try {
-      // Calculate total price (same logic as in MenuOrder page)
-      const totalPrice = orderData.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
-      );
-
-       // Format the current date as a string (YYYY-MM-DD)
-        const today = new Date();
-        const formattedDate = today.toISOString().split('T')[0];
-
+      // คำนวณข้อมูล orders
+      const orders = orderData.map((item) => ({
+        menu_id: item.menu_id,
+        amount: item.quantity,  // Assuming amount here is the same as quantity
+      }));
+  
+      // สร้างข้อมูลทั้งหมดในรูปแบบ JSON
       const billData = {
-        total: totalPrice, // Use the calculated total
-        pay_date: formattedDate, // Or any other date string format your backend expects
-        // Add user_id and giveaway_id if you have them, e.g., from a session
+        orders: orders,
+        giveaway_id: 1,  // ตัวอย่าง ใช้ 1 เป็นค่า giveaway_id
       };
-
-
-      const billRes = await fetch("/api/bills", { // Make sure your API route is correct
+  
+      // ดึงค่า id จากคุกกี้
+      const id = getCookie('id');  // ฟังก์ชัน getCookie ของคุณในการดึงค่า id จากคุกกี้
+      console.log(`Id in cookie: ${id}`);
+  
+      // ส่งข้อมูลทั้งหมดในรูปแบบ JSON ไปที่ API
+      const billRes = await fetch("http://localhost:8080/bill", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json",  // ระบุว่าเป็น JSON
+          "Authorization": `Bearer ${id}`,  // ส่งค่า id ใน Authorization header
         },
-        body: JSON.stringify(billData),
+        body: JSON.stringify(billData),  // ส่งข้อมูล JSON ไปใน body
+        credentials: 'include', // ส่งคุกกี้ (ถ้ามี)
       });
-
-      if (!billRes.ok) {
-          const errorData = await billRes.json();
-          throw new Error(errorData.message || "Failed to create bill");
+  
+      const billText = await billRes.text();
+      console.log("Bill API Response:", billText);
+  
+      let createdBill;
+      try {
+        createdBill = JSON.parse(billText);
+      } catch (e) {
+        throw new Error("Invalid JSON response from /bill: " + billText);
       }
-       const createdBill = await billRes.json();
-
-        // Link Menu Item with bill
-        const promises = orderData.map(async item => {
-            const response = await fetch('/api/bill_items', { // You MUST create this API
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    bill_id: createdBill.bill_id, // Use ID from created bill
-                    menu_id: item.menu_id,
-                    quantity: item.quantity,
-                    price: item.price
-                })
-            });
-
-            if (!response.ok) {
-               const errorData = await response.json(); // Read error message
-               throw new Error("Failed to add menu item to bill" + errorData.message);
-            }
-           return response.json();
-        })
-
-        await Promise.all(promises) //wait all item be insert
-        alert("Bill and Order Items created successfully!");
-        router.push('/BillOrder'); // Redirect to a bill list page or similar
-
-
+  
+      alert("Bill created successfully!");
+      router.push("/BillOrder");
+  
     } catch (error) {
       setError(error.message);
       console.error("Error creating bill:", error);
-       alert("Error creating bill." + error.message);
+      alert("Error creating bill: " + error.message);
     }
   };
+  
+  
 
 
   if (loading) {
@@ -171,3 +155,13 @@ export default function BillOrderPage() {
     </div>
   );
 }
+
+
+// ฟังก์ชันเพื่อดึงค่าคุกกี้ตามชื่อ
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+

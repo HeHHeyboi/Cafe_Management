@@ -26,15 +26,15 @@ export default function MenuPage() {
     const fetchMenuItems = async () => {
       setLoading(true);
       setError(null);
-
+  
       try {
         const response = await fetch("http://localhost:8080/menu");
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setMenuItems(data);
 
+        setMenuItems(data);
         const initialQuantities = {};
         data.forEach((item) => {
           initialQuantities[item.menu_id] = 0;
@@ -48,10 +48,12 @@ export default function MenuPage() {
         setLoading(false);
       }
     };
-
     fetchMenuItems();
   }, []);
 
+  useEffect(() => {
+    console.log(`Data: ${menuItems}`)
+  }, [menuItems])
   const handleIncrement = (item) => {
     setQuantities((prevQuantities) => ({
       ...prevQuantities,
@@ -210,9 +212,7 @@ export default function MenuPage() {
                   <div className="relative h-48 w-full mb-4">
                     <Image
                       src={
-                        item.img_url.startsWith("http")
-                          ? item.img_url
-                          : `http://localhost:8080${item.img_url}`
+                        `http://localhost:8080/${item.img_url}`
                       }
                       alt={item.name}
                       layout="fill"
