@@ -132,6 +132,99 @@ func logoutUser(cfg *Config, ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"msg": "logout success"})
 }
 
+func GetUserBill(cfg *Config, ctx *gin.Context) {
+	user_id, status, err := checkCookie(cfg, ctx)
+	if err != nil {
+		ctx.JSON(status, gin.H{"error": err.Error()})
+		return
+	}
+
+	datas, err := cfg.db.GetUserBill(ctx.Request.Context(), user_id)
+	if err != nil {
+		msg := checkDataBaseError(err)
+		if err.Error() == noResult {
+			ctx.JSON(404, gin.H{"err": msg})
+			return
+		}
+		ctx.JSON(500, gin.H{"err": msg})
+		return
+	}
+	var bills []Bill
+
+	for _, data := range datas {
+		orders_data, _ := cfg.db.GetOrderFromBill(ctx.Request.Context(), data.BillID)
+		var orders []Order
+		var total float64
+		for _, order_data := range orders_data {
+			total += order_data.TotalPrice
+			order := Order{
+				Menu_ID:    order_data.MenuID,
+				Amount:     order_data.Amount,
+				TotalPrice: order_data.TotalPrice,
+			}
+
+			orders = append(orders, order)
+		}
+
+		bill := Bill{
+			Bill_ID:    data.BillID,
+			UserID:     data.UserID.(string),
+			GiveAwayID: data.GiveawayID.Int64,
+			Total:      total,
+			PayDate:    data.PayDate,
+			Orders:     orders,
+		}
+
+		bills = append(bills, bill)
+	}
+
+	ctx.JSON(200, bills)
+}
+
+func GetUserBillByID(cfg *Config, ctx *gin.Context) {
+	user_id, status, err := checkCookie(cfg, ctx)
+	if err != nil {
+		ctx.JSON(status, gin.H{"error": err.Error()})
+		return
+	}
+	bill_id := ctx.Param("id")
+	bill_data, err := cfg.db.GetUserBillByID(ctx.Request.Context(), database.GetUserBillByIDParams{
+		UserID: user_id,
+		BillID: bill_id,
+	})
+	order_data, err := cfg.db.GetOrderFromBill(ctx.Request.Context(), bill_data.BillID)
+	if err != nil {
+		msg := checkDataBaseError(err)
+		if err.Error() == noResult {
+			ctx.JSON(404, gin.H{"err": msg})
+			return
+		}
+		ctx.JSON(500, gin.H{"err": msg})
+		return
+	}
+
+	var orders []Order
+	for _, v := range order_data {
+		order := Order{
+			Menu_ID:    v.MenuID,
+			Amount:     v.Amount,
+			TotalPrice: v.TotalPrice,
+		}
+		orders = append(orders, order)
+	}
+
+	bill := Bill{
+		Bill_ID:    bill_data.BillID,
+		Total:      bill_data.Total,
+		UserID:     bill_data.UserID.(string),
+		GiveAwayID: bill_data.GiveawayID.Int64,
+		PayDate:    bill_data.PayDate,
+		Orders:     orders,
+	}
+
+	ctx.JSON(200, bill)
+}
+
 func checkCookie(cfg *Config, ctx *gin.Context) (string, int, error) {
 	cookie, err := ctx.Request.Cookie("id")
 	if err != nil {
