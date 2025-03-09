@@ -176,7 +176,9 @@ func updateIMG(cfg *Config, ctx *gin.Context, arg uploadIMGArg) ([]string, error
 				GalleryName: gallery_name,
 				ImgUrl:      k,
 			})
+			continue
 		}
+		fmt.Println("already have img")
 	}
 	fmt.Println("Update IMG ", new_url)
 
