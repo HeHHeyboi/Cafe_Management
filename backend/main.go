@@ -115,6 +115,9 @@ func main() {
 	r.GET("/user", func(ctx *gin.Context) {
 		getUser(&cfg, ctx)
 	})
+	r.GET("/user/:id", func(ctx *gin.Context) {
+		GetUserByID(&cfg, ctx)
+	})
 	r.POST("/user/login", func(ctx *gin.Context) {
 		loginUser(&cfg, ctx)
 	})
