@@ -3,16 +3,15 @@ select * from gallery
 ORDER BY "StartDate";
 
 -- name: ListGalleryByMonth :many
+-- name: ListGalleryByMonth :many
 SELECT * FROM gallery
 WHERE StartDate >= CASE 
-	WHEN @this_month = 1 THEN date('now', 'start of month')
-	WHEN @month IS NOT NULL THEN '9999-12-31' -- Fallback for invalid type
-	ELSE '0000-00-00' -- Fallback for other cases
+	WHEN @month IS NULL THEN date('now', 'start of month')
+	ELSE date(@month || '-01') -- Convert YYYY-MM to valid date
 END
 AND StartDate < CASE 
-	WHEN @this_month = 1 THEN date('now', 'start of month', '+1 month')
-	WHEN @month IS NOT NULL THEN '0000-00-00' -- Fallback for invalid type
-	ELSE '9999-12-31' -- Fallback for other cases
+	WHEN @month IS NULL THEN date('now', 'start of month', '+1 month')
+	ELSE date(@month || '-01', '+1 month')
 END;
 
 -- name: BookGallery :one
