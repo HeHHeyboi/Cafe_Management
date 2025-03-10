@@ -44,3 +44,7 @@ WHERE id = ?;
 -- name: DeleteByName :exec
 DELETE FROM giveAway
 WHERE name = ?;
+
+-- name: DeleteByRemain :exec
+DELETE FROM giveAway
+WHERE remain = 0;
