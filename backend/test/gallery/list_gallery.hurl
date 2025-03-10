@@ -57,8 +57,8 @@ POST http://localhost:8080/gallery
 output: -
 {
 	"name": "thana_gallery",
-	"start_date":"2025-02-01",
-	"end_date":"2025-02-15",
+	"start_date":"2025-03-01",
+	"end_date":"2025-03-15",
 	"description":"This is thana gallery"
 }
 # HTTP 200
@@ -67,8 +67,4 @@ GET http://localhost:8080/gallery
 [Options]
 output: -
 
-GET http://localhost:8080/gallery?month=this
-[Options]
-output: -
-
-GET http://localhost:8080/gallery?month=feb
+GET http://localhost:8080/gallery?month=2025-03

@@ -88,24 +88,17 @@ func (q *Queries) ListGallery(ctx context.Context) ([]Gallery, error) {
 const listGalleryByMonth = `-- name: ListGalleryByMonth :many
 SELECT gname, startdate, enddate, "desc", user_id FROM gallery
 WHERE StartDate >= CASE 
-	WHEN ?1 = 1 THEN date('now', 'start of month')
-	WHEN ?2 IS NOT NULL THEN '9999-12-31' -- Fallback for invalid type
-	ELSE '0000-00-00' -- Fallback for other cases
+	WHEN ?1 IS NULL THEN date('now', 'start of month')
+	ELSE date(?1 || '-01') -- Convert YYYY-MM to valid date
 END
 AND StartDate < CASE 
-	WHEN ?1 = 1 THEN date('now', 'start of month', '+1 month')
-	WHEN ?2 IS NOT NULL THEN '0000-00-00' -- Fallback for invalid type
-	ELSE '9999-12-31' -- Fallback for other cases
+	WHEN ?1 IS NULL THEN date('now', 'start of month', '+1 month')
+	ELSE date(?1 || '-01', '+1 month')
 END
 `
 
-type ListGalleryByMonthParams struct {
-	ThisMonth interface{}
-	Month     interface{}
-}
-
-func (q *Queries) ListGalleryByMonth(ctx context.Context, arg ListGalleryByMonthParams) ([]Gallery, error) {
-	rows, err := q.db.QueryContext(ctx, listGalleryByMonth, arg.ThisMonth, arg.Month)
+func (q *Queries) ListGalleryByMonth(ctx context.Context, month interface{}) ([]Gallery, error) {
+	rows, err := q.db.QueryContext(ctx, listGalleryByMonth, month)
 	if err != nil {
 		return nil, err
 	}

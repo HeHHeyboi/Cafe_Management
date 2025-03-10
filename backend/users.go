@@ -130,7 +130,6 @@ func loginUser(cfg *Config, ctx *gin.Context) {
 
 	cookie, err := auth.CreateCookie("id", data.UserID.(string), cfg.secret)
 	if err != nil {
-		// panic("Create Cookie error")
 		ctx.Status(500)
 		ctx.Error(err)
 		return
