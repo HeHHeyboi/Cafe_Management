@@ -80,20 +80,11 @@ func listBooking(cfg *Config, ctx *gin.Context) {
 	var data []database.Gallery
 	var err error
 
-	if month == "this" {
-		data, err = cfg.db.ListGalleryByMonth(ctx.Request.Context(), database.ListGalleryByMonthParams{
-			ThisMonth: true,
-			Month:     nil,
-		})
-	} else if month != "none" {
-		data, err = cfg.db.ListGalleryByMonth(ctx.Request.Context(), database.ListGalleryByMonthParams{
-			ThisMonth: false,
-			Month:     "TEXT",
-		})
+	if month != "none" {
+		data, err = cfg.db.ListGalleryByMonth(ctx.Request.Context(), month)
 	} else {
 		data, err = cfg.db.ListGallery(ctx.Request.Context())
 	}
-
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": "List Booking Error"})
 		ctx.Error(err)
