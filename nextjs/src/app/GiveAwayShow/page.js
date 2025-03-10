@@ -81,31 +81,23 @@ function GiveAwayShow() {
     }
 
     return (
-        <>
-            <div className="max-w-4xl mx-auto mb-4 flex justify-end">
-                <Button onClick={() => router.push('/GiveAway')}>
-                    เพิ่มรายการ GiveAway
-                </Button>
-            </div>
+        <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+            <h1 className="text-2xl font-bold mb-4">GiveAwayList</h1>
             
-            <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
-                <h1 className="text-2xl font-bold mb-4">GiveAwayList</h1>
-                
-                <div className="space-y-4">
-                    {giveaways && giveaways.map(giveaway => (
-                        <div 
-                            key={giveaway.id} 
-                            onClick={() => router.push(`/GiveAwayDetail/${giveaway.id}`)}
-                            className="cursor-pointer hover:shadow-lg transition-shadow duration-300"
-                        >
-                            <GiveawayCard giveaway={giveaway} />
-                        </div>
-                    ))}
-                </div>
+            <div className="space-y-4">
+                {giveaways && giveaways.map(giveaway => (
+                    <div 
+                        key={giveaway.id} 
+                        onClick={() => router.push(`/GiveAwayDetail/${giveaway.id}`)}
+                        className="cursor-pointer hover:shadow-lg transition-shadow duration-300"
+                    >
+                        <GiveawayCard giveaway={giveaway} />
+                    </div>
+                ))}
             </div>
-        </>
+        </div>
     );
-
+    
 }
 
 
