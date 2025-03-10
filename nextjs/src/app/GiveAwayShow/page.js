@@ -6,16 +6,15 @@ import { useRouter } from 'next/navigation';
 function GiveawayCard({ giveaway }) {
     return (
         <div className="border p-4 rounded-lg shadow-sm">
-            {/* แสดงรูปภาพจาก img_url array (ถ้ามี) */}
             {giveaway.img_url && giveaway.img_url.length > 0 && (
                 <div className="mb-4 overflow-x-auto">
                     <div className="flex space-x-2">
                         {giveaway.img_url.map((url, index) => (
                             <img 
                                 key={index}
-                                src={`http://localhost:8080/${url}`} // เพิ่ม base URL ของ API
+                                src={`http://localhost:8080/${url}`} 
                                 alt={`${giveaway.name} image ${index + 1}`}
-                                className="w-32 h-32 object-cover rounded-md"
+                                className="w-full h-32 object-cover object-center rounded-md"
                                 onError={(e) => {
                                     e.target.onerror = null;
                                     e.target.src = 'https://via.placeholder.com/150?text=Image+Not+Found';
@@ -30,7 +29,7 @@ function GiveawayCard({ giveaway }) {
             <p className="text-gray-700">{giveaway.desc}</p>
             <p className="text-gray-600">จำนวนทั้งหมด: {giveaway.amount}</p>
             <p className="text-gray-600">คงเหลือ: {giveaway.remain}</p>
-            <p className="text-gray-500">วันที่เพิ่ม: {new Date(giveaway.date).toLocaleDateString()}</p>
+            {/* <p className="text-gray-500">วันที่เพิ่ม: {new Date(giveaway.date).toLocaleDateString()}</p> */}
         </div>
     );
 }
@@ -84,21 +83,23 @@ function GiveAwayShow() {
         <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
             <h1 className="text-2xl font-bold mb-4">GiveAwayList</h1>
             
-            <div className="space-y-4">
-                {giveaways && giveaways.map(giveaway => (
-                    <div 
-                        key={giveaway.id} 
-                        onClick={() => router.push(`/GiveAwayDetail/${giveaway.id}`)}
-                        className="cursor-pointer hover:shadow-lg transition-shadow duration-300"
-                    >
-                        <GiveawayCard giveaway={giveaway} />
-                    </div>
-                ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {giveaways && giveaways.length > 0 ? (
+                    giveaways.map(giveaway => (
+                        <div 
+                            key={giveaway.id} 
+                            onClick={() => router.push(`/GiveAwayDetail/${giveaway.id}`)}
+                            className="cursor-pointer hover:shadow-lg transition-shadow duration-300"
+                        >
+                            <GiveawayCard giveaway={giveaway} />
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-center text-gray-500">No GiveAway for this month.</p>
+                )}
             </div>
         </div>
     );
-    
 }
-
 
 export default GiveAwayShow;
