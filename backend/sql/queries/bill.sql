@@ -9,6 +9,12 @@ SET total = ?
 WHERE bill_id = ?
 RETURNING *;
 
+-- name: UpdateBillStatus :one
+UPDATE bill
+SET paid_status = NOT paid_status
+WHERE bill_id = ?
+RETURNING *;
+
 -- name: GetBillByID :one
 SELECT * FROM bill
 WHERE bill_id = ?;
