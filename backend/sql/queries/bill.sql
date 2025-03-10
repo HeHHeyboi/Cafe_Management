@@ -32,3 +32,7 @@ SELECT * FROM bill;
 
 -- name: DeleteBill :exec
 DELETE FROM bill;
+
+-- name: DeleteBillByID :exec
+DELETE FROM bill
+WHERE bill_id = ?;
