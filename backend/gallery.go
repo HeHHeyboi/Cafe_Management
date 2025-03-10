@@ -92,7 +92,7 @@ func listBooking(cfg *Config, ctx *gin.Context) {
 
 	var galleries []Gallery
 	for _, book := range data {
-		url, _ := uploadIMG(cfg, ctx, uploadIMGArg{gallery_name: book.Gname})
+		url, _ := getImage(cfg, ctx, uploadIMGArg{gallery_name: book.Gname})
 		gallery := Gallery{
 			Name:        book.Gname,
 			Startdate:   book.Startdate,
