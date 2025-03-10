@@ -79,6 +79,27 @@ func getUser(cfg *Config, ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, users)
 }
 
+func GetUserByID(cfg *Config, ctx *gin.Context) {
+	user_id := ctx.Param("id")
+
+	data, err := cfg.db.GetUserByID(ctx.Request.Context(), user_id)
+	if err != nil {
+		msg := checkDataBaseError(err)
+		if err.Error() == noResult {
+			msg += "Email, Please Create User"
+		}
+		ctx.JSON(404, gin.H{"error": msg})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"id":         data.UserID,
+		"first_name": data.Fname.String,
+		"last_name":  data.Lname.String,
+		"email":      data.Email,
+	})
+}
+
 func loginUser(cfg *Config, ctx *gin.Context) {
 	type Param struct {
 		Email    string `json:"email" form:"email" binding:"required"`

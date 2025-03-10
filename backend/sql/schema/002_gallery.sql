@@ -1,4 +1,3 @@
-
 -- +goose Up
 CREATE TABLE IF NOT EXISTS gallery(
 	Gname TEXT PRIMARY KEY NOT NULL,
