@@ -7,6 +7,8 @@
 
 - [GET /user: แสดง Account ทั้งหมด](#get-user)
 
+- [GET /user/:id แสดงข้อมูลของ user](#get-userid)
+
 - [POST /user: สร้าง Account](#post-user)
 
 - [POST /user/login: user ล็อกอิน เข้า Account](#post-userlogin)
@@ -78,6 +80,21 @@ Example:
 - `last_name`: นามสกุล
 - `email`: อีเมลของ user
 - `password`: จะได้ค่าเป็นรหัสผ่านที่ถูกเข้ารหัส
+
+## [GET /user/:id](#get-userid)
+แสดงข้อมูลของ `user` ที่มี id นี้จะได้
+```
+{
+	"id": "000-0000-000", 
+	"first_name": "ธนทัต",   
+	"last_name": "บุญยานันท์",
+	"email": "example@gmail.com",
+},
+```
+- `id`: UUID ของ user
+- `first_name`: ชื่อ
+- `last_name`: นามสกุล
+- `email`: อีเมลของ user
 
 ## [POST /user](#post-user)
 - Content-Type: application/json
