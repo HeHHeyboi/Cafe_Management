@@ -3,17 +3,187 @@
 import { Line, Bar } from "react-chartjs-2";
 import { Card } from "./components/Card";
 import { CardContent } from "./components/CardContent";
-import { Search, Bell, Phone } from "lucide-react";
-import { useState } from "react";
+import { Bell, Phone, Gift, Database } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from "chart.js";
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
 export default function Dashboard() {
-  const [orders, setOrders] = useState([
-    { id: "#87961", name: "Mark Allen", date: "May 25, 2023", time: "10:30 AM", amount: "$120", payment: "Online" },
-    { id: "#87962", name: "John Doe", date: "May 26, 2023", time: "11:00 AM", amount: "$85", payment: "Cash" },
-  ]);
+  const [orders, setOrders] = useState([]);
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [giveaways, setGiveaways] = useState([]);
+  const [loggedInUser, setLoggedInUser] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // แก้ไขฟังก์ชัน getCookie
+  const getCookie = (name) => {
+    try {
+      if (typeof document === 'undefined') return null;
+      
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) {
+        const cookieValue = parts.pop().split(';').shift();
+        // ถอดรหัส URI component ก่อนที่จะ parse เป็น JSON
+        return decodeURIComponent(cookieValue);
+      }
+      return null;
+    } catch (error) {
+      console.error('Error parsing cookie:', error);
+      return null;
+    }
+  };
+
+  // แยกฟังก์ชัน fetchOrders
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:8080/bill', {
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch orders');
+      }
+      
+      const bills = await response.json();
+      const formattedOrders = [];
+      
+      for (let bill of bills) {
+        const userResponse = await fetch(`http://localhost:8080/user/${bill.user_id}`, {
+          credentials: 'include'
+        });
+        
+        if (!userResponse.ok) {
+          throw new Error(`Failed to fetch user data for ID: ${bill.user_id}`);
+        }
+
+        const userData = await userResponse.json();
+        console.log(userData)
+        const orderDetails = {
+          billId: bill.bill_id,
+          userId: bill.user_id,
+          userName: `${userData.first_name} ${userData.last_name}`,
+          total: bill.total,
+          paidStatus: bill.paid_status,
+          payDate: bill.pay_date,
+          orderItems: []
+        };
+
+        for (let order of bill.orders) {
+          orderDetails.orderItems.push({
+            menuId: order.menu_id,
+            amount: order.amount,
+            totalPrice: order.total_price
+          });
+        }
+
+        formattedOrders.push(orderDetails);
+      }
+
+      console.log('Formatted Orders:', formattedOrders);
+      setOrders(formattedOrders);
+
+      let totalRev = 0;
+      for (let bill of bills) {
+        totalRev += bill.total;
+      }
+      setTotalRevenue(totalRev);
+
+      setTotalOrders(bills.length);
+
+    } catch (error) {
+      console.error('Error:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // แก้ไขฟังก์ชัน handleOrderStatusUpdate
+  const handleOrderStatusUpdate = async (orderId, newStatus) => {
+    try {
+      const billId = orderId.replace('#', '');
+      
+      const response = await fetch(`http://localhost:8080/bill/${billId}/update`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage;
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.message;
+        } catch (e) {
+          errorMessage = errorText;
+        }
+        throw new Error(errorMessage || 'Failed to update order status');
+      }
+
+      // รีเฟรชข้อมูลหลังจากอัพเดทสถานะ
+      await fetchOrders();
+
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      setError(error.message);
+    }
+  };
+
+  // Fetch logged in user data from cookie
+  useEffect(() => {
+    try {
+      const userDataCookie = getCookie('userData');
+      
+      if (userDataCookie) {
+        try {
+          // แยกการ parse JSON ออกมาและเพิ่ม error handling
+          const userData = JSON.parse(userDataCookie);
+          setLoggedInUser(userData.name || 'Guest');
+        } catch (parseError) {
+          console.error("Error parsing user data JSON:", parseError);
+          setLoggedInUser('Guest');
+        }
+      } else {
+        setLoggedInUser('Guest');
+        console.log('No user data found in cookie');
+      }
+    } catch (err) {
+      console.error("Error getting user data from cookie:", err);
+      setLoggedInUser('Guest');
+    }
+  }, []);
+
+  // Fetch orders data
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  // Fetch GiveAway data
+  useEffect(() => {
+    const fetchGiveAways = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/giveAway');
+        if (!response.ok) {
+          throw new Error('Failed to fetch giveaways');
+        }
+        const data = await response.json();
+        setGiveaways(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+    
+    fetchGiveAways();
+  }, []);
 
   const revenueData = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
@@ -41,45 +211,76 @@ export default function Dashboard() {
     ],
   };
 
+  // Calculate total remaining giveaways
+  const totalRemaining = Array.isArray(giveaways) ? giveaways.reduce((sum, giveaway) => sum + giveaway.remain, 0) : 0;
+  const totalAmount = Array.isArray(giveaways) ? giveaways.reduce((sum, giveaway) => sum + giveaway.amount, 0) : 0;
+
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen text-black">
-      {/* Header */}
-      {/* <div className="flex items-center justify-between">
-        <div className="relative w-80">
-          <Search className="absolute left-3 top-2.5 text-gray-500" />
-          <input type="text" placeholder="Search" className="pl-10 pr-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
+      {/* Header with logged in user */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
         <div className="flex items-center gap-4">
           <Bell className="w-6 h-6 text-gray-700 cursor-pointer" />
           <Phone className="w-6 h-6 text-gray-700 cursor-pointer" />
-          <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+          <div className="flex items-center">
+            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-2">
+              {loggedInUser ? loggedInUser.charAt(0).toUpperCase() : 'G'}
+            </div>
+            <span className="font-medium">{loggedInUser || 'Guest'}</span>
+          </div>
         </div>
-      </div> */}
+      </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardContent className="p-4">
             <h3 className="text-lg font-semibold">Total Revenue</h3>
-            <p className="text-2xl font-bold">$130,800</p>
+            <p className="text-2xl font-bold">
+              {loading ? (
+                "..."
+              ) : (
+                `฿${totalRevenue.toLocaleString('th-TH', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })}`
+              )}
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <h3 className="text-lg font-semibold">Total Orders</h3>
-            <p className="text-2xl font-bold">11,000</p>
+            <p className="text-2xl font-bold">
+              {loading ? "..." : totalOrders}
+            </p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
-            <h3 className="text-lg font-semibold">Total Menu</h3>
-            <p className="text-2xl font-bold">120</p>
+          <CardContent className="p-4 flex justify-between items-center">
+            <div>
+              <h3 className="text-lg font-semibold">Total GiveAways</h3>
+              <p className="text-2xl font-bold">
+                {loading ? "..." : (giveaways?.length || 0)}
+              </p>
+            </div>
+            <Gift className="w-10 h-10 text-blue-500" />
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
-            <h3 className="text-lg font-semibold">Total Staff</h3>
-            <p className="text-2xl font-bold">100</p>
+          <CardContent className="p-4 flex justify-between items-center">
+            <div>
+              <h3 className="text-lg font-semibold">GiveAway Remaining</h3>
+              <p className="text-2xl font-bold">
+                {loading ? "..." : `${totalRemaining} / ${totalAmount}`}
+              </p>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+              <span className="text-blue-500 font-bold">
+                {loading ? "..." : (totalAmount > 0 ? Math.round((totalRemaining / totalAmount) * 100) : 0)}%
+              </span>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -100,6 +301,75 @@ export default function Dashboard() {
         </Card>
       </div>
 
+      {/* GiveAway Table */}
+      <Card>
+        <CardContent className="p-4">
+          <h3 className="text-lg font-semibold mb-2">GiveAway List</h3>
+          {loading ? (
+            <p>Loading GiveAway data...</p>
+          ) : error ? (
+            <p className="text-red-500">Error: {error}</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="table w-full">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="p-2 text-left">ID</th>
+                    <th className="p-2 text-left">Name</th>
+                    <th className="p-2 text-left">Total Amount</th>
+                    <th className="p-2 text-left">Remaining</th>
+                    <th className="p-2 text-left">Description</th>
+                    <th className="p-2 text-left">Date</th>
+                    <th className="p-2 text-left">Images</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.isArray(giveaways) && giveaways.length > 0 ? (
+                    giveaways.map((giveaway) => (
+                      <tr key={giveaway.id} className="border-b">
+                        <td className="p-2">{giveaway.id}</td>
+                        <td className="p-2">{giveaway.name}</td>
+                        <td className="p-2">{giveaway.amount}</td>
+                        <td className="p-2">{giveaway.remain}</td>
+                        <td className="p-2">{giveaway.desc}</td>
+                        <td className="p-2">{new Date(giveaway.date).toLocaleDateString()}</td>
+                        <td className="p-2">
+                          {giveaway.img_url && giveaway.img_url.length > 0 ? (
+                            <div className="flex space-x-1">
+                              {giveaway.img_url.slice(0, 2).map((url, idx) => (
+                                <img 
+                                  key={idx} 
+                                  src={url} 
+                                  alt={`${giveaway.name} image ${idx + 1}`} 
+                                  className="w-10 h-10 object-cover rounded"
+                                />
+                              ))}
+                              {giveaway.img_url.length > 2 && (
+                                <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                  <span className="text-xs">+{giveaway.img_url.length - 2}</span>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-gray-400">No images</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="7" className="p-4 text-center text-gray-500">
+                        ไม่มีข้อมูล GiveAway
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Orders Table */}
       <Card>
         <CardContent className="p-4">
@@ -107,28 +377,56 @@ export default function Dashboard() {
           <div className="overflow-x-auto">
             <table className="table w-full">
               <thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Customer Name</th>
-                  <th>Date</th>
-                  <th>Time</th>
-                  <th>Amount</th>
-                  <th>Payment Type</th>
-                  <th>Action</th>
+                <tr className="bg-gray-100">
+                  <th className="p-2">Bill ID</th>
+                  <th className="p-2">Name</th>
+                  <th className="p-2">Total</th>
+                  <th className="p-2">Payment Status</th>
+                  <th className="p-2">Pay Date</th>
+                  <th className="p-2">Orders</th>
+                  <th className="p-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {orders.map((order, index) => (
-                  <tr key={index}>
-                    <td>{order.id}</td>
-                    <td>{order.name}</td>
-                    <td>{order.date}</td>
-                    <td>{order.time}</td>
-                    <td>{order.amount}</td>
-                    <td>{order.payment}</td>
-                    <td>
-                      <button className="btn btn-error btn-sm mr-2">Reject</button>
-                      <button className="btn btn-success btn-sm">Accept</button>
+                {orders.map((order) => (
+                  <tr key={order.billId} className="border-b">
+                    <td className="p-2">{order.billId}</td>
+                    <td className="p-2">{order.userName}</td>
+                    <td className="p-2">{order.total} บาท</td>
+                    <td className="p-2">
+                      <span className={`px-2 py-1 rounded-full text-sm ${
+                        order.paidStatus ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {order.paidStatus ? 'ชำระแล้ว' : 'รอชำระ'}
+                      </span>
+                    </td>
+                    <td className="p-2">{new Date(order.payDate).toLocaleDateString('th-TH')}</td>
+                    <td className="p-2">
+                      <div className="text-sm">
+                        {order.orderItems.map((item, idx) => (
+                          <div key={idx}>
+                            เมนู {item.menuId}: {item.amount} ชิ้น = {item.totalPrice} บาท
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="p-2">
+                      {!order.paidStatus && (
+                        <div className="flex gap-2">
+                          <button 
+                            onClick={() => handleOrderStatusUpdate(order.billId, 'rejected')}
+                            className="bg-red-500 text-white px-2 py-1 rounded text-sm"
+                          >
+                            ปฏิเสธ
+                          </button>
+                          <button 
+                            onClick={() => handleOrderStatusUpdate(order.billId, 'accepted')}
+                            className="bg-green-500 text-white px-2 py-1 rounded text-sm"
+                          >
+                            ยอมรับ
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
