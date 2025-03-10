@@ -12,7 +12,7 @@ output: -
 	"email":"example@gmail.com",
 	"password":"123"
 }
-HTTP 200
+HTTP 201
 [Captures]
 email: jsonpath "$.email"
 
@@ -34,7 +34,7 @@ output: -
 	"end_date":"2025-01-30",
 	"description":"this is gallery"
 }
-HTTP 200
+HTTP 201
 
 GET http://localhost:8080/user/logout
 [Options]
