@@ -4,12 +4,15 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
+	"github.com/google/uuid"
 
+	"github.com/HeHHeyboi/Cafe_Management/backend/internal/auth"
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -20,8 +23,10 @@ import (
 )
 
 type Config struct {
-	db     *database.Queries
-	secret string
+	db             *database.Queries
+	secret         string
+	admin_email    string
+	admin_password string
 }
 
 //go:embed sql/schema/*.sql
@@ -67,19 +72,29 @@ func main() {
 		return
 	}
 
-	setUpDB(db)
 	secret, ok := os.LookupEnv("SECRET")
 	if !ok {
 		fmt.Println("Doesn't have SECRET in enviroment variable")
+	}
+	admin_email, ok := os.LookupEnv("ADMIN_EMAIL")
+	if !ok {
+		fmt.Println("Doesn't Have ADMIN_EMAIL")
+	}
+	admin_password, ok := os.LookupEnv("ADMIN_PASSWORD")
+	if !ok {
+		fmt.Println("Doesn't have ADMIN_PASSWORD")
 	}
 
 	_ = os.MkdirAll(uploadDir, 0777)
 
 	dbQuery := database.New(db)
 	cfg := Config{
-		db:     dbQuery,
-		secret: secret,
+		db:             dbQuery,
+		secret:         secret,
+		admin_email:    admin_email,
+		admin_password: admin_password,
 	}
+	setUpDB(db, &cfg)
 
 	r := gin.New()
 	r.Use(gin.Logger())
@@ -186,7 +201,7 @@ func main() {
 	r.Run()
 }
 
-func setUpDB(db *sql.DB) {
+func setUpDB(db *sql.DB, cfg *Config) {
 	_, err := db.Exec(enableForeignKey)
 	if err != nil {
 		fmt.Println("Enable Foreign Key error", err)
@@ -210,4 +225,16 @@ func setUpDB(db *sql.DB) {
 	}
 	fmt.Println("Foreign status : ", fk_enable == 1)
 
+	admin_uuid := uuid.New()
+	hash_password, _ := auth.HashPassword(&cfg.admin_password)
+
+	_, err = db.Exec(`
+		INSERT INTO users (user_id, FName, LName, email, password, role)
+		VALUES (?, ?, ?, ?, ?, 'admin')
+		ON CONFLICT(email) DO NOTHING;
+	`, admin_uuid.String(), "admin", "admin", cfg.admin_email, hash_password)
+
+	if err != nil {
+		log.Fatalf("Add Admin error: %v", err)
+	}
 }

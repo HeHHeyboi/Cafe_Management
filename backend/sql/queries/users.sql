@@ -2,6 +2,10 @@
 INSERT INTO users(user_id, FName, LName, email, password)
 VALUES( ?, ?, ?, ?, ?);
 
+-- name: CreateAdmin :exec
+INSERT INTO users(user_id,FName,LName,email,password,role)
+VALUES( ?, ?, ?, ?, ?,'admin');
+
 -- name: GetUserByEmail :one
 select user_id,password from users
 WHERE email = ?;
