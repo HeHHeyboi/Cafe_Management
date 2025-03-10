@@ -46,7 +46,6 @@ function EventCard({ giveaway }) {
 }
 
 function EventShow() {
-    // เริ่มต้นด้วย array ว่างเพื่อป้องกัน null
     const [giveaways, setGiveaways] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -55,7 +54,11 @@ function EventShow() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:8080/giveAway', { method: 'GET' });
+                setLoading(true);
+                const response = await fetch('http://localhost:8080/giveAway', {
+                    method: 'GET',
+                    credentials: 'include' // เพิ่ม credentials ถ้าจำเป็น
+                });
                 
                 if (!response.ok) {
                     throw new Error(`Network response was not ok: ${response.status}`);
@@ -64,16 +67,22 @@ function EventShow() {
                 const data = await response.json();
                 console.log('Data from API:', data);
                 
-                // ตรวจสอบว่า data เป็น array หรือไม่
-                if (Array.isArray(data)) {
+                // ปรับปรุงการตรวจสอบข้อมูล
+                if (data === null) {
+                    console.log('API returned null, setting empty array');
+                    setGiveaways([]);
+                } else if (Array.isArray(data)) {
+                    console.log('API returned array with length:', data.length);
                     setGiveaways(data);
                 } else {
-                    console.error('API did not return an array:', data);
+                    console.warn('API returned unexpected data type:', typeof data);
                     setGiveaways([]);
                 }
+
             } catch (error) {
                 console.error('Error fetching giveaways:', error);
-                setError(error);
+                setError(error.message || 'เกิดข้อผิดพลาดในการโหลดข้อมูล');
+                setGiveaways([]); // เซ็ตเป็น array ว่างเมื่อเกิดข้อผิดพลาด
             } finally {
                 setLoading(false);
             }
@@ -82,43 +91,51 @@ function EventShow() {
         fetchData();
     }, []);
 
+    // แยกส่วนการแสดงผลสถานะต่างๆ
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <div className="animate-pulse text-gray-500">กำลังโหลด...</div>
+            <div className="container mx-auto px-4 py-8">
+                <h1 className="text-2xl font-bold mb-6">GiveAway Events</h1>
+                <div className="flex justify-center items-center min-h-[200px]">
+                    <div className="animate-pulse text-gray-500">กำลังโหลดข้อมูล...</div>
+                </div>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="flex flex-col justify-center items-center h-screen">
-                <div className="text-red-500 mb-2">เกิดข้อผิดพลาด:</div>
-                <div>{error.message}</div>
-            </div>
-        );
-    }
-
-    // ตรวจสอบอีกครั้งเพื่อความมั่นใจว่า giveaways เป็น array
-    const hasGiveaways = Array.isArray(giveaways) && giveaways.length > 0;
-
-    if (!hasGiveaways) {
-        return (
-            <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
-                <h1 className="text-2xl font-bold mb-4">GiveAway Events</h1>
-                <div className="text-center py-8 text-gray-600">
-                    ยังไม่มีรายการ GiveAway ในขณะนี้
+            <div className="container mx-auto px-4 py-8">
+                <h1 className="text-2xl font-bold mb-6">GiveAway Events</h1>
+                <div className="flex flex-col justify-center items-center min-h-[200px]">
+                    <div className="text-red-500 mb-2">เกิดข้อผิดพลาด</div>
+                    <div className="text-gray-600">{error}</div>
                 </div>
             </div>
         );
     }
 
+    // แสดงข้อความเมื่อไม่มีข้อมูล
+    if (!Array.isArray(giveaways) || giveaways.length === 0) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <h1 className="text-2xl font-bold mb-6">GiveAway Events</h1>
+                <div className="bg-white shadow-md rounded-lg p-6">
+                    <div className="text-center py-8 text-gray-600">
+                        ยังไม่มีรายการ GiveAway ในขณะนี้
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // แสดงรายการ GiveAway เมื่อมีข้อมูล
     return (
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-2xl font-bold mb-6">GiveAway Events</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Array.isArray(giveaways) && giveaways.map((giveaway) => 
-                    giveaway ? (
+                {giveaways.map((giveaway) => (
+                    giveaway && (
                         <div
                             key={giveaway.id || Math.random().toString()}
                             className="cursor-pointer hover:shadow-lg transition-shadow duration-300"
@@ -126,8 +143,8 @@ function EventShow() {
                         >
                             <EventCard giveaway={giveaway} />
                         </div>
-                    ) : null
-                )}
+                    )
+                ))}
             </div>
         </div>
     );
