@@ -10,6 +10,30 @@ import (
 	"database/sql"
 )
 
+const createAdmin = `-- name: CreateAdmin :exec
+INSERT INTO users(user_id,FName,LName,email,password,role)
+VALUES( ?, ?, ?, ?, ?,'admin')
+`
+
+type CreateAdminParams struct {
+	UserID   interface{}
+	Fname    sql.NullString
+	Lname    sql.NullString
+	Email    string
+	Password string
+}
+
+func (q *Queries) CreateAdmin(ctx context.Context, arg CreateAdminParams) error {
+	_, err := q.db.ExecContext(ctx, createAdmin,
+		arg.UserID,
+		arg.Fname,
+		arg.Lname,
+		arg.Email,
+		arg.Password,
+	)
+	return err
+}
+
 const createUser = `-- name: CreateUser :exec
 INSERT INTO users(user_id, FName, LName, email, password)
 VALUES( ?, ?, ?, ?, ?)
