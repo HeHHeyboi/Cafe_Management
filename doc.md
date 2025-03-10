@@ -7,6 +7,8 @@
 
 - [GET /user: แสดง Account ทั้งหมด](#get-user)
 
+- [GET /user/:id แสดงข้อมูลของ user](#get-userid)
+
 - [POST /user: สร้าง Account](#post-user)
 
 - [POST /user/login: user ล็อกอิน เข้า Account](#post-userlogin)
