@@ -18,5 +18,9 @@ END;
 INSERT INTO gallery(Gname,StartDate,EndDate,Desc,user_id) VALUES (?,?,?,?,?)
 RETURNING *;
 
+-- name: DeleteGalleryByGname :exec
+DELETE FROM gallery
+WHERE Gname = ?;
+
 -- name: DeleteGallery :exec
 DELETE FROM gallery;
