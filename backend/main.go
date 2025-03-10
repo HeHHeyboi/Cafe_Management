@@ -36,6 +36,12 @@ var duration time.Duration = 24 * time.Hour
 
 const uploadDir = "upload/"
 
+/*
+	 TODO:
+		1. DELETE method for /gallery Endpoint
+		2. DELETE method for /giveAway Endpoint
+		3. When create bill and user select /giveAway decreate giveAway.remain by 1 and when it reach zero delete it
+*/
 func main() {
 	godotenv.Load()
 	dbName := "main.db"
