@@ -1,15 +1,49 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';  // Import useSearchParams
+import { useRouter, useSearchParams } from 'next/navigation';
+
+// คอมโพเนนต์ย่อยสำหรับแสดงข้อมูลของแกลเลอรี่แต่ละรายการ
+const GalleryItem = ({ gallery }) => {
+    return (
+        <div className="border p-4 rounded-lg shadow-sm">
+            {Array.isArray(gallery.img_url) && gallery.img_url.length > 0 ? (
+                <div className="mb-4 overflow-x-auto">
+                    <div className="flex space-x-2">
+                        {gallery.img_url.map((url, index) => {
+                            console.log(`Image URL for ${gallery.name}: http://localhost:8080/${url}`);
+                            return (
+                                <img
+                                    key={index}
+                                    src={`http://localhost:8080/${url}`}
+                                    alt={`${gallery.name} image ${index + 1}`}
+                                    className="w-full h-32 object-cover object-center rounded-md"
+                                    onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = 'https://via.placeholder.com/150?text=Image+Not+Found';
+                                    }}
+                                />
+                            );
+                        })}
+                    </div>
+                </div>
+            ) : (
+                <p className="text-gray-500">No images available for this gallery.</p>
+            )}
+
+            <h2 className="text-xl font-semibold text-gray-800">{gallery.name}</h2>
+            <p className="text-gray-600"><strong>Start Date:</strong> {gallery.start_date}</p>
+            <p className="text-gray-600"><strong>End Date:</strong> {gallery.end_date}</p>
+        </div>
+    );
+};
 
 export default function GalleryShowPage() {
     const [galleries, setGalleries] = useState([]);
     const [error, setError] = useState(null);
     const router = useRouter();
-    const searchParams = useSearchParams(); // Get access to URL parameters
+    const searchParams = useSearchParams();
 
-    // Function to get the current month in YYYY-MM format
     const getCurrentMonth = () => {
         const now = new Date();
         const year = now.getFullYear();
@@ -18,17 +52,16 @@ export default function GalleryShowPage() {
     };
 
     useEffect(() => {
-        // Extract month from URL parameters, default to current month if not present
         const month = searchParams.get('month') || getCurrentMonth();
 
         const fetchGalleries = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/gallery?month=${month}`);
+                const response = await fetch(`http://localhost:8080/gallery?month=${month}`, { method: 'GET' });
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
-                setGalleries(data);
+                setGalleries(data || []);
             } catch (e) {
                 setError(e.message);
                 console.error("Could not fetch galleries:", e);
@@ -36,33 +69,25 @@ export default function GalleryShowPage() {
         };
 
         fetchGalleries();
-    }, [searchParams]);  // Re-fetch when the month parameter changes
-
+    }, [searchParams]);
 
     const handleGoBack = () => {
-        router.push('/Gallery'); // Navigate back to the Gallery page
+        router.push('/Gallery');
     };
 
-
     return (
-        <div>
-            <h1>Gallery List</h1>
-            <button onClick={handleGoBack}>Back to Gallery Booking</button>
-            {error && <p>Error: {error}</p>}
-            {galleries.length > 0 ? (
-                <ul>
+        <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md">
+            <h1 className="text-3xl font-semibold text-gray-800 text-center mb-8">Gallery List</h1>
+            
+            {error && <p className="text-red-500 text-center">{error}</p>}
+            {Array.isArray(galleries) && galleries.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {galleries.map((gallery) => (
-                        <li key={gallery.name}> {/* Assuming 'name' is unique and suitable as a key */}
-                            <strong>Name:</strong> {gallery.name}<br />
-                            <strong>Start Date:</strong> {gallery.start_date}<br />
-                            <strong>End Date:</strong> {gallery.end_date}<br />
-                            <strong>Description:</strong> {gallery.description}<br />
-                            <strong>User ID:</strong> {gallery.user_id}
-                        </li>
+                        <GalleryItem key={gallery.name} gallery={gallery} />
                     ))}
-                </ul>
+                </div>
             ) : (
-                <p>No galleries found for this month.</p>
+                <p className="text-center text-gray-500">No galleries found for this month.</p>
             )}
         </div>
     );
