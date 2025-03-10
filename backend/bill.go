@@ -14,6 +14,7 @@ type Bill struct {
 	UserID     string  `json:"user_id"`
 	GiveAwayID int64   `json:"giveaway_id"`
 	Total      float64 `json:"total"`
+	PaidStatus bool    `json:"paid_status"`
 	PayDate    string  `json:"pay_date"`
 	Orders     []Order `json:"orders"`
 }
@@ -101,6 +102,7 @@ func CreateNewBill(cfg *Config, ctx *gin.Context) {
 		UserID:     bill_data.UserID.(string),
 		GiveAwayID: bill_data.GiveawayID.Int64,
 		Total:      bill_data.Total,
+		PaidStatus: bill_data.PaidStatus,
 		PayDate:    bill_data.PayDate,
 		Orders:     orders,
 	}
@@ -142,6 +144,7 @@ func GetBill(cfg *Config, ctx *gin.Context) {
 			UserID:     data.UserID.(string),
 			GiveAwayID: data.GiveawayID.Int64,
 			Total:      total,
+			PaidStatus: data.PaidStatus,
 			PayDate:    data.PayDate,
 			Orders:     orders,
 		}
@@ -181,7 +184,45 @@ func GetBillByID(cfg *Config, ctx *gin.Context) {
 		Bill_ID:    bill_data.BillID,
 		Total:      bill_data.Total,
 		UserID:     bill_data.UserID.(string),
+		PaidStatus: bill_data.PaidStatus,
 		GiveAwayID: bill_data.GiveawayID.Int64,
+		PayDate:    bill_data.PayDate,
+		Orders:     orders,
+	}
+
+	ctx.JSON(200, bill)
+}
+
+func UpdateBillStatus(cfg *Config, ctx *gin.Context) {
+	bill_id := ctx.Param("id")
+	bill_data, err := cfg.db.UpdateBillStatus(ctx.Request.Context(), bill_id)
+	order_data, err := cfg.db.GetOrderFromBill(ctx.Request.Context(), bill_data.BillID)
+	if err != nil {
+		msg := checkDataBaseError(err)
+		if err.Error() == noResult {
+			ctx.JSON(404, gin.H{"err": msg})
+			return
+		}
+		ctx.JSON(500, gin.H{"err": msg})
+		return
+	}
+
+	var orders []Order
+	for _, v := range order_data {
+		order := Order{
+			Menu_ID:    v.MenuID,
+			Amount:     v.Amount,
+			TotalPrice: v.TotalPrice,
+		}
+		orders = append(orders, order)
+	}
+
+	bill := Bill{
+		Bill_ID:    bill_data.BillID,
+		Total:      bill_data.Total,
+		UserID:     bill_data.UserID.(string),
+		GiveAwayID: bill_data.GiveawayID.Int64,
+		PaidStatus: bill_data.PaidStatus,
 		PayDate:    bill_data.PayDate,
 		Orders:     orders,
 	}
