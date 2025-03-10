@@ -15,6 +15,7 @@ type Bill struct {
 	PayDate    string
 	UserID     interface{}
 	GiveawayID sql.NullInt64
+	PaidStatus bool
 }
 
 type Gallery struct {

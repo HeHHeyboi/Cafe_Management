@@ -56,13 +56,13 @@ func AddNewMenu(cfg *Config, ctx *gin.Context) {
 		return
 	}
 
-	url, err := uploadIMG(cfg, ctx, uploadIMGArg{
-		menu_id: data.MenuID,
-	})
-	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
+	// url, err := uploadIMG(cfg, ctx, uploadIMGArg{
+	// 	menu_id: data.MenuID,
+	// })
+	// if err != nil {
+	// 	ctx.JSON(500, gin.H{"error": err.Error()})
+	// 	return
+	// }
 
 	ctx.JSON(201, gin.H{
 		"menu_id":   data.MenuID,
@@ -70,7 +70,7 @@ func AddNewMenu(cfg *Config, ctx *gin.Context) {
 		"menu_type": data.MenuType,
 		"type":      data.Type,
 		"price":     data.Price,
-		"img_url":   url,
+		// "img_url":   url,
 	})
 }
 
