@@ -229,3 +229,20 @@ func UpdateBillStatus(cfg *Config, ctx *gin.Context) {
 
 	ctx.JSON(200, bill)
 }
+
+func DeleteBillByID(cfg *Config, ctx *gin.Context) {
+	bill_id := ctx.Param("id")
+
+	err := cfg.db.DeleteBillByID(ctx.Request.Context(), bill_id)
+	if err != nil {
+		msg := checkDataBaseError(err)
+		if err.Error() == noResult {
+			ctx.JSON(404, gin.H{"err": msg})
+			return
+		}
+		ctx.JSON(500, gin.H{"err": msg})
+		return
+	}
+
+	ctx.Status(204)
+}
