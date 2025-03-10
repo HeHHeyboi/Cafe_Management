@@ -183,6 +183,9 @@ func main() {
 	r.GET("/bill/:id/update", func(ctx *gin.Context) {
 		UpdateBillStatus(&cfg, ctx)
 	})
+	r.DELETE("/bill/:id", func(ctx *gin.Context) {
+		DeleteBillByID(&cfg, ctx)
+	})
 
 	r.GET("/reset", func(ctx *gin.Context) {
 		err := cfg.db.DeleteAllUser(ctx.Request.Context())

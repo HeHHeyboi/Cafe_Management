@@ -64,6 +64,16 @@ func (q *Queries) DeleteByName(ctx context.Context, name string) error {
 	return err
 }
 
+const deleteByRemain = `-- name: DeleteByRemain :exec
+DELETE FROM giveAway
+WHERE remain = 0
+`
+
+func (q *Queries) DeleteByRemain(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, deleteByRemain)
+	return err
+}
+
 const deleteGiveAways = `-- name: DeleteGiveAways :exec
 DELETE FROM giveAway
 `

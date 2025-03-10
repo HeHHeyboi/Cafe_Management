@@ -51,6 +51,16 @@ func (q *Queries) DeleteGallery(ctx context.Context) error {
 	return err
 }
 
+const deleteGalleryByGname = `-- name: DeleteGalleryByGname :exec
+DELETE FROM gallery
+WHERE Gname = ?
+`
+
+func (q *Queries) DeleteGalleryByGname(ctx context.Context, gname string) error {
+	_, err := q.db.ExecContext(ctx, deleteGalleryByGname, gname)
+	return err
+}
+
 const listGallery = `-- name: ListGallery :many
 select gname, startdate, enddate, "desc", user_id from gallery
 ORDER BY "StartDate"

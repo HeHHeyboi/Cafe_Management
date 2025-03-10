@@ -45,6 +45,16 @@ func (q *Queries) DeleteBill(ctx context.Context) error {
 	return err
 }
 
+const deleteBillByID = `-- name: DeleteBillByID :exec
+DELETE FROM bill
+WHERE bill_id = ?
+`
+
+func (q *Queries) DeleteBillByID(ctx context.Context, billID string) error {
+	_, err := q.db.ExecContext(ctx, deleteBillByID, billID)
+	return err
+}
+
 const getBillByID = `-- name: GetBillByID :one
 SELECT bill_id, total, pay_date, user_id, giveaway_id, paid_status FROM bill
 WHERE bill_id = ?
