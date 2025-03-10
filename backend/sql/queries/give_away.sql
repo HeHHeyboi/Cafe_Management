@@ -23,12 +23,16 @@ SET name=?, amount=?, desc=?,remain=?
 WHERE id = ?
 RETURNING *;
 
-
 -- name: UpdateGiveAwayByName :one
 UPDATE giveAway
 SET name=@setname, amount=?, desc=?,remain=?
 WHERE name=@name
 RETURNING *;
+
+-- name: UpdateGiveAwayRemain :exec
+UPDATE giveAway
+SET remain = remain - 1
+WHERE id = ?;
 
 -- name: DeleteGiveAways :exec
 DELETE FROM giveAway;

@@ -64,7 +64,7 @@ func uploadIMG(cfg *Config, ctx *gin.Context, arg uploadIMGArg) ([]string, error
 	}
 	// fmt.Println(datas)
 
-	fmt.Println("Upload IMG ", url)
+	// fmt.Println("Upload IMG ", url)
 	return url, nil
 }
 
@@ -97,7 +97,7 @@ func getImage(cfg *Config, ctx *gin.Context, arg uploadIMGArg) ([]string, error)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("Get IMG ", url)
+	// fmt.Println("Get IMG ", url)
 
 	return url, nil
 }
@@ -160,17 +160,17 @@ func updateIMG(cfg *Config, ctx *gin.Context, arg uploadIMGArg) ([]string, error
 
 	for k, v := range set_new_url {
 		if v != 0 {
-			data, _ := cfg.db.AddNewIMG(ctx.Request.Context(), database.AddNewIMGParams{
+			cfg.db.AddNewIMG(ctx.Request.Context(), database.AddNewIMGParams{
 				MenuID:      menu_id,
 				GiveawayID:  giveAway_id,
 				GalleryName: gallery_name,
 				ImgUrl:      k,
 			})
-			fmt.Println("Add new IMG", data)
+			// fmt.Println("Add new IMG", data)
 			continue
 		}
 	}
-	fmt.Println("Update IMG ", new_url)
+	// fmt.Println("Update IMG ", new_url)
 
 	return new_url, nil
 }
@@ -181,7 +181,7 @@ func test_updateIMG(old_url, new_url []string) []string {
 		set_new_url[p] = 1
 	}
 
-	fmt.Println(set_new_url)
+	// fmt.Println(set_new_url)
 	for i, p := range old_url {
 		_, ok := set_new_url[p]
 		if !ok {
@@ -206,7 +206,7 @@ func deleteIMG(cfg *Config, ctx *gin.Context, arg uploadIMGArg) {
 		GiveawayID:  giveAway_id,
 		GalleryName: gallery_name,
 	})
-	fmt.Println("Delete IMG ", url)
+	// fmt.Println("Delete IMG ", url)
 	if err != nil {
 		ctx.Error(err)
 	}
