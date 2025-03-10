@@ -244,3 +244,14 @@ func (q *Queries) UpdateGiveAwayByName(ctx context.Context, arg UpdateGiveAwayBy
 	)
 	return i, err
 }
+
+const updateGiveAwayRemain = `-- name: UpdateGiveAwayRemain :exec
+UPDATE giveAway
+SET remain = remain - 1
+WHERE id = ?
+`
+
+func (q *Queries) UpdateGiveAwayRemain(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, updateGiveAwayRemain, id)
+	return err
+}
