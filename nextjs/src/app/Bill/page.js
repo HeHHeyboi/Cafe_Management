@@ -21,6 +21,7 @@ export default function BillPage() {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
+		console.log(data)
         const processedData = Array.isArray(data) ? data.map(bill => ({
           ...bill,
           giveaway: bill.total >= 60 ? 1 : 0
@@ -70,7 +71,7 @@ export default function BillPage() {
             >
               <CardHeader>
                 <CardTitle>Invoice #{bill.bill_id}</CardTitle>
-                <CardDescription>Created: {new Date(bill.created_at).toLocaleString()}</CardDescription>
+                <CardDescription>Created: {new Date(bill.pay_date).toLocaleString()}</CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
