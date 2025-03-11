@@ -259,6 +259,14 @@ Example:
 - `description`: คำอธิบาย
 - `user_id(FK)`: ID ของ User
 
+## [DELETE /gallery/{name}](#delete-galleryname)
+`name`: ชื่อของแกลลอรี่
+เอาไว้ใช้ลบ gallery
+```
+http://localhost:8080/gallery/some_name
+```
+`Status 204`
+
 # [/menu](#menu)
 
 ## [GET /menu](#get-menu)
@@ -547,3 +555,5 @@ http://localhost:8080/giveAway?name=สักชื่อ
 ```
 http://localhost:8080/bill/3ebb38dd7370f5f2
 ```
+`Status 204`
+
