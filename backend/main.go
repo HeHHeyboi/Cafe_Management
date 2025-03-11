@@ -38,8 +38,6 @@ const uploadDir = "upload/"
 
 /*
 	 TODO:
-		1. DELETE method for /gallery Endpoint
-		2. DELETE method for /giveAway Endpoint
 		3. When create bill and user select /giveAway decreate giveAway.remain by 1 and when it reach zero delete it
 */
 func main() {
@@ -142,6 +140,9 @@ func main() {
 	})
 	r.GET("/gallery", func(ctx *gin.Context) {
 		listBooking(&cfg, ctx)
+	})
+	r.DELETE("/gallery/:name", func(ctx *gin.Context) {
+		DeleteGallery(&cfg, ctx)
 	})
 
 	r.GET("/menu", func(ctx *gin.Context) {

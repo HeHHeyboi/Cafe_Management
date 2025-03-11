@@ -10,10 +10,10 @@ import (
 )
 
 const createNewOrder = `-- name: CreateNewOrder :one
-INSERT INTO "order"(bill_id, menu_id, amount, total_price)
-SELECT ?,?,?,? * menu.price FROM menu
+INSERT INTO "order"(bill_id, menu_id, amount, total_price,menu_name)
+SELECT ?,?,?,? * menu.price, menu.name FROM menu
 	WHERE menu.menu_id = ?
-RETURNING bill_id, menu_id, amount, total_price
+RETURNING bill_id, menu_id, amount, total_price, menu_name
 `
 
 type CreateNewOrderParams struct {
@@ -38,6 +38,7 @@ func (q *Queries) CreateNewOrder(ctx context.Context, arg CreateNewOrderParams) 
 		&i.MenuID,
 		&i.Amount,
 		&i.TotalPrice,
+		&i.MenuName,
 	)
 	return i, err
 }
@@ -52,7 +53,7 @@ func (q *Queries) DeleteOrder(ctx context.Context) error {
 }
 
 const getOrderFromBill = `-- name: GetOrderFromBill :many
-SELECT bill_id, menu_id, amount, total_price FROM "order" 
+SELECT bill_id, menu_id, amount, total_price, menu_name FROM "order" 
 WHERE bill_id = ?
 `
 
@@ -70,6 +71,7 @@ func (q *Queries) GetOrderFromBill(ctx context.Context, billID string) ([]Order,
 			&i.MenuID,
 			&i.Amount,
 			&i.TotalPrice,
+			&i.MenuName,
 		); err != nil {
 			return nil, err
 		}
