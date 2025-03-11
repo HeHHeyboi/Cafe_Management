@@ -39,9 +39,9 @@ export default function BillOrderPage() {
         if (!response.ok) {
           throw new Error(`Failed to fetch bill data: ${response.status} ${response.statusText}`);
         }
-        const user_data = await fetch(`http://localhost:8080/user/${data.user_id}`);
         
         const data = await response.json();
+        const user_data = await fetch(`http://localhost:8080/user/${data.user_id}`);
         
         // Set bill data
         setBill({
