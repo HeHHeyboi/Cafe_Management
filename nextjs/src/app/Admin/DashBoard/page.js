@@ -55,8 +55,8 @@ export default function Dashboard() {
       const formattedOrders = [];
       if(Array.isArray(bills)) {
         console.log('Bills:', bills);
-      } else {
-        throw new Error('API returned unexpected data type');
+      } else{
+        return;
       }
       for (let bill of bills) {
         const userResponse = await fetch(`http://localhost:8080/user/${bill.user_id}`, {
@@ -82,6 +82,7 @@ export default function Dashboard() {
         for (let order of bill.orders) {
           orderDetails.orderItems.push({
             menuId: order.menu_id,
+            menuName: order.menu_name,
             amount: order.amount,
             totalPrice: order.total_price
           });
@@ -113,14 +114,39 @@ export default function Dashboard() {
   const handleOrderStatusUpdate = async (orderId, newStatus) => {
     try {
       const billId = orderId.replace('#', '');
+      if (!['accepted', 'rejected'].includes(newStatus)) {
+        throw new Error('Invalid order status');
+      }
+      var response= null;
+      if ('accepted' === newStatus) {
+        console.log('Order accepted:', billId);
+        response = await fetch(`http://localhost:8080/bill/${billId}/update`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+      } else {
+        console.log('Order rejected:', billId);
+        response = await fetch(`http://localhost:8080/bill/${billId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+        await fetchOrders();
+        return
+      }
       
-      const response = await fetch(`http://localhost:8080/bill/${billId}/update`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
+      // const response = await fetch(`http://localhost:8080/bill/${billId}/update`, {
+      //   method: 'GET',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   credentials: 'include',
+      // });
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -451,7 +477,7 @@ export default function Dashboard() {
                       <div className="text-sm">
                         {order.orderItems.map((item, idx) => (
                           <div key={idx}>
-                            เมนู {item.menuId}: {item.amount} ชิ้น = {item.totalPrice} บาท
+                            เมนู {item.menuName}: {item.amount} ชิ้น = {item.totalPrice} บาท
                           </div>
                         ))}
                       </div>
@@ -466,8 +492,8 @@ export default function Dashboard() {
                             ปฏิเสธ
                           </button>
                           <button 
-                            onClick={() => handleOrderStatusUpdate(order.billId, 'accepted')}
                             className="bg-green-500 text-white px-2 py-1 rounded text-sm"
+                            onClick={() => handleOrderStatusUpdate(order.billId, 'accepted')}
                           >
                             ยอมรับ
                           </button>
