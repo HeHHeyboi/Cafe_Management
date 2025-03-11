@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 
 export default function BillPage() {
-  const [bills, setBills] = useState([]);  // Ensure it's an empty array
+  const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
@@ -21,11 +21,15 @@ export default function BillPage() {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
-        setBills(Array.isArray(data) ? data : []); // Ensure 'data' is always an array
+        const processedData = Array.isArray(data) ? data.map(bill => ({
+          ...bill,
+          giveaway: bill.total >= 60 ? 1 : 0
+        })) : [];
+        setBills(processedData);
       } catch (error) {
         console.error("Error fetching bill data:", error);
         setError("Failed to load bill data. Please try again.");
-        setBills([]); // Ensure bills is set to an empty array on error
+        setBills([]);
       } finally {
         setLoading(false);
       }
@@ -92,6 +96,11 @@ export default function BillPage() {
                 <div className="text-sm text-gray-600">{bill.orders.length} items</div>
                 <div className="font-bold">Total: ${bill.total.toFixed(2)}</div>
               </CardFooter>
+              {bill.giveaway > 0 && (
+                <div className="p-2 text-center bg-green-100 text-green-800 font-semibold">
+                  🎁 Giveaway Included!
+                </div>
+              )}
             </Card>
           ))}
         </div>
