@@ -204,7 +204,7 @@ export default function BillOrderPageContent() {
       </div>
 
       {/* Give Away Dialog */}
-      {totalPrice >= 60 && giveAways.length > 0 && (
+      {Array.isArray(giveAways)&& totalPrice >= 60 && giveAways.length > 0 && (
            <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" className="mt-4">Select Give Away</Button>
@@ -260,7 +260,7 @@ export default function BillOrderPageContent() {
 
 
       {/* Create Bill Button (only show if give away is not available or not selected) */}
-        {(totalPrice < 60 || giveAways.length === 0) && (
+        {Array.isArray(giveAways)&& (totalPrice < 60 || giveAways.length === 0) && (
             <div className="mt-4">
                 <Button onClick={handleCreateBill} variant="default">
                     Create Bill
