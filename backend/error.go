@@ -22,7 +22,7 @@ func checkDataBaseError(err error) string {
 	case usedEmail:
 		return "This email Already Used, Please login or Used other email"
 	case noResult:
-		return "ไม่มีข้อมูลของ "
+		return "ไม่มีข้อมูลของ"
 	default:
 		return err.Error()
 	}
@@ -37,7 +37,7 @@ func bindingErrorMsg(err validator.ValidationErrors, ctx *gin.Context) {
 		default:
 			msg = e.Error()
 		}
-		ctx.Error(fmt.Errorf(msg))
+		ctx.Error(fmt.Errorf("%v", msg))
 		ctx.JSON(400, gin.H{"error": msg})
 	}
 }

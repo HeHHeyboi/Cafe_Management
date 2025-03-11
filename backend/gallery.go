@@ -105,3 +105,22 @@ func listBooking(cfg *Config, ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, galleries)
 }
+
+func DeleteGallery(cfg *Config, ctx *gin.Context) {
+	gallery_name := ctx.Param("name")
+
+	err := cfg.db.DeleteGalleryByGname(ctx.Request.Context(), gallery_name)
+	if err != nil {
+		msg := checkDataBaseError(err)
+		if err.Error() == noResult {
+			msg += "Email, Please Create User"
+			ctx.JSON(404, gin.H{"error": msg})
+			return
+		}
+		ctx.JSON(500, gin.H{"error": msg})
+		return
+	}
+
+	deleteIMG(cfg, ctx, uploadIMGArg{gallery_name: gallery_name})
+	ctx.Status(200)
+}

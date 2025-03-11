@@ -18,4 +18,5 @@ Where user_id = ?;
 SELECT * from users;
 
 -- name: DeleteAllUser :exec
-DELETE from users;
+DELETE from users
+WHERE role = 'customer';
