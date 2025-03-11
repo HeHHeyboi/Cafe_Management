@@ -177,6 +177,9 @@ export default function BillOrderPage() {
           </Button>
         </div>
       </div>
+      <div className="mt-8 flex justify-center">
+      <img src="http://localhost:8080/upload/MyQR.jpg" alt="QR Code" className="w-64 h-64" />
+      </div>
     </div>
   );
 }
