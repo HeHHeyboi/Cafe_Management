@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import axios from "axios";
 
 export default function BillOrderPage() {
   const params = useParams();
@@ -34,15 +35,15 @@ export default function BillOrderPage() {
 
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:8080/bill/${billId}`);
-        
-        if (!response.ok) {
+        const response = await axios(`http://localhost:8080/bill/${billId}`);
+          console.log(response);
+        if (response.status !== 200) {
           throw new Error(`Failed to fetch bill data: ${response.status} ${response.statusText}`);
         }
-        const user_data = await fetch(`http://localhost:8080/user/${data.user_id}`);
-        
-        const data = await response.json();
-        
+       
+        const data = response.data;
+         const user_data = await fetch(`http://localhost:8080/user/${data.user_id}`);
+         
         // Set bill data
         setBill({
           bill_id: data.bill_id,
