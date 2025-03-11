@@ -192,31 +192,77 @@ export default function Dashboard() {
     fetchGiveAways();
   }, []);
 
+  const [monthlyRevenue, setMonthlyRevenue] = useState(Array(12).fill(0));
+  const [monthlyOrders, setMonthlyOrders] = useState(Array(6).fill(0));
+
+  useEffect(() => {
+    if (orders.length > 0) {
+      // สร้างข้อมูลรายได้รายเดือน
+      const revenueByMonth = Array(12).fill(0);
+      const ordersByMonth = Array(6).fill(0);
+      
+      orders.forEach(order => {
+        const orderDate = new Date(order.payDate);
+        const month = orderDate.getMonth();
+        
+        // เพิ่มรายได้เข้าไปในเดือนที่เกี่ยวข้อง
+        revenueByMonth[month] += order.total;
+        
+        // เพิ่มจำนวนออเดอร์สำหรับ 6 เดือนล่าสุด
+        if (month < 6) {
+          ordersByMonth[month] += 1;
+        }
+      });
+      
+      setMonthlyRevenue(revenueByMonth);
+      setMonthlyOrders(ordersByMonth);
+    }
+  }, [orders]);
+
   const revenueData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    labels: ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."],
     datasets: [
       {
-        label: "Total Revenue",
-        data: [100, 200, 300, 500, 700, 800, 900, 1000, 400, 600, 700, 900],
-        backgroundColor: "rgba(59, 130, 246, 0.5)",
+        label: "รายได้รวม (บาท)",
+        data: monthlyRevenue,
+        backgroundColor: "rgba(59, 130, 246, 0.2)",
         borderColor: "rgba(59, 130, 246, 1)",
         borderWidth: 2,
-        tension: 0.5
+        tension: 0.4,
+        fill: true
       },
     ],
   };
 
   const ordersData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    labels: ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย."],
     datasets: [
       {
-        label: "Total Orders",
-        data: [500, 700, 400, 900, 600, 800],
+        label: "จำนวนออเดอร์",
+        data: monthlyOrders,
         backgroundColor: "rgba(59, 130, 246, 0.7)",
         borderRadius: 5,
+        borderWidth: 1,
       },
     ],
   };
+
+  // เพิ่มตัวเลือกสำหรับกราฟให้แสดงผลได้ดีขึ้น
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  };
+
 
   // Calculate total remaining giveaways
   const totalRemaining = Array.isArray(giveaways) ? giveaways.reduce((sum, giveaway) => sum + giveaway.remain, 0) : 0;
@@ -256,6 +302,7 @@ export default function Dashboard() {
             </p>
           </CardContent>
         </Card>
+
         <Card>
           <CardContent className="p-4">
             <h3 className="text-lg font-semibold">Total Orders</h3>
@@ -264,6 +311,7 @@ export default function Dashboard() {
             </p>
           </CardContent>
         </Card>
+        
         <Card>
           <CardContent className="p-4 flex justify-between items-center">
             <div>
@@ -294,16 +342,22 @@ export default function Dashboard() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+       
         <Card>
           <CardContent className="p-4">
-            <h3 className="text-lg font-semibold mb-2">Total Revenue</h3>
-            <Line data={revenueData} />
+            <h3 className="text-lg font-semibold mb-2">รายได้รวม</h3>
+            <div style={{ height: "300px" }}>
+              <Line data={revenueData} options={chartOptions} />
+            </div>
           </CardContent>
         </Card>
+      
         <Card>
           <CardContent className="p-4">
-            <h3 className="text-lg font-semibold mb-2">Total Orders</h3>
-            <Bar data={ordersData} />
+            <h3 className="text-lg font-semibold mb-2">จำนวนออเดอร์</h3>
+            <div style={{ height: "300px" }}>
+              <Bar data={ordersData} options={chartOptions} />
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -317,7 +371,7 @@ export default function Dashboard() {
             onClick={() => router.push("/GiveAway")}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow"
           >
-            ➕ เพิ่มรายการ GiveAway
+            + เพิ่มรายการ GiveAway
           </Button>
         </div>
 
@@ -328,7 +382,7 @@ export default function Dashboard() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-200">
-                  {["ID", "Name", "Total Amount", "Remaining", "Description", "Date", "Images"].map((header) => (
+                  {["ID", "Name", "Total Amount", "Remaining", "Description", "Date",].map((header) => (
                     <th key={header} className="p-3 text-left font-medium text-gray-700">
                       {header}
                     </th>
@@ -345,27 +399,7 @@ export default function Dashboard() {
                       <td className="p-3">{giveaway.remain}</td>
                       <td className="p-3">{giveaway.desc}</td>
                       <td className="p-3">{new Date(giveaway.date).toLocaleDateString()}</td>
-                      <td className="p-3">
-                        {giveaway.img_url && giveaway.img_url.length > 0 ? (
-                          <div className="flex space-x-1">
-                            {giveaway.img_url.slice(0, 2).map((url, idx) => (
-                              <img 
-                                key={idx} 
-                                src={url} 
-                                alt={`${giveaway.name} image ${idx + 1}`} 
-                                className="w-10 h-10 object-cover rounded-lg border"
-                              />
-                            ))}
-                            {giveaway.img_url.length > 2 && (
-                              <div className="w-10 h-10 bg-gray-300 rounded-lg flex items-center justify-center text-sm text-gray-700">
-                                +{giveaway.img_url.length - 2}
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-gray-400">No images</span>
-                        )}
-                      </td>
+                  
                     </tr>
                   ))
                 ) : (
