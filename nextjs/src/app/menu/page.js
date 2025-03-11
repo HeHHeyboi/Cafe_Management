@@ -102,7 +102,7 @@ export default function MenuPage() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6 text-center">
-        เมนูอาหาร ของหวาน และ เครื่องดื่ม
+        เมนูเครื่องดื่ม และ ของหวาน
       </h1>
 
       {/* Search Bar and Filter */}
