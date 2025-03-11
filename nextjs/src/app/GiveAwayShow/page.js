@@ -79,13 +79,16 @@ function GiveAwayShow() {
         return <div className="flex justify-center items-center h-screen">Error: {error.message}</div>;
     }
 
+    // Filter out giveaways with remain = 0
+    const filteredGiveaways = giveaways.filter(giveaway => giveaway.remain > 0);
+
     return (
         <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
             <h1 className="text-2xl font-bold mb-4">GiveAwayList</h1>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {giveaways && giveaways.length > 0 ? (
-                    giveaways.map(giveaway => (
+                {filteredGiveaways && filteredGiveaways.length > 0 ? (
+                    filteredGiveaways.map(giveaway => (
                         <div 
                             key={giveaway.id} 
                             onClick={() => router.push(`/GiveAwayDetail/${giveaway.id}`)}
@@ -95,7 +98,7 @@ function GiveAwayShow() {
                         </div>
                     ))
                 ) : (
-                    <p className="text-center text-gray-500">No GiveAway for this month.</p>
+                    <p className="text-center text-gray-500">No GiveAway available at this moment.</p>
                 )}
             </div>
         </div>
