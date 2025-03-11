@@ -11,7 +11,6 @@ function EventCard({ giveaway }) {
     
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden mt-5">
-            {/* แสดงรูปภาพถ้ามี */}
             {hasImage && (
                 <div className="w-full h-48 overflow-hidden">
                     <img 
@@ -129,12 +128,12 @@ function EventShow() {
         );
     }
 
-    // แสดงรายการ GiveAway เมื่อมีข้อมูล
+    // แสดงรายการ GiveAway เมื่อมีข้อมูลและ remain > 0
     return (
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-2xl font-bold mb-6">GiveAway Events</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {giveaways.map((giveaway) => (
+                {giveaways.filter(giveaway => giveaway.remain > 0).map((giveaway) => (
                     giveaway && (
                         <div
                             key={giveaway.id || Math.random().toString()}
