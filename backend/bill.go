@@ -48,7 +48,7 @@ func CreateNewBill(cfg *Config, ctx *gin.Context) {
 	}
 
 	bill_data, err := cfg.db.CreateBill(ctx.Request.Context(), database.CreateBillParams{
-		PayDate: time.Now().Format(time.DateOnly),
+		PayDate: time.Now().Format(time.DateTime),
 		UserID:  id,
 		GiveawayID: sql.NullInt64{
 			Int64: param.GiveAwayID,
