@@ -440,6 +440,7 @@ http://localhost:8080/giveAway?name=สักชื่อ
 		"orders : [
 			{
 				"menu_id": 1,
+				"menu_name": น้ำส้ม,
 				"amount": 2,
 				"total_price": 100
 			},
@@ -455,6 +456,7 @@ http://localhost:8080/giveAway?name=สักชื่อ
 - `giveaway_id`: giveaway id
 - `orders`: List ของ order
 	- `menu_id`: id ของเมนู
+    - `menu_name`: ชื่อเมนู	
  	- `amount`: จำนวนเมนูที่สั่ง
   	- `total_price`: amount * menu.price	
 
@@ -470,6 +472,7 @@ http://localhost:8080/giveAway?name=สักชื่อ
 	"orders : [
 		{
 			"menu_id": 1,
+			"menu_name": น้ำส้ม,
 			"amount": 2,
 			"total_price": 100
 		},
@@ -484,6 +487,7 @@ http://localhost:8080/giveAway?name=สักชื่อ
 - `giveaway_id`: giveaway id
 - `orders`: List ของ order
 	- `menu_id`: id ของเมนู
+    - `menu_name`: ชื่อเมนู	
  	- `amount`: จำนวนเมนูที่สั่ง
   	- `total_price`: amount * menu.price	
 
@@ -516,6 +520,7 @@ http://localhost:8080/giveAway?name=สักชื่อ
 	"orders : [
 		{
 			"menu_id": 1,
+			"menu_name": น้ำส้ม,
 			"amount": 2,
 			"total_price": 100
 		},
@@ -530,5 +535,13 @@ http://localhost:8080/giveAway?name=สักชื่อ
 - `giveaway_id`: giveaway id
 - `orders`: List ของ order
 	- `menu_id`: id ของเมนู
+	- `menu_name`: ชื่อเมนู	
  	- `amount`: จำนวนเมนูที่สั่ง
   	- `total_price`: amount * menu.price	
+
+## [DELETE /bill/{id}](delete-billid)
+`id`: หมายเลขบิล
+เอาไว้ลบบิล
+```
+http://localhost:8080/bill/3ebb38dd7370f5f2
+```
