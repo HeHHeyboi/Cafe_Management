@@ -300,11 +300,9 @@ export default function Dashboard() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <div className="flex items-center gap-4">
-          <Bell className="w-6 h-6 text-gray-700 cursor-pointer" />
-          <Phone className="w-6 h-6 text-gray-700 cursor-pointer" />
           <div className="flex items-center">
             <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-2">
-              {loggedInUser ? loggedInUser.charAt(0).toUpperCase() : 'G'}
+              {loggedInUser ? loggedInUser.charAt(0).toUpperCase() : 'A'}
             </div>
             <span className="font-medium">{loggedInUser || 'Guest'}</span>
           </div>
@@ -442,71 +440,95 @@ export default function Dashboard() {
       </CardContent>
     </Card>
 
+    <CardContent className="p-4">
+    <h3 className="text-xl font-semibold">Gallery List</h3>
+    <Button 
+        onClick={() => router.push("/Admin/Menu")}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md"
+      >
+        + เพิ่มรายการ Gallery
+      </Button>
+    
+  </CardContent>
+      
+
+
+
       {/* Orders Table */}
       <Card>
-        <CardContent className="p-4">
-          <h3 className="text-lg font-semibold mb-2">New Orders</h3>
-          <div className="overflow-x-auto">
-            <table className="table w-full">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="p-2">Bill ID</th>
-                  <th className="p-2">Name</th>
-                  <th className="p-2">Total</th>
-                  <th className="p-2">Payment Status</th>
-                  <th className="p-2">Pay Date</th>
-                  <th className="p-2">Orders</th>
-                  <th className="p-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr key={order.billId} className="border-b">
-                    <td className="p-2">{order.billId}</td>
-                    <td className="p-2">{order.userName}</td>
-                    <td className="p-2">{order.total} บาท</td>
-                    <td className="p-2">
-                      <span className={`px-2 py-1 rounded-full text-sm ${
-                        order.paidStatus ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {order.paidStatus ? 'ชำระแล้ว' : 'รอชำระ'}
-                      </span>
-                    </td>
-                    <td className="p-2">{new Date(order.payDate).toLocaleDateString('th-TH')}</td>
-                    <td className="p-2">
-                      <div className="text-sm">
-                        {order.orderItems.map((item, idx) => (
-                          <div key={idx}>
-                            เมนู {item.menuName}: {item.amount} ชิ้น = {item.totalPrice} บาท
-                          </div>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="p-2">
-                      {!order.paidStatus && (
-                        <div className="flex gap-2">
-                          <button 
-                            onClick={() => handleOrderStatusUpdate(order.billId, 'rejected')}
-                            className="bg-red-500 text-white px-2 py-1 rounded text-sm"
-                          >
-                            ปฏิเสธ
-                          </button>
-                          <button 
-                            className="bg-green-500 text-white px-2 py-1 rounded text-sm"
-                            onClick={() => handleOrderStatusUpdate(order.billId, 'accepted')}
-                          >
-                            ยอมรับ
-                          </button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+  <CardContent className="p-4">
+    {/* ส่วนหัวของการ์ด */}
+    <div className="flex justify-between items-center mb-4">
+      <h3 className="text-xl font-semibold">New Orders</h3>
+      <Button 
+        onClick={() => router.push("/Admin/Menu")}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md"
+      >
+        + เพิ่มรายการอาหาร
+      </Button>
+    </div>
+    {/* ตารางรายการสั่งซื้อ */}
+    <div className="overflow-x-auto">
+      <table className="table w-full border-collapse">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="p-3 text-left">Bill ID</th>
+            <th className="p-3 text-left">Name</th>
+            <th className="p-3 text-left">Total</th>
+            <th className="p-3 text-left">Payment Status</th>
+            <th className="p-3 text-left">Pay Date</th>
+            <th className="p-3 text-left">Orders</th>
+            <th className="p-3 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {orders.map((order) => (
+            <tr key={order.billId} className="border-b hover:bg-gray-100">
+              <td className="p-3">{order.billId}</td>
+              <td className="p-3">{order.userName}</td>
+              <td className="p-3">{order.total} บาท</td>
+              <td className="p-3">
+                <span className={`px-2 py-1 rounded-full text-sm ${
+                  order.paidStatus ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                }`}>
+                  {order.paidStatus ? 'ชำระแล้ว' : 'รอชำระ'}
+                </span>
+              </td>
+              <td className="p-3">{new Date(order.payDate).toLocaleDateString('th-TH')}</td>
+              <td className="p-3">
+                <div className="text-sm space-y-1">
+                  {order.orderItems.map((item, idx) => (
+                    <div key={idx}>
+                      {item.menuName}: {item.amount} ชิ้น = {item.totalPrice} บาท
+                    </div>
+                  ))}
+                </div>
+              </td>
+              <td className="p-3 text-right">
+                {!order.paidStatus && (
+                  <div className="flex gap-2 justify-end">
+                    <button 
+                      onClick={() => handleOrderStatusUpdate(order.billId, 'rejected')}
+                      className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
+                    >
+                      ปฏิเสธ
+                    </button>
+                    <button 
+                      onClick={() => handleOrderStatusUpdate(order.billId, 'accepted')}
+                      className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600"
+                    >
+                      ยอมรับ
+                    </button>
+                  </div>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </CardContent>
+</Card>
     </div>
   );
 }
