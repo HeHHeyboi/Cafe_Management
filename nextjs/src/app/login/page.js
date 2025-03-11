@@ -37,7 +37,7 @@ export default function LoginPage() {
 
             if (response.status === 201) {
                 localStorage.setItem('userEmail', email);
-                router.push('/menu');
+                router.push('/');
             } else {
                 setError('Invalid email or password.');
             }
