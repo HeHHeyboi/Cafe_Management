@@ -62,7 +62,7 @@ const GiveAwayPage = () => {
             });
 
             if (response.ok) {
-                router.push("/GiveAwayShow");
+                router.push("/Admin/DashBoard");
             } else {
                 const errorData = await response.json();
                 setError("ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่อีกครั้ง");

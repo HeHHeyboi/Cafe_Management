@@ -4,12 +4,15 @@ import { Line, Bar } from "react-chartjs-2";
 import { Card } from "./components/Card";
 import { CardContent } from "./components/CardContent";
 import { Bell, Phone, Gift, Database } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from "chart.js";
+import { useRouter } from 'next/navigation';
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
 export default function Dashboard() {
+  const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [totalOrders, setTotalOrders] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
@@ -50,7 +53,11 @@ export default function Dashboard() {
       
       const bills = await response.json();
       const formattedOrders = [];
-      
+      if(Array.isArray(bills)) {
+        console.log('Bills:', bills);
+      } else {
+        throw new Error('API returned unexpected data type');
+      }
       for (let bill of bills) {
         const userResponse = await fetch(`http://localhost:8080/user/${bill.user_id}`, {
           credentials: 'include'
@@ -303,72 +310,77 @@ export default function Dashboard() {
 
       {/* GiveAway Table */}
       <Card>
-        <CardContent className="p-4">
-          <h3 className="text-lg font-semibold mb-2">GiveAway List</h3>
-          {loading ? (
-            <p>Loading GiveAway data...</p>
-          ) : error ? (
-            <p className="text-red-500">Error: {error}</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="table w-full">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="p-2 text-left">ID</th>
-                    <th className="p-2 text-left">Name</th>
-                    <th className="p-2 text-left">Total Amount</th>
-                    <th className="p-2 text-left">Remaining</th>
-                    <th className="p-2 text-left">Description</th>
-                    <th className="p-2 text-left">Date</th>
-                    <th className="p-2 text-left">Images</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.isArray(giveaways) && giveaways.length > 0 ? (
-                    giveaways.map((giveaway) => (
-                      <tr key={giveaway.id} className="border-b">
-                        <td className="p-2">{giveaway.id}</td>
-                        <td className="p-2">{giveaway.name}</td>
-                        <td className="p-2">{giveaway.amount}</td>
-                        <td className="p-2">{giveaway.remain}</td>
-                        <td className="p-2">{giveaway.desc}</td>
-                        <td className="p-2">{new Date(giveaway.date).toLocaleDateString()}</td>
-                        <td className="p-2">
-                          {giveaway.img_url && giveaway.img_url.length > 0 ? (
-                            <div className="flex space-x-1">
-                              {giveaway.img_url.slice(0, 2).map((url, idx) => (
-                                <img 
-                                  key={idx} 
-                                  src={url} 
-                                  alt={`${giveaway.name} image ${idx + 1}`} 
-                                  className="w-10 h-10 object-cover rounded"
-                                />
-                              ))}
-                              {giveaway.img_url.length > 2 && (
-                                <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
-                                  <span className="text-xs">+{giveaway.img_url.length - 2}</span>
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            <span className="text-gray-400">No images</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="7" className="p-4 text-center text-gray-500">
-                        ไม่มีข้อมูล GiveAway
+      <CardContent className="p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-semibold">GiveAway List</h3>
+          <Button 
+            onClick={() => router.push("/GiveAway")}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow"
+          >
+            ➕ เพิ่มรายการ GiveAway
+          </Button>
+        </div>
+
+        {loading ? (
+          <p className="text-gray-500">Loading GiveAway data...</p>
+        ) : (
+          <div className="overflow-x-auto bg-white rounded-lg shadow-md">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-200">
+                  {["ID", "Name", "Total Amount", "Remaining", "Description", "Date", "Images"].map((header) => (
+                    <th key={header} className="p-3 text-left font-medium text-gray-700">
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {Array.isArray(giveaways) && giveaways.length > 0 ? (
+                  giveaways.map((giveaway) => (
+                    <tr key={giveaway.id} className="border-b hover:bg-gray-100">
+                      <td className="p-3">{giveaway.id}</td>
+                      <td className="p-3">{giveaway.name}</td>
+                      <td className="p-3">{giveaway.amount}</td>
+                      <td className="p-3">{giveaway.remain}</td>
+                      <td className="p-3">{giveaway.desc}</td>
+                      <td className="p-3">{new Date(giveaway.date).toLocaleDateString()}</td>
+                      <td className="p-3">
+                        {giveaway.img_url && giveaway.img_url.length > 0 ? (
+                          <div className="flex space-x-1">
+                            {giveaway.img_url.slice(0, 2).map((url, idx) => (
+                              <img 
+                                key={idx} 
+                                src={url} 
+                                alt={`${giveaway.name} image ${idx + 1}`} 
+                                className="w-10 h-10 object-cover rounded-lg border"
+                              />
+                            ))}
+                            {giveaway.img_url.length > 2 && (
+                              <div className="w-10 h-10 bg-gray-300 rounded-lg flex items-center justify-center text-sm text-gray-700">
+                                +{giveaway.img_url.length - 2}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">No images</span>
+                        )}
                       </td>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="7" className="p-6 text-center text-gray-500">
+                      ไม่มีข้อมูล GiveAway
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </CardContent>
+    </Card>
 
       {/* Orders Table */}
       <Card>
