@@ -44,7 +44,9 @@
 
 - [GET /bill/{id} : ดูบิลด้วย id](#get-billid)
 
-- [POST /bill : เพิ่ม bill](#post-bill) 
+- [POST /bill : เพิ่ม bill](#post-bill)
+
+- [DELETE /bill/{id} : ลบบิล](#delete-billid) 
 
 ## [GET /reset](#get-reset)
 Reset ข้อมูลใน Data Base
