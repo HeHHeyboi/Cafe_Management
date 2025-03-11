@@ -55,6 +55,7 @@ type Order struct {
 	MenuID     int64
 	Amount     int64
 	TotalPrice float64
+	MenuName   string
 }
 
 type User struct {

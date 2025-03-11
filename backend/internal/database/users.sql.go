@@ -60,6 +60,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 
 const deleteAllUser = `-- name: DeleteAllUser :exec
 DELETE from users
+WHERE role = 'customer'
 `
 
 func (q *Queries) DeleteAllUser(ctx context.Context) error {

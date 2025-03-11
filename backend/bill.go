@@ -21,6 +21,7 @@ type Bill struct {
 
 type Order struct {
 	Menu_ID    int64   `json:"menu_id"`
+	MenuName   string  `json:"menu_name"`
 	Amount     int64   `json:"amount"`
 	TotalPrice float64 `json:"total_price"`
 }
@@ -55,8 +56,12 @@ func CreateNewBill(cfg *Config, ctx *gin.Context) {
 		},
 	})
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
-		ctx.Error(err)
+		msg := checkDataBaseError(err)
+		if err.Error() == noResult {
+			ctx.JSON(404, gin.H{"err": msg})
+			return
+		}
+		ctx.JSON(500, gin.H{"err": msg})
 		return
 	}
 
@@ -80,6 +85,7 @@ func CreateNewBill(cfg *Config, ctx *gin.Context) {
 
 		order := Order{
 			Menu_ID:    order_data.MenuID,
+			MenuName:   order_data.MenuName,
 			Amount:     order_data.Amount,
 			TotalPrice: order_data.TotalPrice,
 		}
@@ -92,8 +98,23 @@ func CreateNewBill(cfg *Config, ctx *gin.Context) {
 		BillID: bill_data.BillID,
 	})
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
-		ctx.Error(err)
+		msg := checkDataBaseError(err)
+		if err.Error() == noResult {
+			ctx.JSON(404, gin.H{"err": msg})
+			return
+		}
+		ctx.JSON(500, gin.H{"err": msg})
+		return
+	}
+
+	err = cfg.db.UpdateGiveAwayRemain(ctx.Request.Context(), bill_data.GiveawayID.Int64)
+	if err != nil {
+		msg := checkDataBaseError(err)
+		if err.Error() == noResult {
+			ctx.JSON(404, gin.H{"err": msg})
+			return
+		}
+		ctx.JSON(500, gin.H{"err": msg})
 		return
 	}
 
@@ -132,6 +153,7 @@ func GetBill(cfg *Config, ctx *gin.Context) {
 			total += order_data.TotalPrice
 			order := Order{
 				Menu_ID:    order_data.MenuID,
+				MenuName:   order_data.MenuName,
 				Amount:     order_data.Amount,
 				TotalPrice: order_data.TotalPrice,
 			}
@@ -174,6 +196,7 @@ func GetBillByID(cfg *Config, ctx *gin.Context) {
 	for _, v := range order_data {
 		order := Order{
 			Menu_ID:    v.MenuID,
+			MenuName:   v.MenuName,
 			Amount:     v.Amount,
 			TotalPrice: v.TotalPrice,
 		}
@@ -211,6 +234,7 @@ func UpdateBillStatus(cfg *Config, ctx *gin.Context) {
 	for _, v := range order_data {
 		order := Order{
 			Menu_ID:    v.MenuID,
+			MenuName:   v.MenuName,
 			Amount:     v.Amount,
 			TotalPrice: v.TotalPrice,
 		}
