@@ -20,6 +20,8 @@ export default function Dashboard() {
   const [loggedInUser, setLoggedInUser] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [galleries, setGalleries] = useState([]);
+  const [month, setMonth] = useState('');
 
   // แก้ไขฟังก์ชัน getCookie
   const getCookie = (name) => {
@@ -39,6 +41,33 @@ export default function Dashboard() {
       return null;
     }
   };
+  const fetchGalleries = async () => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const monthParam = queryParams.get('month');
+
+    if (monthParam) {
+      setMonth(monthParam);
+
+      try {
+        const response = await fetch(`http://localhost:8080/gallery?month=${monthParam}`, {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('ไม่สามารถดึงข้อมูลแกลลอรี่ได้');
+        }
+
+        const data = await response.json();
+        setGalleries(data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+  };
+
+  fetchGalleries();
+
 
   // แยกฟังก์ชัน fetchOrders
   const fetchOrders = async () => {
@@ -107,6 +136,24 @@ export default function Dashboard() {
       setError(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (name) => {
+    try {
+      const response = await fetch(`http://localhost:8080/gallery/${name}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('ไม่สามารถลบแกลลอรี่ได้');
+      }
+
+      // อัปเดตรายการแกลลอรี่หลังจากลบ
+      setGalleries((prevGalleries) => prevGalleries.filter((gallery) => gallery.name !== name));
+    } catch (error) {
+      console.error('Error:', error);
     }
   };
 
@@ -440,19 +487,7 @@ export default function Dashboard() {
       </CardContent>
     </Card>
 
-    <CardContent className="p-4">
-    <h3 className="text-xl font-semibold">Gallery List</h3>
-    <Button 
-        onClick={() => router.push("/Admin/Menu")}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md"
-      >
-        + เพิ่มรายการ Gallery
-      </Button>
     
-  </CardContent>
-      
-
-
 
       {/* Orders Table */}
       <Card>
