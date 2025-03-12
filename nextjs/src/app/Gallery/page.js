@@ -10,53 +10,82 @@ export default function GalleryPage() {
   const [message, setMessage] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
+  const [galleryId, setGalleryId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // เพิ่ม state สำหรับการโหลด
   const router = useRouter();
-  
-  // Reference for the file input
   const fileInputRef = useRef(null);
 
-  // เพิ่ม useEffect เพื่อดึง user data จาก cookie
+  // ดึงข้อมูลจากเซิร์ฟเวอร์เมื่อโหลดหน้าแก้ไข
   useEffect(() => {
-    const getUserFromCookie = () => {
-      try {
-        const userDataCookie = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('id='));
-        
-      } catch(error){
-        console.log(error)
+    const fetchGalleryData = async () => {
+      const queryParams = new URLSearchParams(window.location.search);
+      const id = queryParams.get('id');
+
+      if (id) {
+        try {
+          const response = await fetch(`http://localhost:8080/gallery/${id}`, {
+            method: 'GET',
+            credentials: 'include',
+          });
+
+          if (!response.ok) {
+            throw new Error('ไม่สามารถดึงข้อมูลแกลลอรี่ได้');
+          }
+
+          const data = await response.json();
+          setName(data.name);
+          setStartDate(data.start_date);
+          setEndDate(data.end_date);
+          setDescription(data.description);
+          setPreviews(data.images || []);
+          setGalleryId(id);
+        } catch (error) {
+          console.error('Error:', error);
+          setMessage(error.message || 'เกิดข้อผิดพลาดในการดึงข้อมูล');
+        }
       }
     };
 
-    getUserFromCookie();
+    fetchGalleryData();
   }, []);
 
   // จัดการการเพิ่มรูปภาพ
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
-    
+
     // สร้าง preview URLs
-    const newPreviews = files.map(file => URL.createObjectURL(file));
+    const newPreviews = files.map((file) => URL.createObjectURL(file));
     setPreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
   };
 
   // Cleanup previews
   useEffect(() => {
     return () => {
-      previews.forEach(url => URL.revokeObjectURL(url));
+      previews.forEach((url) => URL.revokeObjectURL(url));
     };
   }, [previews]);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    // ตรวจสอบวันที่
+  // ตรวจสอบวันที่
+  const validateDates = () => {
     const start = new Date(startDate);
     const end = new Date(endDate);
-    
+
     if (end < start) {
       setMessage('วันที่สิ้นสุดต้องมาหลังวันที่เริ่มต้น');
+      return false;
+    }
+    return true;
+  };
+
+  // จัดการการส่งฟอร์ม
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsLoading(true); // เริ่มโหลด
+
+    // ตรวจสอบวันที่
+    if (!validateDates()) {
+      setIsLoading(false);
       return;
     }
 
@@ -68,26 +97,35 @@ export default function GalleryPage() {
     formData.append('description', description.trim());
 
     // เพิ่มรูปภาพทั้งหมดเข้าไปใน FormData
-    selectedFiles.forEach((file, index) => {
-      formData.append('images', file); // ใช้ชื่อ 'files' สำหรับรูปภาพทั้งหมด
+    selectedFiles.forEach((file) => {
+      formData.append('images', file);
     });
 
     try {
-      const response = await fetch('http://localhost:8080/gallery', {
-        method: 'POST',
+      const url = galleryId ? `http://localhost:8080/gallery/${galleryId}` : 'http://localhost:8080/gallery';
+      const method = galleryId ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method: method,
         credentials: 'include',
-        body: formData, // ส่ง FormData ที่มีทั้งข้อมูลและรูปภาพ
+        body: formData,
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'ไม่สามารถจองแกลลอรี่ได้');
+        const contentType = response.headers.get('Content-Type');
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'ไม่สามารถบันทึกแกลลอรี่ได้');
+        } else {
+          const errorText = await response.text();
+          throw new Error(errorText || 'ไม่สามารถบันทึกแกลลอรี่ได้');
+        }
       }
 
       const data = await response.json();
       console.log('Success:', data);
 
-      setMessage('จองแกลลอรี่สำเร็จ!');
+      setMessage(galleryId ? 'แก้ไขแกลลอรี่สำเร็จ!' : 'จองแกลลอรี่สำเร็จ!');
       // เคลียร์ฟอร์ม
       setName('');
       setStartDate('');
@@ -96,31 +134,24 @@ export default function GalleryPage() {
       setSelectedFiles([]);
       setPreviews([]);
 
-      // Redirect หลังจากจองสำเร็จ
+      // Redirect หลังจากบันทึกสำเร็จ
       router.push('/GalleryShow?month=' + new Date(startDate).toISOString().slice(0, 7));
-
     } catch (error) {
       console.error('Error:', error);
       setMessage(error.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
+    } finally {
+      setIsLoading(false); // หยุดโหลด
     }
   };
 
-  // เพิ่มฟังก์ชันตรวจสอบวันที่
+  // ตรวจสอบวันที่เมื่อมีการเปลี่ยนแปลง
   const handleDateChange = (setter) => (e) => {
     const value = e.target.value;
     setter(value);
-    
-    if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      if (end < start) {
-        setMessage('วันที่สิ้นสุดต้องมาหลังวันที่เริ่มต้น');
-      } else {
-        setMessage('');
-      }
-    }
+    validateDates();
   };
 
+  // ลบรูปภาพ
   const removeImage = (indexToRemove) => {
     setSelectedFiles((prevFiles) => prevFiles.filter((_, index) => index !== indexToRemove));
     setPreviews((prevPreviews) => prevPreviews.filter((_, index) => index !== indexToRemove));
@@ -133,9 +164,12 @@ export default function GalleryPage() {
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">จองแกลลอรี่</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">
+        {galleryId ? 'แก้ไขแกลลอรี่' : 'จองแกลลอรี่'}
+      </h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* ชื่อแกลลอรี่ */}
         <div className="space-y-2">
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">
             ชื่อแกลลอรี่:
@@ -150,6 +184,7 @@ export default function GalleryPage() {
           />
         </div>
 
+        {/* วันที่เริ่ม */}
         <div className="space-y-2">
           <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
             วันที่เริ่ม:
@@ -165,6 +200,7 @@ export default function GalleryPage() {
           />
         </div>
 
+        {/* วันที่สิ้นสุด */}
         <div className="space-y-2">
           <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">
             วันที่สิ้นสุด:
@@ -180,6 +216,7 @@ export default function GalleryPage() {
           />
         </div>
 
+        {/* คำอธิบาย */}
         <div className="space-y-2">
           <label htmlFor="description" className="block text-sm font-medium text-gray-700">
             คำอธิบาย:
@@ -197,7 +234,7 @@ export default function GalleryPage() {
           <button
             type="button"
             onClick={handleButtonClick}
-            className=" py-2 px-4 bg-blue-500 text-white rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="py-2 px-4 bg-blue-500 text-white rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
           >
             +เพิ่มรูปภาพ
           </button>
@@ -235,16 +272,19 @@ export default function GalleryPage() {
           )}
         </div>
 
+        {/* แสดงข้อความข้อผิดพลาด */}
         {message && (
           <div className="text-sm text-red-500">{message}</div>
         )}
 
+        {/* ปุ่มส่งฟอร์ม */}
         <div className="mt-4">
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-green-500 text-white rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+            disabled={isLoading}
+            className="w-full py-2 px-4 bg-green-500 text-white rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 disabled:bg-gray-400"
           >
-            Submit
+            {isLoading ? 'กำลังประมวลผล...' : galleryId ? 'บันทึกการแก้ไข' : 'Submit'}
           </button>
         </div>
       </form>
