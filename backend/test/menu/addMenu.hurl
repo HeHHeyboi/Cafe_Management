@@ -9,7 +9,7 @@ output: -
 	"type": "เย็น",
 	"price": 15
 }
-HTTP 200
+HTTP 201
 
 POST http://localhost:8080/menu
 [Options]
@@ -19,7 +19,7 @@ output: -
 	"menu_type": "Dessert",
 	"price": 83 
 }
-HTTP 200
+HTTP 201
 
 GET http://localhost:8080/menu
 HTTP 200

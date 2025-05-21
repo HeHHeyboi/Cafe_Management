@@ -5,50 +5,50 @@ POST http://localhost:8080/menu
 output: -
 {
 	"name": "Cola",
-	"type": "Drink",
+	"menu_type": "Drink",
 	"price":25 
 }
-HTTP 200
+HTTP 201
 
 POST http://localhost:8080/menu
 [Options]
 output: -
 {
 	"name": "Cake",
-	"type": "Dessert",
+	"menu_type": "Dessert",
 	"price": 105 
 }
-HTTP 200
+HTTP 201
 
 POST http://localhost:8080/menu
 [Options]
 output: -
 {
 	"name": "Whip Cream",
-	"type": "Options",
+	"menu_type": "Options",
 	"price": 15 
 }
-HTTP 200
+HTTP 201
 
 POST http://localhost:8080/menu
 [Options]
 output: -
 {
 	"name": "Coffee",
-	"type": "Drink",
+	"menu_type": "Drink",
 	"price": 85 
 }
-HTTP 200
+HTTP 201
 
 POST http://localhost:8080/menu
 [Options]
 output: -
 {
 	"name": "Cookie",
-	"type": "Snack",
+	"menu_type": "Snack",
 	"price": 50 
 }
-HTTP 200
+HTTP 201
 
 GET http://localhost:8080/menu
 [Options]
@@ -76,7 +76,7 @@ output: -
 HTTP 200
 
 DELETE http://localhost:8080/menu/name/something
-HTTP 204
+HTTP 400
 
 DELETE http://localhost:8080/menu/id/99
 HTTP 204
