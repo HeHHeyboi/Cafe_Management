@@ -5,20 +5,20 @@ POST http://localhost:8080/menu
 output: -
 {
 	"name": "Cola",
-	"type": "Drink",
+	"menu_type": "Drink",
 	"price": 15
 }
-HTTP 200
+HTTP 201
 
 POST http://localhost:8080/menu
 [Options]
 output: -
 {
 	"name": "Cake",
-	"type": "Dessert",
+	"menu_type": "Dessert",
 	"price": 83 
 }
-HTTP 200
+HTTP 201
 
 GET http://localhost:8080/menu
 [Options]
@@ -31,14 +31,14 @@ name: jsonpath "$.[1].name"
 PUT http://localhost:8080/menu/id/{{id}}
 {
 	"name": "Cola",
-	"type": "Meal",
+	"menu_type": "Meal",
 	"price": 55 
 }
 
 PUT http://localhost:8080/menu/name/{{name}}
 {
 	"name": "Red Velvet",
-	"type": "Dessert",
+	"menu_type": "Dessert",
 	"price": 100 
 }
 
@@ -52,7 +52,7 @@ PUT http://localhost:8080/menu/name/something
 output: -
 {
 	"name": "Red Velvet",
-	"type": "Dessert",
+	"menu_type": "Dessert",
 	"price": 100 
 }
 
@@ -61,7 +61,7 @@ PUT http://localhost:8080/menu/id/99
 output: -
 {
 	"name": "Cola",
-	"type": "Meal",
+	"menu_type": "Meal",
 	"price": 55 
 }
 

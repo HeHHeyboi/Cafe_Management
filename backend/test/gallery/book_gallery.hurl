@@ -9,7 +9,7 @@ output: -
 	"end_date":"2025-01-30",
 	"description":"this is gallery"
 }
-HTTP 401
+HTTP 400
 
 POST http://localhost:8080/user
 [Options]
@@ -20,7 +20,7 @@ output: -
 	"email":"example@gmail.com",
 	"password":"123"
 }
-HTTP 200
+HTTP 201
 [Captures]
 email: jsonpath "$.email"
 
@@ -40,7 +40,7 @@ POST http://localhost:8080/gallery
 	"end_date":"2025-01-30",
 	"description":"this is gallery"
 }
-HTTP 200
+HTTP 201
 [Asserts]
 jsonpath "$.start_date" == "2025-01-25" 
 jsonpath "$.end_date" == "2025-01-30" 
