@@ -7,7 +7,7 @@ INSERT INTO users(user_id,FName,LName,email,password,role)
 VALUES( ?, ?, ?, ?, ?,'admin');
 
 -- name: GetUserByEmail :one
-select user_id,password from users
+select * from users
 WHERE email = ?;
 
 -- name: GetUserByID :one
