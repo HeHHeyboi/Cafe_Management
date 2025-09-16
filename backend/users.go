@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/HeHHeyboi/Cafe_Management/backend/internal/model"
 	"net/http"
 
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/auth"
@@ -12,19 +13,9 @@ import (
 	"github.com/google/uuid"
 )
 
-type User struct {
-	UserID   uuid.UUID `json:"id"`
-	Fname    string    `json:"first_name" form:"first_name" binding:"required"`
-	Lname    string    `json:"last_name" form:"last_name" binding:"required"`
-	Email    string    `json:"email" form:"email" binding:"required"`
-	Password string    `json:"password" form:"password" binding:"required"`
-}
-
 func createUser(cfg *Config, ctx *gin.Context) {
-
-	var user User
+	var user model.User
 	var err error
-
 	if err = ctx.ShouldBind(&user); err != nil {
 		bindingErrorMsg(err.(validator.ValidationErrors), ctx)
 		return
@@ -60,13 +51,13 @@ func getUser(cfg *Config, ctx *gin.Context) {
 		ctx.JSON(401, gin.H{"error": err.Error()})
 		return
 	}
-	var users []User
+	var users []model.User
 	for _, v := range data {
 		id, err := uuid.Parse(v.UserID.(string))
 		if err != nil {
 			ctx.IndentedJSON(401, gin.H{"error": err.Error()})
 		}
-		user := User{
+		user := model.User{
 			UserID:   id,
 			Fname:    v.Fname.String,
 			Lname:    v.Lname.String,
