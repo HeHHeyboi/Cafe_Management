@@ -45,11 +45,11 @@ func main() {
 	dbName := "main.db"
 
 	db, err := sql.Open("sqlite", dbName)
-	defer db.Close()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	defer db.Close()
 
 	if len(os.Args) < 2 {
 		gin.SetMode(gin.ReleaseMode)
