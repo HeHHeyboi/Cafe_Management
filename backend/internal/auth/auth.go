@@ -8,15 +8,15 @@ import (
 
 func HashPassword(password *string) (string, error) {
 	if password == nil {
-		return "", fmt.Errorf("Nil password")
+		return "", NewHashError("Password is None")
 	}
 	if *password == "" {
-		return "", fmt.Errorf("password required")
+		return "", NewHashError("Please Enter Password")
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(*password), bcrypt.DefaultCost)
 	if err != nil {
-		return "", fmt.Errorf("Password hash Error: %v", err)
+		return "", NewHashError(fmt.Sprintf("Password hash Error: %v", err))
 	}
 	return string(hash), nil
 }

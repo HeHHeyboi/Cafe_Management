@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/model"
@@ -9,8 +10,8 @@ import (
 )
 
 type UserRepository interface {
-	CreateAdmin(ctx context.Context, arg database.CreateAdminParams) error
-	CreateUser(ctx context.Context, arg database.CreateUserParams) error
+	CreateAdmin(ctx context.Context, user model.User) error
+	CreateUser(ctx context.Context, user model.User) error
 	DeleteAllUser(ctx context.Context) error
 	GetAllUser(ctx context.Context) ([]model.User, error)
 	GetUserByEmail(ctx context.Context, email string) (model.User, error)
@@ -25,16 +26,30 @@ func NewUserRepository(q *database.Queries) UserRepository {
 	return &userRepository{db: q}
 }
 
-func (ur userRepository) CreateAdmin(ctx context.Context, arg database.CreateAdminParams) error {
-	err := ur.db.CreateAdmin(ctx, arg)
+func (ur userRepository) CreateAdmin(ctx context.Context, user model.User) error {
+	param := database.CreateAdminParams{
+		UserID:   user.UserID,
+		Fname:    sql.NullString{String: user.Fname, Valid: user.Fname != ""},
+		Lname:    sql.NullString{String: user.Lname, Valid: user.Lname != ""},
+		Email:    user.Email,
+		Password: user.Password,
+	}
+	err := ur.db.CreateAdmin(ctx, param)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (ur userRepository) CreateUser(ctx context.Context, arg database.CreateUserParams) error {
-	err := ur.db.CreateUser(ctx, arg)
+func (ur userRepository) CreateUser(ctx context.Context, user model.User) error {
+	param := database.CreateUserParams{
+		UserID:   user.UserID,
+		Fname:    sql.NullString{String: user.Fname, Valid: user.Fname != ""},
+		Lname:    sql.NullString{String: user.Lname, Valid: user.Lname != ""},
+		Email:    user.Email,
+		Password: user.Password,
+	}
+	err := ur.db.CreateUser(ctx, param)
 	if err != nil {
 		return err
 	}
@@ -55,13 +70,7 @@ func (ur userRepository) GetAllUser(ctx context.Context) ([]model.User, error) {
 
 	var userList []model.User
 	for _, data := range datas {
-		var user model.User
-		user.UserID = data.UserID.(uuid.UUID)
-		user.Email = data.Email
-		user.Fname = data.Fname.String
-		user.Lname = data.Lname.String
-		user.Password = data.Password
-		user.Role = data.Role.String
+		user := toUser(data)
 		userList = append(userList, user)
 	}
 
@@ -70,24 +79,22 @@ func (ur userRepository) GetAllUser(ctx context.Context) ([]model.User, error) {
 func (ur userRepository) GetUserByEmail(ctx context.Context, email string) (model.User, error) {
 	data, err := ur.db.GetUserByEmail(ctx, email)
 	if err != nil {
-		return model.User{}, nil
+		return model.User{}, err
 	}
-	var user model.User
-	user.UserID = data.UserID.(uuid.UUID)
-	user.Email = data.Email
-	user.Fname = data.Fname.String
-	user.Lname = data.Lname.String
-	user.Password = data.Password
-	user.Role = data.Role.String
 
-	return user, nil
+	return toUser(data), nil
 }
 func (ur userRepository) GetUserByID(ctx context.Context, userID any) (model.User, error) {
 
 	data, err := ur.db.GetUserByID(ctx, userID)
 	if err != nil {
-		return model.User{}, nil
+		return model.User{}, err
 	}
+
+	return toUser(data), nil
+}
+
+func toUser(data database.User) model.User {
 	var user model.User
 	user.UserID = data.UserID.(uuid.UUID)
 	user.Email = data.Email
@@ -95,6 +102,5 @@ func (ur userRepository) GetUserByID(ctx context.Context, userID any) (model.Use
 	user.Lname = data.Lname.String
 	user.Password = data.Password
 	user.Role = data.Role.String
-
-	return user, nil
+	return user
 }

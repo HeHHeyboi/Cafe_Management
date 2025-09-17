@@ -1,4 +1,4 @@
-package main
+package dto
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ const (
 	requireTag        = "required"
 )
 
-func checkDataBaseError(err error) string {
+func CheckDataBaseError(err error) string {
 	switch err.Error() {
 	case foreignKeyMissing:
 		return "Please Created User first with Email"
@@ -28,7 +28,7 @@ func checkDataBaseError(err error) string {
 	}
 }
 
-func bindingErrorMsg(err validator.ValidationErrors, ctx *gin.Context) {
+func BindingErrorMsg(err validator.ValidationErrors, ctx *gin.Context) {
 	var msg string
 	for _, e := range err {
 		switch e.Tag() {
