@@ -1,5 +1,7 @@
 package com.CafeManagement;
 
+import java.sql.Connection;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -8,6 +10,9 @@ public class CafeManagementApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CafeManagementApplication.class, args);
+	}
+
+	public static void SetupDatatBase(Connection conn) {
 	}
 
 }
