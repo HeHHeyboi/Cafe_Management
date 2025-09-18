@@ -1,16 +1,13 @@
 package com.CafeManagement.auth;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
+import org.mindrot.jbcrypt.*;
 public class Auth {
 	public static String HashPassword(String password) {
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
-		String hash = encoder.encode(password);
+		String hash = BCrypt.hashpw(password, BCrypt.gensalt(10));
 		return hash;
 	}
 
 	public static Boolean ComparePassword(String password, String hash) {
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
-		return encoder.matches(password, hash);
+		return BCrypt.checkpw(password, hash);
 	}
 }
