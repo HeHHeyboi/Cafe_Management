@@ -2,7 +2,6 @@ package com.CafeManagement.model;
 
 import java.util.UUID;
 
-@Component
 public class User {
 	UUID userId;
 	String firstName;

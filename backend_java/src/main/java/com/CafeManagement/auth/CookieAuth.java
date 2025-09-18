@@ -11,7 +11,6 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import javax.servlet.http.Cookie;
-import org.springframework.boot.web.server.Cookie.SameSite;
 
 public class CookieAuth {
 	public static final int NONCE_LENGTH_BYTES = 8;
