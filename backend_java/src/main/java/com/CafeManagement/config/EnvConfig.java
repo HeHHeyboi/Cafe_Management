@@ -30,4 +30,9 @@ public class EnvConfig {
 		return uuid.toString();
 	}
 
+	@Bean(name = "secret")
+	public String Secret() {
+		return dotenv.get("SECRET");
+	}
+
 }
