@@ -128,6 +128,7 @@ public class UserRepo {
 			user.setFirstName(data.getString("fname"));
 			user.setLastName(data.getString("lname"));
 			user.setEmail(data.getString("email"));
+			user.setPassword(data.getString("password"));
 		}
 		return user;
 	}

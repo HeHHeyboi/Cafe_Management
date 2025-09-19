@@ -1,5 +1,6 @@
 package com.CafeManagement.auth;
 
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.Duration;
@@ -12,19 +13,24 @@ import javax.crypto.spec.SecretKeySpec;
 
 import javax.servlet.http.Cookie;
 
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseCookie.ResponseCookieBuilder;
+
 public class CookieAuth {
 	public static final int NONCE_LENGTH_BYTES = 8;
 	private static final int GCM_TAG_LENGTH_BYTES = 16;
 	private static final int GCM_IV_LENGTH_BYTES = 12;
 
-	public static Cookie CreateCookie(String name, String value, String secret) throws Exception {
+	public static ResponseCookie CreateCookie(String name, String value, String secret) throws Exception {
 		String encrypt = encryptCookie(name, value, secret);
-		Cookie cookie = new Cookie(name, encrypt);
 		Duration expire = Duration.ofDays(7);
-		cookie.setPath("/");
-		cookie.setDomain("localhost");
-		cookie.setMaxAge(expire.toSecondsPart());
-		return cookie;
+		ResponseCookieBuilder builder = ResponseCookie.fromClientResponse("id", encrypt);
+		builder.path("/");
+		builder.secure(false);
+		builder.sameSite("Lax");
+		builder.domain("localhost");
+		builder.maxAge(expire);
+		return builder.build();
 	}
 
 	private static String encryptCookie(String name, String value, String secret) throws Exception {
@@ -50,7 +56,7 @@ public class CookieAuth {
 
 	}
 
-	public static String ReadCookie(Cookie cookie, String secret) throws Exception {
+	public static String ReadCookie(ResponseCookie cookie, String secret) throws Exception {
 		byte[] value = Base64.getDecoder().decode(cookie.getValue());
 		String decrypt = decryptCookie(cookie.getName(), value, secret);
 		String[] arr = decrypt.split(":");
