@@ -1,18 +1,32 @@
 package com.CafeManagement.dto;
 
+import com.CafeManagement.model.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({ "first_name", "last_name", "email", "password" })
+@JsonPropertyOrder({ "id", "first_name", "last_name", "email", "password" })
 public class UserResponse {
+	@JsonProperty(value = "id")
+	String userId;
 	@JsonProperty(value = "first_name")
 	String firtName;
 	@JsonProperty(value = "last_name")
 	String lastName;
 	@JsonProperty(value = "email")
 	String email;
-	@JsonProperty(value = "password")
-	String password;
+
+	// @JsonProperty(value = "password")
+	// String password;
+	public UserResponse() {
+
+	}
+
+	public UserResponse(User user) {
+		this.userId = user.getUserId().toString();
+		this.firtName = user.getFirstName();
+		this.lastName = user.getLastName();
+		this.email = user.getEmail();
+	}
 
 	public String getFirtName() {
 		return firtName;
@@ -38,11 +52,4 @@ public class UserResponse {
 		this.email = email;
 	}
 
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
 }
