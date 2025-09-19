@@ -1,16 +1,12 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Created by https://www.toptal.com/developers/gitignore/api/nextjs
+# Edit at https://www.toptal.com/developers/gitignore?templates=nextjs
 
+### NextJS ###
 # dependencies
+/node_modules
 /.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-node_modules/.bin
-node_modules/@next
-node_modules/@tailwindcss/oxide-win32-x64-msvc
+.pnp.js
+
 # testing
 /coverage
 
@@ -20,8 +16,7 @@ node_modules/@tailwindcss/oxide-win32-x64-msvc
 
 # production
 /build
-.next/node_modules/@next/swc-win32-x64
-.next/node_modules/@next/swc-linux-x64
+
 # misc
 .DS_Store
 *.pem
@@ -32,8 +27,8 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# local env files
+.env*.local
 
 # vercel
 .vercel
@@ -41,3 +36,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# End of https://www.toptal.com/developers/gitignore/api/nextjs

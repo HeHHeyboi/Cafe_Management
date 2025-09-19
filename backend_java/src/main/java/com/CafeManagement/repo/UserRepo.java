@@ -30,11 +30,22 @@ public class UserRepo {
 	}
 
 	private final String createUser = """
-	INSERT INTO users(user_id, FName, LName, email, password)
-	VALUES(?, ?, ?, ?, ?)
-	""";
+			INSERT INTO users(user_id, FName, LName, email, password)
+			VALUES(?, ?, ?, ?, ?)
+			""";
+
 	public void CreateUser(CreateUserParams param) throws Exception {
 		jdbc.update(createUser, param.userId, param.firstName, param.lastName,
-		  param.email, param.password);
+				param.email, param.password);
 	}
+
+	private final String deleteAllUser = """
+			DELETE from users
+			WHERE role = 'customer'
+			""";
+
+	public void DeleteAllUser() throws Exception {
+		jdbc.update(deleteAllUser);
+	}
+
 }
