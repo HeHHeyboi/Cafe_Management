@@ -1,12 +1,18 @@
 package com.CafeManagement.service;
 
-import com.CafeManagement.dto.UserRequest;
-import com.CafeManagement.repo.UserRepo;
-import com.CafeManagement.repo.UserRepo.CreateUserParams;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.CafeManagement.dto.UserRequest;
+import com.CafeManagement.dto.UserResponse;
+import com.CafeManagement.model.User;
+import com.CafeManagement.repo.UserRepo;
+import com.CafeManagement.repo.UserRepo.CreateUserParams;
 
 @Service
 @Transactional
@@ -27,5 +33,22 @@ public class UserService {
 
 	public void DeleteAllUser() throws Exception {
 		repo.DeleteAllUser();
+	}
+
+	public List<UserResponse> GetAllUser() throws Exception {
+		List<User> users = repo.GetAllUser();
+		List<UserResponse> response = new ArrayList<>();
+		for (var user : users) {
+			response.add(new UserResponse(user));
+		}
+		return response;
+	}
+
+	public UserResponse GetUserByEmail(String email) throws Exception {
+		return new UserResponse(repo.GetUserByEmail(email));
+	}
+
+	public UserResponse GetUserById(String id) throws Exception {
+		return new UserResponse(repo.GetUserById(id));
 	}
 }
