@@ -1,17 +1,17 @@
 "use client"
 import Link from "next/link";
 import { CircleUserRound, Home, BarChart2 } from "lucide-react";
+import { Coffee } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 export default function AdminSidebar() {
   const pathname = usePathname();
 
   const menuItems = [
-    { title: "Dashboard", href: "/admin/dashboard", icon: Home },
-    { title: "Users", href: "/admin/users", icon: CircleUserRound },
-    { title: "Reports", href: "/admin/reports", icon: BarChart2 },
-    { title: "MenuOrder", href: "/admin/settings", icon: BarChart2 },
-  ];
+  { title: "Dashboard", href: "/Admin/Dashboard", icon: Home },
+  { title: "MenuOrder", href: "/Admin/MenuOrder", icon: Coffee },
+];
+
 
   return (
     <nav className="p-6 bg-gray-50 min-h-screen w-64 shadow-md">
