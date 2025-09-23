@@ -3,11 +3,5 @@ CREATE TABLE IF NOT EXISTS menu(
 	menu_id INTEGER PRIMARY KEY,
 	name TEXT NOT NULL,
 	price REAL NOT NULL,
-	type TEXT NOT NULL
+	menu_type TEXT NOT NULL
 );
-
-ALTER TABLE menu
-RENAME COLUMN type to menu_type;
-
-ALTER TABLE menu
-ADD COLUMN type TEXT;
