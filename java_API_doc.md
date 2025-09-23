@@ -14,10 +14,10 @@
 - [DELETE /bill/{id}](#delete-billid)
 
 [/order Endpoint](#order-endpoint)
-- [GET /order/{bill_id}](#get-orderid)
-- [POST /order/{bill_id}](#post-order)
-- [PUT /order/{bill_id}](#put-orderid)
-- [DELETE /order/{bill_id}](#delete-orderid)
+- [GET /order/{bill_id}](#get-orderbill_id)
+- [POST /order/{bill_id}](#post-orderbill_id)
+- [PUT /order/{bill_id}](#put-orderbill_id)
+- [DELETE /order/{bill_id}](#delete-orderbill_id)
 
 
 ## [/menu Endpoint](#menu-endpoint)
@@ -281,7 +281,7 @@ API สำหรับจัดการบิลในร้านกาแฟ.
 
 ## [/order Endpoint](#order-endpoint)
 API สำหรับจัดการคำสั่งซื้อในร้านกาแฟ.
-### [GET /order/{bill_id}](#get-order)
+### [GET /order/{bill_id}](#get-orderbill_id)
 - **คำอธิบาย**: แสดงข้อมูลของคำสั่งซื้อทั้งหมดในบิลที่ระบุ.
 - **Parameters**:
   - `bill_id`: รหัสบิลที่ต้องการดึงข้อมูลคำสั่งซื้อ (String, required)
@@ -312,7 +312,7 @@ API สำหรับจัดการคำสั่งซื้อในร�
 
 	`total_price`: ราคาทั้งหมดของคำสั่งซื้อนี้ (Decimal)
 
-### [POST /order/{bill_id}](#post-order)
+### [POST /order/{bill_id}](#post-orderbill_id)
 - **คำอธิบาย**: เพิ่มคำสั่งซื้อใหม่ในบิลที่ระบุ.
 - **Parameters**:
   - `bill_id`: รหัสบิลที่ต้องการเพิ่มคำสั่งซื้อ (String, required)
@@ -347,7 +347,7 @@ API สำหรับจัดการคำสั่งซื้อในร�
 	  "error": "Invalid menu ID or amount"
 	}
 	```
-### [PUT /order/{bill_id}](#put-orderid)
+### [PUT /order/{bill_id}](#put-orderbill_id)
 - **คำอธิบาย**: แก้ไขคำสั่งซื้อในบิลที่ระบุ.
 - **Parameters**:
   - `bill_id`: รหัสบิลที่ต้องการแก้ไขคำสั่งซื้อ (String, required)
@@ -391,7 +391,7 @@ API สำหรับจัดการคำสั่งซื้อในร�
 	  "error": "Order not found"
 	}
 	```
-### [DELETE /order/{bill_id}](#delete-orderid)
+### [DELETE /order/{bill_id}](#delete-orderbill_id)
 - **คำอธิบาย**: ลบคำสั่งซื้อในบิลที่ระบุ.
 - **Parameters**:
   - `bill_id`: รหัสบิลที่ต้องการลบคำสั่งซื้อ (String, required)
