@@ -34,7 +34,6 @@ const BillItem = ({ item, onUpdateQuantity, onRemoveItem }) => (
     <div className="flex items-center space-x-3 w-3/5">
       <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
         {/* <Image src={item.image} alt={item.name} layout="fill" objectFit="cover" /> */}
-        {/* --- แก้ไขตรงนี้: แทนที่ด้วย div สีเทา --- */}
         <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm">
             IMG {/* หรือจะให้ว่างเปล่าก็ได้ */}
         </div>
@@ -100,34 +99,32 @@ export default function BillPrint({
   onRemoveItem,
   onClearBill,
 }) {
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('Cash');
-
-  const subtotal = billItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const taxRate = 0.07;
-  const taxAmount = subtotal * taxRate;
-  const total = subtotal + taxAmount;
+  const [payment, setPayment] = useState('Cash');
+  const subtotal = billItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const tax = subtotal * 0.07;
+  const total = subtotal + tax;
 
   return (
-    <div className="flex flex-col h-full bg-white text-gray-900 font-sans overflow-hidden">
+    <div className="flex flex-col h-full bg-white text-gray-900 font-sans overflow-hidden text-sm">
       <UserProfileHeader userName="Simon Lee" avatarSrc="" />
 
-      <div className="flex-shrink-0 flex items-center justify-between pb-2 pt-3 px-4 border-b border-gray-200 sticky top-0 bg-white z-10">
-        <h2 className="text-lg font-bold">Current Order</h2>
+      <div className="flex items-center justify-between pb-2 pt-3 px-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+        <h2 className="text-base font-bold">Order</h2>
         <button
           onClick={onClearBill}
-          disabled={billItems.length === 0}
-          className="flex items-center space-x-1 text-red-500 hover:text-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+          disabled={!billItems.length}
+          className="flex items-center text-red-500 hover:text-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-xs"
         >
           <Trash2 className="w-4 h-4" />
-          <span>Clear All</span>
+          <span>Clear</span>
         </button>
       </div>
 
-      <section className="flex-grow overflow-y-auto custom-scrollbar px-4 pr-2 py-2">
-        {billItems.length === 0 ? (
-          <div className="text-center text-gray-500 py-6 text-sm">
-            <p>No items in the order yet.</p>
-            <p>Select items from the menu!</p>
+      <section className="flex-grow overflow-y-auto px-4 pr-2 py-2">
+        {!billItems.length ? (
+          <div className="text-center text-gray-500 py-6 text-xs">
+            <p>No items yet.</p>
+            <p>Select from menu!</p>
           </div>
         ) : (
           <div className="space-y-1">
@@ -143,57 +140,51 @@ export default function BillPrint({
         )}
       </section>
 
-      <section className="flex-shrink-0 pt-2 border-t border-dashed border-gray-200 mt-auto px-4">
-        <div className="flex justify-between items-center mb-1 text-sm">
+      <section className="pt-2 border-t border-dashed border-gray-200 mt-auto px-4">
+        <div className="flex justify-between mb-1">
           <span className="text-gray-600">Subtotal</span>
-          <span className="font-semibold text-gray-800">{subtotal.toFixed(2)} บาท</span>
+          <span className="font-semibold">{subtotal.toFixed(2)} บาท</span>
         </div>
-        <div className="flex justify-between items-center mb-1 text-sm">
-          <span className="text-gray-600">Tax ({taxRate * 100}%)</span>
-          <span className="font-semibold text-gray-800">{taxAmount.toFixed(2)} บาท</span>
+        <div className="flex justify-between mb-1">
+          <span className="text-gray-600">Tax (7%)</span>
+          <span className="font-semibold">{tax.toFixed(2)} บาท</span>
         </div>
         <div className="my-2 border-b border-gray-200"></div>
-        <div className="flex justify-between items-center mb-3"></div>
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-gray-600">Tax ({taxRate * 100}%)</span>
-          <span className="font-semibold text-gray-800">{taxAmount.toFixed(2)} บาท</span>
-        </div>
-        <div className="my-4 border-b border-gray-200"></div> {/* Divider */}
-        <div className="flex justify-between items-center mb-6">
-          <span className="text-xl font-bold text-gray-800">Total</span>
-          <span className="text-3xl font-bold text-amber-800">{total.toFixed(2)} บาท</span>
+        <div className="flex justify-between mb-4">
+          <span className="text-base font-bold">Total</span>
+          <span className="text-xl font-bold text-amber-800">{total.toFixed(2)} บาท</span>
         </div>
       </section>
 
-      {/* Payment Method Section */}
-      <section className="flex-shrink-0 mb-6 px-6">
-        <h2 className="text-lg font-bold mb-4">Payment Method</h2>
-        <div className="grid grid-cols-3 gap-3">
+      <section className="mb-4 px-6">
+        <h2 className="text-base font-bold mb-2">Payment</h2>
+        <div className="grid grid-cols-3 gap-2">
           <PaymentMethodOption
             icon={Landmark}
             label="Cash"
-            isSelected={selectedPaymentMethod === 'Cash'}
-            onClick={() => setSelectedPaymentMethod('Cash')}
+            isSelected={payment === 'Cash'}
+            onClick={() => setPayment('Cash')}
           />
           <PaymentMethodOption
             icon={CreditCard}
             label="Debit Card"
-            isSelected={selectedPaymentMethod === 'Debit Card'}
-            onClick={() => setSelectedPaymentMethod('Debit Card')}
+            isSelected={payment === 'Debit Card'}
+            onClick={() => setPayment('Debit Card')}
           />
           <PaymentMethodOption
             icon={Wallet}
             label="E-Wallet"
-            isSelected={selectedPaymentMethod === 'E-Wallet'}
-            onClick={() => setSelectedPaymentMethod('E-Wallet')}
+            isSelected={payment === 'E-Wallet'}
+            onClick={() => setPayment('E-Wallet')}
           />
         </div>
       </section>
 
-      {/* Print Bills Button */}
-      <button className="flex-shrink-0 w-full bg-amber-700 text-white py-4 rounded-xl text-lg font-semibold hover:bg-amber-800 transition-colors duration-200 shadow-lg mb-6 mx-6">
-        Print Bills
-      </button>
+      <div className="px-6 mb-4">
+        <button className="w-full bg-amber-700 text-white py-3 rounded-xl text-base font-semibold hover:bg-amber-800 transition">
+          Print Bills
+        </button>
+      </div>
     </div>
   );
 }
