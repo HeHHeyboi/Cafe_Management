@@ -14,9 +14,9 @@
 - [DELETE /bill/{id}](#delete-billid)
 
 [/order Endpoint](#order-endpoint)
-- [GET /order/{bill_id}](#get-order)
-- [POST /order/{bill_id}](#post-order)
 - [GET /order/{bill_id}](#get-orderid)
+- [POST /order/{bill_id}](#post-order)
+- [PUT /order/{bill_id}](#put-orderid)
 - [DELETE /order/{bill_id}](#delete-orderid)
 
 
@@ -329,3 +329,102 @@ API สำหรับจัดการคำสั่งซื้อในร�
 	`menu_id`: รหัสเมนูที่ต้องการสั่ง (Integer, required)
 	
 	`amount`: จำนวนที่ต้องการสั่ง (Integer, required)
+
+- **Response**:
+  - **Status Code**: 201 Created
+  - **Body**:
+	```json
+	{
+		"msg": "Order added successfully to Bill ID: 0t1Y8Ccg",
+	}
+	```
+
+- **Error Responses**:
+  - **Status Code**: 400 Bad Request
+  - **Body**:
+	```json
+	{
+	  "error": "Invalid menu ID or amount"
+	}
+	```
+### [PUT /order/{bill_id}](#put-orderid)
+- **คำอธิบาย**: แก้ไขคำสั่งซื้อในบิลที่ระบุ.
+- **Parameters**:
+  - `bill_id`: รหัสบิลที่ต้องการแก้ไขคำสั่งซื้อ (String, required)
+- **Request**:
+  - **Headers**:
+	- Content-Type: application/json
+  - **Body**:
+	```json
+	{
+	  "order_id": 1,
+	  "menu_id": 2,
+	  "amount": 3
+	}
+	```
+	`order_id`: รหัสคำสั่งซื้อที่ต้องการแก้ไข (Integer, required)
+
+	`menu_id`: รหัสเมนูที่ต้องการสั่ง (Integer, optional)
+
+	`amount`: จำนวนที่ต้องการสั่ง (Integer, optional)
+
+- **Response**:
+  - **Status Code**: 200 OK
+  - **Body**:
+	```json
+	{
+	  "msg": "Order updated successfully"
+	}
+	```
+- **Error Responses**:
+  - **Status Code**: 400 Bad Request
+  - **Body**:
+	```json
+	{
+	  "error": "Invalid order ID, menu ID, or amount"
+	}
+	```
+  - **Status Code**: 404 Not Found
+  - **Body**:
+	```json
+	{	
+	  "error": "Order not found"
+	}
+	```
+### [DELETE /order/{bill_id}](#delete-orderid)
+- **คำอธิบาย**: ลบคำสั่งซื้อในบิลที่ระบุ.
+- **Parameters**:
+  - `bill_id`: รหัสบิลที่ต้องการลบคำสั่งซื้อ (String, required)
+- **Request**:
+  - **Headers**:
+	- Content-Type: application/json
+  - **Body**:
+	```json
+	{
+	  "order_id": 1
+	}
+	```
+	`order_id`: รหัสคำสั่งซื้อที่ต้องการลบ (Integer, required)
+- **Response**:
+  - **Status Code**: 200 OK
+  - **Body**:
+	```json
+	{
+	  "msg": "Order deleted successfully"
+	}
+	```
+- **Error Responses**:
+  - **Status Code**: 400 Bad Request
+  - **Body**:
+	```json
+	{
+	  "error": "Invalid order ID"
+	}
+	```
+  - **Status Code**: 404 Not Found
+  - **Body**:
+	```json
+	{
+	  "error": "Order not found"
+	}
+	```
