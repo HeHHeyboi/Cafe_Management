@@ -1,6 +1,7 @@
 "use client"
 import Link from "next/link";
 import { CircleUserRound, Home, BarChart2 } from "lucide-react";
+import { Clock } from "lucide-react"; 
 import { Coffee } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -10,6 +11,7 @@ export default function AdminSidebar() {
   const menuItems = [
   { title: "Dashboard", href: "/Admin/Dashboard", icon: Home },
   { title: "MenuOrder", href: "/Admin/MenuOrder", icon: Coffee },
+  { title: "History", href: "/Admin/History", icon: Clock },
   
 ];
 
