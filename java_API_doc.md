@@ -1,1 +1,331 @@
+# Java API Documentation
+[/menu Endpoint](#menu-endpoint)
 
+- [GET /menu](#get-menu)
+- [POST /menu](#post-menu)
+- [GET /menu/{id}](#get-menuid)
+- [PUT /menu/{id}](#put-menuid)
+- [DELETE /menu/{id}](#delete-menuid)
+
+[/bill Endpoint](#bill-endpoint)
+- [GET /bill](#get-bill)
+- [GET /bill/new](#get-billnew)
+- [GET /bill/{id}](#get-billid)
+- [DELETE /bill/{id}](#delete-billid)
+
+[/order Endpoint](#order-endpoint)
+- [GET /order/{bill_id}](#get-order)
+- [POST /order/{bill_id}](#post-order)
+- [GET /order/{bill_id}](#get-orderid)
+- [DELETE /order/{bill_id}](#delete-orderid)
+
+
+## [/menu Endpoint](#menu-endpoint)
+API สำหรับจัดการเมนูอาหารและเครื่องดื่มในร้านกาแฟ.
+### [GET /menu](#get-menu)
+- **คำอธิบาย**: แสดงข้อมูลของเมนูทั้งหมด.
+- **Response**:
+  - **Status Code**: 200 OK
+  - **Body**: Array ของเมนูในรูปแบบ JSON
+	```json
+	[
+	  {
+	    "menu_id": 1,
+	    "name": "Cheese Cake",
+	    "price": 100.00,
+	    "menu_type": "dessert",
+		"img_url": "http://example.com/uploads/cheese_cake.jpg"
+	  },
+	  {
+	    "menu_id": 2,
+	    "name": "Hot Coffee",
+	    "price": 50.00,
+	    "menu_type": "drink",
+		"img_url": "http://example.com/uploads/hot_coffe.jpg"
+	  }
+	]
+	```
+	`menu_id`: รหัสเมนู (Integer)
+
+	`name`: ชื่อเมนู (String)
+
+	`price`: ราคาของเมนู (Decimal)
+
+	`menu_type`: ประเภทของเมนู (String) - "food", "drink", หรือ "dessert"
+
+	`img_url`: URL ของรูปภาพเมนู (String)
+
+### [POST /menu](#post-menu)
+- **คำอธิบาย**: เพิ่มเมนูใหม่.
+- **Request**:
+  - **Headers**:
+	- Content-Type: application/json
+  - **Body**:
+	```json
+	{
+	  "name": "Cheese Cake",
+	  "price": 100.00,
+	  "menu_type": "dessert",
+	  "img_url": "http://example.com/uploads/cheese_cake.jpg"
+	}
+	```
+	`name`: ชื่อเมนู (String, required)
+	`price`: ราคาของเมนู (Decimal, required)
+	`menu_type`: ประเภทของเมนู (String, required) - "food", "drink", หรือ "dessert"
+	`img_url`: URL ของรูปภาพเมนู (String, optional)
+- **Response**:
+  - **Status Code**: 201 Created
+  - **Body**:
+	```json
+	{
+	  "menu_id": 3,
+	  "name": "Cheese Cake",
+	  "price": 100.00,
+	  "menu_type": "dessert",
+	  "img_url": "http://example.com/uploads/cheese_cake.jpg"
+	}
+	```
+	`menu_id`: รหัสเมนูที่ถูกสร้างขึ้นใหม่ (Integer)
+
+	`name`: ชื่อเมนู (String)
+
+	`price`: ราคาของเมนู (Decimal)
+
+	`menu_type`: ประเภทของเมนู (String) - "food", "drink", หรือ "dessert"
+
+	`img_url`: URL ของรูปภาพเมนู (String)
+
+### [GET /menu/{id}](#get-menuid)
+- **คำอธิบาย**: แสดงข้อมูลของเมนูตาม ID ของเมนู.
+- **Parameters**:
+  - `id`: รหัสเมนูที่ต้องการดึงข้อมูล (Integer, required)
+- **Response**:
+  - **Status Code**: 200 OK
+  - **Body**:
+	```json
+	{
+	  "menu_id": 1,
+	  "name": "Cheese Cake",
+	  "price": 100.00,
+	  "menu_type": "dessert",
+	  "img_url": "http://example.com/uploads/cheese_cake.jpg"
+	}
+	```
+	`menu_id`: รหัสเมนู (Integer)
+
+	`name`: ชื่อเมนู (String)
+
+	`price`: ราคาของเมนู (Decimal)
+
+	`menu_type`: ประเภทของเมนู (String) - "food", "drink", หรือ "dessert"
+
+	`img_url`: URL ของรูปภาพเมนู (String)
+
+- **Error Responses**:
+  - **Status Code**: 404 Not Found
+  - **Body**:
+	```json
+	{
+	  "error": "Menu item not found"
+	}
+	```
+
+### [PUT /menu/{id}](#put-menuid)
+- **คำอธิบาย**: แก้ไขข้อมูลของเมนูตาม ID ของเมนู.
+- **Parameters**:
+  - `id`: รหัสเมนูที่ต้องการแก้ไข (Integer, required)
+- **Request**:
+  - **Headers**:
+	- Content-Type: application/json
+  - **Body**:
+	```json
+	{
+	  "name": "Updated Cheese Cake",
+	  "price": 120.00,
+	  "menu_type": "dessert",
+	  "img_url": "http://example.com/uploads/updated_cheese_cake.jpg"
+	}
+	```
+	`name`: ชื่อเมนู (String, optional)
+
+	`price`: ราคาของเมนู (Decimal, optional)
+
+	`menu_type`: ประเภทของเมนู (String, optional) - "food", "drink", หรือ "dessert"
+
+	`img_url`: URL ของรูปภาพเมนู (String, optional)
+
+- **Response**:
+  - **Status Code**: 200 OK
+  - **Body**:
+	```json
+	{
+	  "msg": "Menu item updated successfully"
+	}
+	```
+- **Error Responses**:
+  - **Status Code**: 404 Not Found
+  - **Body**:
+	```json
+	{
+	  "error": "Menu item not found"
+	}
+	```
+### [DELETE /menu/{id}](#delete-menuid)
+- **คำอธิบาย**: ลบเมนูตาม ID ของเมนู.
+- **Parameters**:
+  - `id`: รหัสเมนูที่ต้องการลบ (Integer, required)
+- **Response**:
+  - **Status Code**: 200 OK
+  - **Body**:
+	```json
+	{
+	  "msg": "Menu item deleted successfully"
+	}
+	```
+- **Error Responses**:
+  - **Status Code**: 404 Not Found
+  - **Body**:
+	```json
+	{
+	  "error": "Menu item not found"
+	}
+	```
+
+## [/bill Endpoint](#bill-endpoint)
+API สำหรับจัดการบิลในร้านกาแฟ.
+### [GET /bill](#get-bill)
+- **คำอธิบาย**: แสดงข้อมูลของบิลทั้งหมด.
+- **Response**:
+  - **Status Code**: 200 OK
+  - **Body**: Array ของบิลในรูปแบบ JSON
+	```json
+	[
+	  {
+	    "bill_id": "0t1Y8Ccg",
+	    "total": 250.00,
+	    "created_at": "2023-10-01T10:00:00Z"
+	  },
+	  {
+	    "bill_id": "DaZdJTjL",
+	    "total_amount": 150.00,
+	    "created_at": "2023-10-01T11:00:00Z"
+	  }
+	]
+	```
+	`lill_id`: รหัสบิล (String)
+
+	`total`: ยอดรวมของบิล (Decimal)
+
+	`created_at`: วันที่และเวลาที่บิลถูกสร้าง (ISO 8601 String)
+
+### [GET /bill/new](#get-billnew)
+- **คำอธิบาย**: สร้างบิลใหม่และคืนค่า ID ของบิล.
+- **Response**:
+  - **Status Code**: 201 Created
+  - **Body**:
+	```json
+	{
+	  "bill_id": "0t1Y8Ccg"
+	}
+	```
+	`bill_id`: รหัสบิลที่ถูกสร้างขึ้นใหม่ (String)
+
+### [GET /bill/{id}](#get-billid)
+- **คำอธิบาย**: แสดงข้อมูลของบิลตาม ID ของบิล.
+- **Parameters**:
+  - `id`: รหัสบิลที่ต้องการดึงข้อมูล (String, required)
+- **Response**:
+  - **Status Code**: 200 OK
+  - **Body**:
+	```json
+	{
+	  "bill_id": "0t1Y8Ccg",
+	  "total": 250.00,
+	  "created_at": "2023-10-01T10:00:00Z",
+	}
+	```
+	`bill_id`: รหัสบิล (String)
+
+	`total`: ยอดรวมของบิล (Decimal)
+
+	`created_at`: วันที่และเวลาที่บิลถูกสร้าง (ISO 8601 String)
+
+- **Error Responses**:
+  - **Status Code**: 404 Not Found
+  - **Body**:
+	```json
+	{
+	  "error": "Bill not found"
+	}
+	```
+### [DELETE /bill/{id}](#delete-billid)
+- **คำอธิบาย**: ลบบิลตาม ID ของบิล.
+- **Parameters**:
+  - `id`: รหัสบิลที่ต้องการลบ (String, required)
+- **Response**:
+  - **Status Code**: 200 OK
+  - **Body**:
+	```json
+	{
+	  "msg": "Bill deleted successfully"
+	}
+	```
+- **Error Responses**:
+  - **Status Code**: 404 Not Found
+  - **Body**:
+	```json
+	{
+	  "error": "Bill not found"
+	}
+	```
+
+## [/order Endpoint](#order-endpoint)
+API สำหรับจัดการคำสั่งซื้อในร้านกาแฟ.
+### [GET /order/{bill_id}](#get-order)
+- **คำอธิบาย**: แสดงข้อมูลของคำสั่งซื้อทั้งหมดในบิลที่ระบุ.
+- **Parameters**:
+  - `bill_id`: รหัสบิลที่ต้องการดึงข้อมูลคำสั่งซื้อ (String, required)
+- **Response**:
+  - **Status Code**: 200 OK
+  - **Body**: Array ของคำสั่งซื้อในรูปแบบ JSON
+	```json
+	[
+	  {
+	    "order_id": 1,
+	    "menu_id": 2,
+	    "amount": 2,
+	    "total_price": 100.00
+	  },
+	  {
+	    "order_id": 2,
+	    "menu_id": 1,
+	    "amount": 1,
+	    "total_price": 100.00
+	  }
+	]
+	```
+	`order_id`: รหัสคำสั่งซื้อ (Integer)
+
+	`menud_id`: รหัสเมนูที่ถูกสั่ง (Integer)
+
+	`amount`: จำนวนที่ถูกสั่ง (Integer)
+
+	`total_price`: ราคาทั้งหมดของคำสั่งซื้อนี้ (Decimal)
+
+### [POST /order/{bill_id}](#post-order)
+- **คำอธิบาย**: เพิ่มคำสั่งซื้อใหม่ในบิลที่ระบุ.
+- **Parameters**:
+  - `bill_id`: รหัสบิลที่ต้องการเพิ่มคำสั่งซื้อ (String, required)
+- **Request**:
+  - **Headers**:
+	- Content-Type: application/json
+  - **Body**:
+	```json
+	{
+	  "menu_id": 2,
+	  "amount": 2
+	}
+	```
+	`menu_id`: รหัสเมนูที่ต้องการสั่ง (Integer, required)
+	
+	`amount`: จำนวนที่ต้องการสั่ง (Integer, required)
