@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Coffee, Milk, CupSoda, Cake, UtensilsCrossed, Grid } from "lucide-react";
+import Link from "next/link";
 
 // หมวดหมู่
 const menuCategories = [
@@ -32,15 +33,18 @@ export default function MenuOrderPage() {
       ? menuItems
       : menuItems.filter((item) => item.category === selected);
 
+  // เพิ่ม import Link จาก next/link
+
   return (
     <div className="p-6">
-    <div className="flex items-center justify-between mb-4">
-  <h1 className="text-lg font-medium">Menu Order</h1>
-  <button className="px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition">
-    Add New Menu
-  </button>
-</div>
-      
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-lg font-medium">Menu Order</h1>
+        <Link href="/Admin/AddNewMenu" passHref>
+          <button className="px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition">
+            Add New Menu
+          </button>
+        </Link>
+      </div>
 
       {/* ปุ่มเลือกหมวดหมู่ */}
       <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
@@ -51,7 +55,7 @@ export default function MenuOrderPage() {
             <button
               key={item.title}
               onClick={() => setSelected(item.title)}
-              className={`flex flex-col items-center justify-center rounded-xl py-4 px-2 transition-colors
+              className={`flex flex-col items-center justify-center rounded-xl py-4 px-2 shadow-sm border-gray-950 transition-colors
                 ${isActive
                   ? "bg-blue-500 text-white"
                   : "bg-gray-50 text-gray-700 hover:bg-gray-100"}
