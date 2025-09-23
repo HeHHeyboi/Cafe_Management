@@ -55,7 +55,7 @@ export default function AdminDashboardPage() {
       {
         label: "Revenue",
         data: selectedRange.data,
-        backgroundColor: "#2563eb",
+        backgroundColor: "#FFA000", 
         borderRadius: 8,
       },
     ],

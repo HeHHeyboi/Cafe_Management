@@ -17,7 +17,7 @@ export default function AdminSidebar() {
 
 
   return (
-    <nav className="p-6 bg-gray-50 min-h-screen w-64 shadow-md">
+    <nav className="p-6 bg-gray-50 min-h-screen w-64   shadow-md">
       <ul className="space-y-4">
         {menuItems.map((item) => {
           const isActive = pathname === item.href;
@@ -27,7 +27,7 @@ export default function AdminSidebar() {
               <Link
                 href={item.href}
                 className={`flex items-center space-x-3 px-3 py-2 rounded-lg font-medium transition 
-                  ${isActive ? "bg-blue-50 text-blue-600" : "text-gray-700 hover:bg-gray-100 hover:text-blue-600"}`}
+                  ${isActive ? "bg-amber-50 text-amber-600" : "text-gray-700 hover:bg-gray-100 hover:text-amber-600"}`}
               >
                 <Icon className="w-5 h-5" />
                 <span>{item.title}</span>
