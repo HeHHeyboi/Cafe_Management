@@ -2,7 +2,6 @@
 CREATE TABLE IF NOT EXISTS "order"(
 	bill_id TEXT NOT NULL,
 	menu_id INTEGER NOT NULL,
-	menu_name TEXT NOT NULL,
 	amount INTEGER NOT NULL,
 	total_price FLOAT NOT NULL,
 	PRIMARY KEY (bill_id,menu_id),
