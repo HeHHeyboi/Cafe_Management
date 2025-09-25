@@ -7,7 +7,8 @@ import org.springframework.data.relational.core.mapping.Table;
 @Entity
 @Table(name="admin")
 public class Admin {
-  @Id
+	
+    @Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
 	
