@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-// import Image from "next/image"; // <--- ไม่ใช้แล้ว
+
 import Link from "next/link";
 import { Coffee, Milk, CupSoda, Cake, UtensilsCrossed, Grid, Plus } from "lucide-react";
 import clsx from 'clsx';
@@ -19,8 +19,7 @@ const menuCategories = [
 ];
 
 const allMenuItems = [
-  // เปลี่ยน image url เป็นแค่ string เพื่อไม่ต้องกังวลเรื่อง config
-  { id: 'm1', name: "Latte", category: "Coffee", price: 60, image: "#f0f0f0" }, // ใช้สีแทน URL ชั่วคราว
+  { id: 'm1', name: "Latte", category: "Coffee", price: 60, image: "#f0f0f0" },
   { id: 'm2', name: "Cappuccino", category: "Coffee", price: 65, image: "#d0d0d0" },
   { id: 'm3', name: "Orange Juice", category: "Juice", price: 45, image: "#f0f0c0" },
   { id: 'm4', name: "Milk Tea", category: "Milk", price: 50, image: "#e0e0e0" },
@@ -31,32 +30,63 @@ const allMenuItems = [
   { id: 'm9', name: "Sandwich", category: "Snack", price: 60, image: "#b0f0b0" },
 ];
 
-
 export default function AdminOrderPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentBillItems, setCurrentBillItems] = useState([]);
+
+  // ---------- เพิ่ม state สำหรับ Modal ----------
+  const [showOptionModal, setShowOptionModal] = useState(false);
+  const [menuItemPending, setMenuItemPending] = useState(null);
+  const [drinkType, setDrinkType] = useState(""); // "ร้อน", "เย็น", "ปั่น"
+  const [cupSize, setCupSize] = useState(""); // "S", "M", "L"
 
   const filteredMenuItems =
     selectedCategory === "All"
       ? allMenuItems
       : allMenuItems.filter((item) => item.category === selectedCategory);
 
-  const handleAddItemToBill = (menuItem) => {
-    setCurrentBillItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === menuItem.id);
-
-      if (existingItem) {
-        return prevItems.map((item) =>
-          item.id === menuItem.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      } else {
-        return [...prevItems, { ...menuItem, quantity: 1 }];
-      }
-    });
+  // ---------- ปรับจากเดิม: คลิกใช้ modal ----------
+  const handleMenuClick = (item) => {
+    setMenuItemPending(item);
+    setDrinkType("");
+    setCupSize("");
+    setShowOptionModal(true);
   };
 
+  // ---------- เพิ่ม: ยืนยันการเลือก option ----------
+  const handleConfirmAdd = () => {
+    if (!menuItemPending) return;
+
+    // สร้าง id ใหม่เพื่อระบุตัวเลือกที่ต่างกัน (กันชนกัน)
+    const optionId = menuItemPending.id + "|" + drinkType + "|" + cupSize;
+
+    const option = {
+      id: optionId,
+      name: menuItemPending.name,
+      category: menuItemPending.category,
+      price: menuItemPending.price,
+      image: menuItemPending.image,
+      quantity: 1,
+      drinkType,
+      cupSize,
+    };
+
+    setCurrentBillItems(prevItems => {
+      const exist = prevItems.find(i => i.id === option.id);
+      if (exist) {
+        return prevItems.map(i =>
+          i.id === option.id ? { ...i, quantity: i.quantity + 1 } : i
+        );
+      } else {
+        return [...prevItems, option];
+      }
+    });
+
+    setShowOptionModal(false);
+    setMenuItemPending(null);
+  };
+
+  // ---------- ส่วนลดจำนวน/ลบ ----------
   const handleUpdateItemQuantity = (id, newQuantity) => {
     if (newQuantity < 1) {
       handleRemoveItem(id);
@@ -115,24 +145,19 @@ export default function AdminOrderPage() {
           </div>
         </div>
 
-        {/* แสดงเมนู Mock (ที่กรองแล้ว) */}
+        {/* เมนู */}
         <div className="flex-grow p-6 overflow-y-auto custom-scrollbar">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredMenuItems.map((item) => (
               <div
                 key={item.id}
-                className="relative border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden
-                           flex flex-col hover:shadow-md transition-all duration-200 cursor-pointer"
-                onClick={() => handleAddItemToBill(item)}
+                className="relative border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-all duration-200 cursor-pointer"
+                onClick={() => handleMenuClick(item)} aria-label={`Select ${item.name}`}
               >
-                <div 
-                  // --- แก้ไขตรงนี้ ---
-                  // ลบ next/image ออก และใช้ div แทน
-                  className="relative w-full h-32 bg-gray-100 rounded-t-xl overflow-hidden" 
-                  style={{ backgroundColor: item.image }} // ใช้ item.image เป็นสีพื้นหลัง
-                >
-                  {/* ไม่ต้องมี Image component แล้ว */}
-                </div>
+                <div
+                  className="relative w-full h-32 bg-gray-100 rounded-t-xl overflow-hidden"
+                  style={{ backgroundColor: item.image }}
+                ></div>
                 <div className="p-3 flex-grow">
                   <h2 className="text-lg font-semibold text-gray-800">{item.name}</h2>
                   <p className="text-sm text-gray-500">{item.category}</p>
@@ -142,7 +167,7 @@ export default function AdminOrderPage() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleAddItemToBill(item);
+                      handleMenuClick(item);
                     }}
                     className="p-2 bg-amber-100 text-amber-700 rounded-full hover:bg-amber-200 transition"
                     aria-label={`Add ${item.name} to order`}
@@ -156,7 +181,7 @@ export default function AdminOrderPage() {
         </div>
       </div>
 
-      {/* ===== ส่วนขวา: Bill Display ===== */}
+      {/* ===== ฝั่งขวา: Bill Display ===== */}
       <div className="w-2/5 bg-white shadow-lg overflow-hidden flex flex-col">
         <BillPrint
           billItems={currentBillItems}
@@ -165,6 +190,48 @@ export default function AdminOrderPage() {
           onClearBill={handleClearBill}
         />
       </div>
+
+      {/* ===== Modal เลือกตัวเลือก ===== */}
+      {showOptionModal && (
+        <div className=" flex fixed z-50 inset-0 flex items-center justify-center bg-black/30">
+          <div className="bg-white rounded-xl p-6 w-[320px] shadow-xl">
+            <h2 className="font-bold text-xl mb-4 text-center">{menuItemPending?.name}</h2>
+            <div className="mb-5">
+              <label className="block mb-3 ">ประเภท</label>
+              <div className=" flex gap-3 justify-center">
+                {["Hot", "Ice", "Frappe"].map(type => (
+                  <button key={type}
+                    onClick={() => setDrinkType(type)}
+                    className={`px-4 py-2 rounded-full border ${drinkType === type ? "bg-amber-700 text-white" : "bg-gray-100"}`}>
+                    {type}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="mb-7">
+              <label className="block mb-1">ขนาดแก้ว</label>
+              <div className="flex gap-3 justify-center">
+                {["S", "M", "L","XL"].map(size => (
+                  <button key={size}
+                    onClick={() => setCupSize(size)}
+                    className={`px-4 py-2 rounded-full border ${cupSize === size ? "bg-amber-700 text-white" : "bg-gray-100"}`}>
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex gap-3 justify-center">
+              <button onClick={() => setShowOptionModal(false)}
+                      className="px-4 py-2 bg-gray-200 rounded-lg">ยกเลิก</button>
+              <button 
+                onClick={handleConfirmAdd}
+                className="px-4 py-2 bg-amber-700 text-white rounded-lg disabled:bg-gray-400"
+                disabled={!drinkType || !cupSize}
+              >AddMenu</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
