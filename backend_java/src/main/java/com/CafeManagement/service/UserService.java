@@ -36,7 +36,7 @@ public class UserService {
 	}
 
 	public void CreateUser(UserRequest req) throws Exception {
-		CreateUserParams params = repo.new CreateUserParams(req);
+		CreateUserParams params = new UserRepo.CreateUserParams(req);
 		UUID userId = UUID.randomUUID();
 		params.setUserId(userId.toString());
 		repo.CreateUser(params);
