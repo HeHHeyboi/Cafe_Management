@@ -113,7 +113,7 @@ API สำหรับจัดการเมนูอาหารและเ�
 	  ],
 	}
 	```
-	และ
+	และ Form-Data (ถ้ามีการอัปโหลดรูปภาพ):
 	```form-data
 	img: Files (Image, optional)
 	```
