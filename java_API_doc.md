@@ -107,7 +107,7 @@ API สำหรับจัดการเมนูอาหารและเ�
 		]
 	}
 	```
-	และ
+	และ Form-Data (ถ้ามีการอัปโหลดรูปภาพ):
 	```form-data
 	img: Files (Image, optional)
 	```
@@ -192,18 +192,35 @@ API สำหรับจัดการเมนูอาหารและเ�
   - **Body**:
 	```json
 	{
-	  "name": "Updated Cheese Cake",
-	  "price": 120.00,
+	  "name": "Cheese Cake",
 	  "menu_type": "dessert",
-	  "size": "s",
-	  "types": [
-		{
-			"type": "ร้อน",
-			"addition_price": 10.00
+	  "category": [
+		{ 
+			"size": "s",
+			"price": 100.00,
+			"types":[
+				{
+					"type": "ร้อน",
+					"addition_price": 10.00
+				}
+			]
+		},
+		{ 
+			"size": "m",
+			"price": 120.00,
+			"types":[
+				{
+					"type": "ร้อน",
+					"addition_price": 10.00
+				}
+			]
 		}
 	  ],
-	  "img_url": "http://example.com/uploads/updated_cheese_cake.jpg"
 	}
+	```
+	และ Form-Data (ถ้ามีการอัปโหลดรูปภาพ):
+	```form-data
+	img: Files (Image, optional)
 	```
 	`name`: ชื่อเมนู (String, optional)
 
@@ -213,9 +230,12 @@ API สำหรับจัดการเมนูอาหารและเ�
 
 	`size`: ขนาดของเมนู (String, optional) - "s", "m", "l", "xl"
 
-	`types`: ปั่น, ร้อน, เย็น (Array, optional)
-	 - `type`: ปั่น, ร้อน, เย็น (String, optional)
-	 - `addition_price`: ราคาที่ต้องเพิ่ม (Decimal, optional)
+	`category`: ขนาดของเมนู (Array, optional)
+	 - `size`: ขนาดของเมนู (String, required) - "s", "m", "l", "xl"
+	 - `price`: ราคาของเมนู (Decimal, required)
+	 - `types`: ร้อน,เย็น (Array, required)
+		- `type`: ร้อน,เย็น (String, required)
+		- `addition_price`: ราคาที่ต้องเพิ่ม (Decimal, required)
 
 	`img_url`: URL ของรูปภาพเมนู (String, optional)
 
