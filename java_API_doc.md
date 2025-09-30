@@ -149,7 +149,7 @@ API สำหรับจัดการเมนูอาหารและเ�
 				}
 			],
 			"img_url": "http://example.com/uploads/cheese_cake.jpg"
-		}
+		},
 		{
 			"menu_id": 4,
 			"name": "Cheese Cake",
