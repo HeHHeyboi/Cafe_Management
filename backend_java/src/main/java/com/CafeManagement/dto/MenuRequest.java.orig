@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 
 public class MenuRequest {
+<<<<<<< HEAD
 
 	public class Category {
 		@JsonProperty("size")
@@ -26,4 +27,9 @@ public class MenuRequest {
 	@JsonProperty("menu_type")
 	String menu_type;
 
+=======
+	@NotBlank(message = "Must have Menu Name")
+	@JsonProperty("menu")
+	String name;
+>>>>>>> 26e42cdd (update Doc)
 }
