@@ -87,30 +87,24 @@ API สำหรับจัดการเมนูอาหารและเ�
   - **Body**:
 	```json
 	{
-	  "name": "Cheese Cake",
-	  "menu_type": "dessert",
-	  "category": [
-		{ 
-			"size": "s",
-			"price": 100.00,
-			"types":[
-				{
-					"type": "ร้อน",
-					"addition_price": 10.00
-				}
-			]
-		},
-		{ 
-			"size": "m",
-			"price": 120.00,
-			"types":[
-				{
-					"type": "ร้อน",
-					"addition_price": 10.00
-				}
-			]
-		}
-	  ],
+		"name": "Cheese Cake",
+		"menu_type": "dessert",
+		"category": [
+			{ 
+				"size": "s",
+				"price": 100.00,
+			},
+			{ 
+				"size": "m",
+				"price": 120.00,
+			},
+		],
+		"types":[
+			{
+				"type": "ร้อน",
+				"addition_price": 10.00
+			}
+		]
 	}
 	```
 	และ
@@ -135,53 +129,10 @@ API สำหรับจัดการเมนูอาหารและเ�
   - **Status Code**: 201 Created
   - **Body**:
 	```json
-	[
-		{
-			"menu_id": 3,
-			"name": "Cheese Cake",
-			"price": 100.00,
-			"menu_type": "dessert",
-			"size": "s",
-			"types": [
-				{
-					"type": "ร้อน",
-					"addition_price": 10.00
-				}
-			],
-			"img_url": "http://example.com/uploads/cheese_cake.jpg"
-		}
-		{
-			"menu_id": 4,
-			"name": "Cheese Cake",
-			"price": 100.00,
-			"menu_type": "dessert",
-			"size": "m",
-			"types": [
-				{
-					"type": "ร้อน",
-					"addition_price": 10.00
-				}
-			],
-			"img_url": "http://example.com/uploads/cheese_cake.jpg"
-		},
-		...
-	]
+	{
+		"msg": "Menu item created successfully"
+	}
 	```
-	`menu_id`: รหัสเมนูที่ถูกสร้างขึ้นใหม่ (Integer)
-
-	`name`: ชื่อเมนู (String)
-
-	`price`: ราคาของเมนู (Decimal)
-
-	`menu_type`: ประเภทของเมนู (String) - "food", "drink", หรือ "dessert"
-
-	`size`: ขนาดของเมนู (String) - "s", "m", "l", "xl"
-
-	`types`: ร้อน,เย็น, ปั่น (Array)
-	 - `type`: ร้อน,เย็น, ปั่น (String)
-	 - `addition_price`: ราคาที่ต้องเพิ่ม (Decimal)
-
-	`img_url`: URL ของรูปภาพเมนู (String)
 
 ### [GET /menu/{id}](#get-menuid)
 - **คำอธิบาย**: แสดงข้อมูลของเมนูตาม ID ของเมนู.
