@@ -4,5 +4,7 @@ CREATE TABLE IF NOT EXISTS menu(
 	name TEXT NOT NULL,
 	price REAL NOT NULL,
 	menu_type TEXT NOT NULL,
-	img_url TEXT
+	img_url TEXT,
+	size TEXT,
+	type TEXT
 );
