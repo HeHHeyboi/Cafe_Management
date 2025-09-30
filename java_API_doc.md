@@ -148,7 +148,6 @@ API สำหรับจัดการเมนูอาหารและเ�
 					"addition_price": 10.00
 				}
 			],
-			"price": 100.00,
 			"img_url": "http://example.com/uploads/cheese_cake.jpg"
 		}
 		{
@@ -163,7 +162,6 @@ API สำหรับจัดการเมนูอาหารและเ�
 					"addition_price": 10.00
 				}
 			],
-			"price": 100.00,
 			"img_url": "http://example.com/uploads/cheese_cake.jpg"
 		},
 		...

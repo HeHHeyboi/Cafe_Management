@@ -1,11 +1,15 @@
 package com.CafeManagement.dto;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.validation.constraints.NotBlank;
 
+@JsonPropertyOrder({ "name", "menu_type", "category" })
 public class MenuRequest {
-	public class Category {
+	public static class Category {
 		@JsonProperty("size")
 		String size;
 
@@ -13,55 +17,32 @@ public class MenuRequest {
 		double price;
 
 		@JsonProperty("types")
-		Type types[];
-
-		public void setSize(String size) {
-			this.size = size;
-		}
-
-		public void setPrice(double price) {
-			this.price = price;
-		}
-
-		public void setTypes(Type[] types) {
-			this.types = types;
-		}
+		List<Type> types;
 
 		public String getSize() {
 			return size;
+		}
+
+		public void setSize(String size) {
+			this.size = size;
 		}
 
 		public double getPrice() {
 			return price;
 		}
 
-		public Type[] getTypes() {
+		public void setPrice(double price) {
+			this.price = price;
+		}
+
+		public List<Type> getTypes() {
 			return types;
 		}
-	}
 
-	public class Type {
-		@JsonProperty("type")
-		String type;
-
-		@JsonProperty("addition_price")
-		String addition_price;
-
-		public void setType(String type) {
-			this.type = type;
+		public void setTypes(List<Type> types) {
+			this.types = types;
 		}
 
-		public void setAddition_price(String addition_price) {
-			this.addition_price = addition_price;
-		}
-
-		public String getType() {
-			return type;
-		}
-
-		public String getAddition_price() {
-			return addition_price;
-		}
 	}
 
 	@NotBlank(message = "Must have Menu Name")
@@ -73,29 +54,5 @@ public class MenuRequest {
 	String menu_type;
 
 	@JsonProperty("category")
-	Category category[];
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getMenu_type() {
-		return menu_type;
-	}
-
-	public void setMenu_type(String menu_type) {
-		this.menu_type = menu_type;
-	}
-
-	public Category[] getCategory() {
-		return category;
-	}
-
-	public void setCategory(Category[] category) {
-		this.category = category;
-	}
+	List<Category> category;
 }
