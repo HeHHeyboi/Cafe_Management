@@ -25,7 +25,7 @@ public class UserRepo {
 	 * สร้างึ้นมาเพื่อแปลงจาก UserRequest -> Parameter ของ
 	 * CreateUser method
 	 */
-	public class CreateUserParams {
+	public static class CreateUserParams {
 		String userId;
 		String firstName;
 		String lastName;

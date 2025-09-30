@@ -11,6 +11,6 @@ CREATE TABLE IF NOT EXISTS menu(
 CREATE TABLE IF NOT EXISTS type_table(
 	menu_id INTEGER,
 	type TEXT,
-	addition_price REAL,
+	addition_price REAL DEFAULT 0,
 	FOREIGN KEY (menu_id) REFERENCES menu(menu_id) ON DELETE CASCADE
 );

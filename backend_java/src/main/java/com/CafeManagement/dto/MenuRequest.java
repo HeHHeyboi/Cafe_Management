@@ -14,10 +14,7 @@ public class MenuRequest {
 		String size;
 
 		@JsonProperty("price")
-		double price;
-
-		@JsonProperty("types")
-		List<Type> types;
+		Double price;
 
 		public String getSize() {
 			return size;
@@ -27,20 +24,12 @@ public class MenuRequest {
 			this.size = size;
 		}
 
-		public double getPrice() {
+		public Double getPrice() {
 			return price;
 		}
 
-		public void setPrice(double price) {
+		public void setPrice(Double price) {
 			this.price = price;
-		}
-
-		public List<Type> getTypes() {
-			return types;
-		}
-
-		public void setTypes(List<Type> types) {
-			this.types = types;
 		}
 
 	}
@@ -55,4 +44,39 @@ public class MenuRequest {
 
 	@JsonProperty("category")
 	List<Category> category;
+
+	@JsonProperty("types")
+	List<Type> types;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getMenu_type() {
+		return menu_type;
+	}
+
+	public void setMenu_type(String menu_type) {
+		this.menu_type = menu_type;
+	}
+
+	public List<Category> getCategory() {
+		return category;
+	}
+
+	public void setCategory(List<Category> category) {
+		this.category = category;
+	}
+
+	public List<Type> getTypes() {
+		return types;
+	}
+
+	public void setTypes(List<Type> types) {
+		this.types = types;
+	}
 }
