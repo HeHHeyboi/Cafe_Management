@@ -12,6 +12,7 @@ export default function AdminSidebar() {
   { title: "Dashboard", href: "/Admin/Dashboard", icon: Home },
   { title: "MenuOrder", href: "/Admin/MenuOrder", icon: Coffee },
   { title: "History", href: "/Admin/History", icon: Clock },
+  { title: "Member", href: "/Admin/Member", icon: CircleUserRound },
   
 ];
 
