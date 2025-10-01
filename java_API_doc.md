@@ -83,11 +83,9 @@ API สำหรับจัดการเมนูอาหารและเ�
 - **คำอธิบาย**: เพิ่มเมนูใหม่.
 - **Request**:
   - **Headers**:
-	- Content-Type: multipart/form-data
+	- Content-Type: application/json
   - **Body**:
-	```form-data
-	img: Files (Image, optional)
-	data: JSON (required)
+	```json
 	{
 		"name": "Cheese Cake",
 		"menu_type": "dessert",
@@ -108,6 +106,10 @@ API สำหรับจัดการเมนูอาหารและเ�
 			}
 		]
 	}
+	```
+	และ Form-Data (ถ้ามีการอัปโหลดรูปภาพ):
+	```form-data
+	img: Files (Image, optional)
 	```
 
 	`name`: ชื่อเมนู (String, required)
