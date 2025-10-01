@@ -1,5 +1,6 @@
 package com.CafeManagement.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,30 +10,6 @@ import jakarta.validation.constraints.NotBlank;
 
 @JsonPropertyOrder({ "name", "menu_type", "category" })
 public class MenuRequest {
-	public static class Category {
-		@JsonProperty("size")
-		String size;
-
-		@JsonProperty("price")
-		Double price;
-
-		public String getSize() {
-			return size;
-		}
-
-		public void setSize(String size) {
-			this.size = size;
-		}
-
-		public Double getPrice() {
-			return price;
-		}
-
-		public void setPrice(Double price) {
-			this.price = price;
-		}
-
-	}
 
 	@NotBlank(message = "Must have Menu Name")
 	@JsonProperty("name")
@@ -43,10 +20,10 @@ public class MenuRequest {
 	String menu_type;
 
 	@JsonProperty("category")
-	List<Category> category;
+	List<Category> category = new ArrayList<>();
 
 	@JsonProperty("types")
-	List<Type> types;
+	List<Type> types = new ArrayList<>();
 
 	public String getName() {
 		return name;

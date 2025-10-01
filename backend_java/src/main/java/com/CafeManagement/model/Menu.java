@@ -1,16 +1,35 @@
 package com.CafeManagement.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Menu {
 	private int id;
 	private String name;
-	private double price;
 	private String menu_type;
 	private String img_url;
-	private String size;
 
-	private List<Type> types;
+	private List<Type> types = new ArrayList<>();
+	private List<Category> categories = new ArrayList<>();
+
+	public static class Category {
+		private String size;
+		private Double price;
+
+		public Category(String size, Double price) {
+			this.size = size;
+			this.price = price;
+		}
+
+		public double getPrice() {
+			return price;
+		}
+
+		public String getSize() {
+			return size;
+		}
+
+	}
 
 	public static class Type {
 		String type;
@@ -34,16 +53,11 @@ public class Menu {
 
 	}
 
-	public Menu(int id, String name, double price,
-			String menu_type, String img_url,
-			String size, List<Type> types) {
+	public Menu(int id, String name, String menu_type, String img_url) {
 		this.id = id;
 		this.name = name;
-		this.price = price;
 		this.menu_type = menu_type;
 		this.img_url = img_url;
-		this.size = size;
-		this.types = types;
 	}
 
 	public int getId() {
@@ -62,14 +76,6 @@ public class Menu {
 		this.name = name;
 	}
 
-	public double getPrice() {
-		return price;
-	}
-
-	public void setPrice(double price) {
-		this.price = price;
-	}
-
 	public String getMenu_type() {
 		return menu_type;
 	}
@@ -86,15 +92,11 @@ public class Menu {
 		this.img_url = img_url;
 	}
 
-	public String getSize() {
-		return size;
-	}
-
-	public void setSize(String size) {
-		this.size = size;
-	}
-
 	public List<Type> getTypes() {
 		return types;
+	}
+
+	public List<Category> getCategories() {
+		return categories;
 	}
 }

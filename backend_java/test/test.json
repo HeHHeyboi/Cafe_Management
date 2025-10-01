@@ -1,0 +1,28 @@
+{
+  "name": "Cake Cheese",
+  "menu_type": "drink",
+  "category": [
+    {
+      "size": "s",
+      "price": 80.00
+    },
+    {
+      "size": "m",
+      "price": 100.00
+    },
+    {
+      "size": "l",
+      "price": 120.00
+    }
+  ],
+  "types": [
+    {
+      "type": "ร้อน",
+      "addition_price": 10.00
+    },
+    {
+      "type": "none",
+      "addition_price": 0.0
+    }
+  ]
+}
