@@ -29,38 +29,52 @@ API สำหรับจัดการเมนูอาหารและเ�
   - **Body**: Array ของเมนูในรูปแบบ JSON
 	```json
 	[
-	  {
-	    "menu_id": 1,
-	    "name": "Cheese Cake",
-	    "price": 100.00,
-	    "menu_type": "dessert",
-		"size": "s",
-		"types": [
-			{
-				"type": "ร้อน",
-				"addition_price": 10.00
-			},
-			{
-				"type": "เย็น",
-				"addition_price": 5.00
-			}
-		],
-		"img_url": "http://example.com/uploads/cheese_cake.jpg"
-	  },
-	  {
-	    "menu_id": 2,
-	    "name": "Hot Coffee",
-	    "price": 50.00,
-	    "menu_type": "drink",
-		"size": "s",
-		"types": [
-			{
-				"type": "ร้อน",
-				"addition_price": 10.00
-			}
-		],
-		"img_url": "http://example.com/uploads/hot_coffe.jpg"
-	  }
+		{
+			"name": "Cheese Cake",
+			"menu_type": "dessert",
+			"img_url": "http://example.com/uploads/cheese_cake.jpg",
+			"category": [
+				{ 
+					"size": "s",
+					"price": 100.00,
+				},
+				{ 
+					"size": "m",
+					"price": 120.00,
+				},
+			],
+			"types":[
+				{
+					"type": "ร้อน",
+					"addition_price": 10.00
+				}
+			]
+		},
+		{
+			"name": "Espresso",
+			"menu_type": "drink",
+			"img_url": "http://example.com/uploads/espresso.jpg",
+			"category": [
+				{ 
+					"size": "s",
+					"price": 50.00,
+				},
+				{ 
+					"size": "m",
+					"price": 70.00,
+				},
+			],
+			"types":[
+				{
+					"type": "ร้อน",
+					"addition_price": 0.00
+				},
+				{
+					"type": "เย็น",
+					"addition_price": 10.00
+				}
+			]
+		}
 	]
 	```
 	`menu_id`: รหัสเมนู (Integer)
@@ -146,16 +160,24 @@ API สำหรับจัดการเมนูอาหารและเ�
 	{
 	  "menu_id": 1,
 	  "name": "Cheese Cake",
-	  "price": 100.00,
-	  "size": "s",
+	  "menu_type": "dessert",
+	  "img_url": "http://example.com/uploads/cheese_cake.jpg",
+		"category": [
+			{ 
+				"size": "s",
+				"price": 100.00,
+			},
+			{ 
+				"size": "m",
+				"price": 120.00,
+			},
+		],
 	  "types": [
 		{
 			"type": "ร้อน",
 			"addition_price": 10.00
 		}
-	  ],
-	  "menu_type": "dessert",
-	  "img_url": "http://example.com/uploads/cheese_cake.jpg"
+	  ]
 	}
 	```
 	`menu_id`: รหัสเมนู (Integer)

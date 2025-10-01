@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,6 +58,10 @@ public class MenuController {
 		try {
 			response = service.GetMenu(id);
 
+		} catch (MenuNotFoundExeception notfound) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("""
+					{"error": "%s"}
+					""".formatted(notfound.getMessage()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.internalServerError().body("""
@@ -69,12 +74,12 @@ public class MenuController {
 
 	@PutMapping("/{id}")
 	public ResponseEntity<String> updateMenuById(@RequestParam("img") MultipartFile file,
-			@Valid @RequestParam("data") String data, @PathVariable int menu_id) {
+			@Valid @RequestParam("data") String data, @PathVariable int id) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			MenuRequest req = mapper.readValue(data, MenuRequest.class);
 			String img_url = fileService.store(file);
-			service.UpdateMenuById(req, menu_id, img_url);
+			service.UpdateMenuById(req, id, img_url);
 		} catch (MenuNotFoundExeception notfound) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("""
 					{"error": "%s"}
@@ -116,5 +121,21 @@ public class MenuController {
 		// return ResponseEntity.ok("""
 		// {"msg":"Create Menu Success","img":"%s"}
 		// """.formatted(file.getName()));
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteMenuById(@PathVariable int id) {
+		try {
+			service.DeleteMenuById(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.internalServerError().body("""
+					{ "error": "%s" }
+					""".formatted(e.getMessage()));
+		}
+
+		return ResponseEntity.ok("""
+				{ "msg": "Menu item deleted successfully" }
+				""");
 	}
 }

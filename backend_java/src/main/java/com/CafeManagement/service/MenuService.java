@@ -45,6 +45,10 @@ public class MenuService {
 		repo.UpdateMenuById(req, menu_id, img_url);
 	}
 
+	public void DeleteMenuById(int menu_id) {
+		repo.DeleteMenuById(menu_id);
+	}
+
 	public void DeleteAllMenu() throws Exception {
 		repo.DeleteAllMenu();
 	}

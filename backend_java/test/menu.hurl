@@ -22,7 +22,24 @@ GET http://localhost:8080/menu/{{id}}
 output: -
 HTTP 200
 
-# PUT http://localhost:8080/menu/{{id}}
-# [Multipart]
-# img: file,random.jpg; image/jpeg
-# data: {"name": "Cake Cheese", "menu_type": "main",}
+PUT http://localhost:8080/menu/{{id}}
+[Options]
+output: -
+[Multipart]
+img: file,random.jpg; image/jpeg
+data: { "name": "Cake Cheese", "menu_type": "drink", "category": [ {"size":"s","price": 80.00},{ "size": "m", "price": 100.00 }, { "size": "l", "price": 120.00 } ], "types":[ { "type": "ร้อน", "addition_price": 10.00 },{"type":"none","addition_price":0.0} ] }
+
+HTTP 200
+
+GET http://localhost:8080/menu/{{id}}
+[Options]
+output: -
+HTTP 200
+
+DELETE http://localhost:8080/menu/{{id}}
+[Options]
+output: -
+HTTP 200
+
+GET http://localhost:8080/menu
+HTTP 200

@@ -12,7 +12,6 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
 import com.CafeManagement.dto.MenuRequest;
-import com.CafeManagement.dto.Type;
 import com.CafeManagement.exception.MenuNotFoundExeception;
 import com.CafeManagement.model.Menu;
 
@@ -22,12 +21,16 @@ public class MenuRepo {
 	JdbcTemplate jdbc;
 
 	final String getMenus = """
-			SELECT menu_id,name,price,menu_type,img_url,size FROM menu;
+			SELECT menu_id,name,menu_type,img_url FROM menu;
 			""";
 
+	final String getCategoriesById = """
+			SELECT size, price FROM category
+			WHERE menu_id = ?;
+			""";
 	final String getTypesById = """
-				SELECT type,addition_price FROM type_table
-				WHERE menu_id = ?;
+			SELECT type,addition_price FROM type_table
+			WHERE menu_id = ?;
 			""";
 
 	public List<Menu> GetAllMenu() throws Exception {
@@ -36,11 +39,16 @@ public class MenuRepo {
 		while (row.next()) {
 			int id = row.getInt("menu_id");
 			String name = row.getString("name");
-			Double price = row.getDouble("price");
 			String menu_type = row.getString("menu_type");
 			String img_url = row.getString("img_url");
-			String size = row.getString("size");
-			Menu menu = new Menu(id, name, price, menu_type, img_url, size);
+			Menu menu = new Menu(id, name, menu_type, img_url);
+
+			SqlRowSet category_rows = jdbc.queryForRowSet(getCategoriesById, id);
+			while (category_rows.next()) {
+				String size = category_rows.getString("size");
+				Double price = category_rows.getDouble("price");
+				menu.getCategories().add(new Menu.Category(size, price));
+			}
 
 			SqlRowSet type_rows = jdbc.queryForRowSet(getTypesById, id);
 			while (type_rows.next()) {
@@ -54,7 +62,7 @@ public class MenuRepo {
 	}
 
 	final String getMenuById = """
-			SELECT menu_id,name,price,menu_type,img_url,size FROM menu
+			SELECT menu_id,name,menu_type,img_url FROM menu
 			WHERE menu_id = ?
 			""";
 
@@ -64,17 +72,24 @@ public class MenuRepo {
 		if (row.next()) {
 			menu.setId(row.getInt("menu_id"));
 			menu.setName(row.getString("name"));
-			menu.setPrice(row.getDouble("price"));
 			menu.setMenu_type(row.getString("menu_type"));
 			menu.setImg_url(row.getString("img_url"));
-			menu.setSize(row.getString("size"));
 
-			SqlRowSet type_rows = jdbc.queryForRowSet(getTypesById, menu.getId());
+			SqlRowSet category_rows = jdbc.queryForRowSet(getCategoriesById, menu_id);
+			while (category_rows.next()) {
+				String size = category_rows.getString("size");
+				Double price = category_rows.getDouble("price");
+				menu.getCategories().add(new Menu.Category(size, price));
+			}
+
+			SqlRowSet type_rows = jdbc.queryForRowSet(getTypesById, menu_id);
 			while (type_rows.next()) {
 				String type = type_rows.getString("type");
 				Double addition_price = type_rows.getDouble("addition_price");
 				menu.getTypes().add(new Menu.Type(type, addition_price));
 			}
+		} else {
+			throw new MenuNotFoundExeception(MenuNotFoundExeception.GenMessage(menu_id));
 		}
 
 		return menu;
@@ -82,8 +97,16 @@ public class MenuRepo {
 
 	final String updateMenuById = """
 			UPDATE menu
-			SET name = ?, price = ?, menu_type = ?, size = ?, img_url = ?
+			SET name = ?,  menu_type = ?,img_url = ?
 			WHERE menu_id = ?;
+			""";
+	final String resetCategoryById = """
+			DELETE FROM category
+			WHERE menu_id = ?
+			""";
+	final String resetTypeById = """
+			DELETE FROM type_table
+			WHERE menu_id = ?
 			""";
 	final String updateTypeByMenuId = """
 			UPDATE type_table
@@ -93,18 +116,30 @@ public class MenuRepo {
 
 	public void UpdateMenuById(MenuRequest arg, int menu_id, String img_url) throws Exception {
 		int row_affected = 0;
-		for (var c : arg.getCategory()) {
-			row_affected += jdbc.update(updateMenuById, arg.getName(), c.getPrice(), arg.getMenu_type(),
-					c.getSize(), img_url, menu_id);
-		}
 
-		for (var t : arg.getTypes()) {
-			jdbc.update(updateTypeByMenuId, t.getType(), t.getAddition_price(), menu_id);
-		}
-
+		row_affected = jdbc.update(updateMenuById, arg.getName(), arg.getMenu_type(), img_url, menu_id);
 		if (row_affected == 0) {
 			throw new MenuNotFoundExeception(MenuNotFoundExeception.GenMessage(menu_id));
 		}
+		jdbc.update(resetCategoryById, menu_id);
+		for (var c : arg.getCategory()) {
+			jdbc.update(createCategory, menu_id, c.getSize(), c.getPrice());
+		}
+
+		jdbc.update(resetTypeById, menu_id);
+		for (var t : arg.getTypes()) {
+			jdbc.update(createType, menu_id, t.getType(), t.getAddition_price());
+		}
+
+	}
+
+	final String deleteMenuById = """
+			DELETE FROM menu
+			WHERE menu_id = ?
+			""";
+
+	public void DeleteMenuById(int menu_id) {
+		jdbc.update(deleteMenuById, menu_id);
 	}
 
 	final String deleteAllMenu = """
@@ -122,7 +157,7 @@ public class MenuRepo {
 	// """;
 	final String createMenu = """
 			INSERT INTO menu(name,menu_type,img_url)
-			VALUES(?,?,?,?,?)
+			VALUES(?,?,?)
 			""";
 
 	final String createCategory = """
@@ -152,8 +187,8 @@ public class MenuRepo {
 			PreparedStatement ps = conn.prepareStatement(createMenu, new String[] { "menu_id" });
 
 			ps.setString(1, arg.getName());
-			ps.setString(3, arg.getMenu_type());
-			ps.setString(4, img_url);
+			ps.setString(2, arg.getMenu_type());
+			ps.setString(3, img_url);
 
 			return ps;
 		}, key);
