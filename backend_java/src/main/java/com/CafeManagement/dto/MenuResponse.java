@@ -1,5 +1,6 @@
 package com.CafeManagement.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.CafeManagement.model.Menu;
@@ -17,9 +18,12 @@ public class MenuResponse {
 	@JsonProperty("size")
 	String size;
 	@JsonProperty("types")
-	List<Type> types;
+	List<Type> types = new ArrayList<>();
 	@JsonProperty("img_url")
 	String img_url;
+
+	public MenuResponse() {
+	}
 
 	public MenuResponse(Menu menu) {
 		this.id = menu.getId();

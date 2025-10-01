@@ -83,10 +83,10 @@ API สำหรับจัดการเมนูอาหารและเ�
 - **คำอธิบาย**: เพิ่มเมนูใหม่.
 - **Request**:
   - **Headers**:
-	- Content-Type: application/json
+	- Content-Type: multipart/form-data
   - **Body**:
 	```json
-	{
+	data:{
 		"name": "Cheese Cake",
 		"menu_type": "dessert",
 		"category": [
@@ -107,7 +107,7 @@ API สำหรับจัดการเมนูอาหารและเ�
 		]
 	}
 	```
-	และ Form-Data (ถ้ามีการอัปโหลดรูปภาพ):
+	และ img (ถ้ามีการอัปโหลดรูปภาพ):
 	```form-data
 	img: Files (Image, optional)
 	```
@@ -119,9 +119,10 @@ API สำหรับจัดการเมนูอาหารและเ�
 	`category`: ขนาดของเมนู (Array, required)
 	 - `size`: ขนาดของเมนู (String, required) - "s", "m", "l", "xl"
 	 - `price`: ราคาของเมนู (Decimal, required)
-	 - `types`: ร้อน,เย็น (Array, required)
-		- `type`: ร้อน,เย็น (String, required)
-		- `addition_price`: ราคาที่ต้องเพิ่ม (Decimal, required)
+
+	`types`: ร้อน,เย็น (Array, required)
+	 - `type`: ร้อน,เย็น (String, required)
+	 - `addition_price`: ราคาที่ต้องเพิ่ม (Decimal, required)
 
 	`img`: URL ของรูปภาพเมนู (String, optional)
 
@@ -198,24 +199,18 @@ API สำหรับจัดการเมนูอาหารและเ�
 		{ 
 			"size": "s",
 			"price": 100.00,
-			"types":[
-				{
-					"type": "ร้อน",
-					"addition_price": 10.00
-				}
-			]
 		},
 		{ 
 			"size": "m",
 			"price": 120.00,
-			"types":[
-				{
-					"type": "ร้อน",
-					"addition_price": 10.00
-				}
-			]
 		}
 	  ],
+		"types":[
+			{
+				"type": "ร้อน",
+				"addition_price": 10.00
+			}
+		]
 	}
 	```
 	และ Form-Data (ถ้ามีการอัปโหลดรูปภาพ):

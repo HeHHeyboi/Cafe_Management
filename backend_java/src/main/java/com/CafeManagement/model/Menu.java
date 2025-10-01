@@ -1,5 +1,6 @@
 package com.CafeManagement.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Menu {
@@ -10,7 +11,7 @@ public class Menu {
 	private String img_url;
 	private String size;
 
-	private List<Type> types;
+	private List<Type> types = new ArrayList<>();
 
 	public static class Type {
 		String type;
@@ -36,14 +37,16 @@ public class Menu {
 
 	public Menu(int id, String name, double price,
 			String menu_type, String img_url,
-			String size, List<Type> types) {
+			String size) {
 		this.id = id;
 		this.name = name;
 		this.price = price;
 		this.menu_type = menu_type;
 		this.img_url = img_url;
 		this.size = size;
-		this.types = types;
+		if (this.types == null) {
+			System.out.println("List is null");
+		}
 	}
 
 	public int getId() {
@@ -96,5 +99,9 @@ public class Menu {
 
 	public List<Type> getTypes() {
 		return types;
+	}
+
+	public void setTypes(List<Type> types) {
+		this.types = types;
 	}
 }
