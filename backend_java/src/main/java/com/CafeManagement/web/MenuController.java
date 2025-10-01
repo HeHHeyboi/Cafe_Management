@@ -1,5 +1,7 @@
 package com.CafeManagement.web;
 
+import java.io.File;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.json.JacksonJsonDecoder;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.CafeManagement.dto.MenuRequest;
+import com.CafeManagement.service.FileSystemStorageService;
 import com.CafeManagement.service.MenuService;
 
 import jakarta.validation.Valid;
@@ -20,10 +23,12 @@ import tools.jackson.databind.ObjectMapper;
 @RequestMapping("/menu")
 public class MenuController {
 	MenuService service;
+	FileSystemStorageService fileService;
 
 	@Autowired
-	public MenuController(MenuService service) {
+	public MenuController(MenuService service, FileSystemStorageService fileSystemStorageService) {
 		this.service = service;
+		this.fileService = fileSystemStorageService;
 	}
 
 	@PostMapping(consumes = { "multipart/form-data" })
@@ -32,9 +37,10 @@ public class MenuController {
 
 		ObjectMapper mapper = new ObjectMapper();
 		MenuRequest req = mapper.readValue(data, MenuRequest.class);
+		String img_url = fileService.store(file);
 
 		try {
-			service.CreateMenu(req, null);
+			service.CreateMenu(req, img_url);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.internalServerError().body("""

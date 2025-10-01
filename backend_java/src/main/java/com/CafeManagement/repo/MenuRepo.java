@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
 import com.CafeManagement.dto.MenuRequest;
@@ -39,8 +38,7 @@ public class MenuRepo {
 		for (var c : arg.getCategory()) {
 			// NOTE: Can use this like Golang
 			// SqlRowSet row = jdbc.queryForRowSet(createMenu, arg.getName(), c.getPrice(),
-			// arg.getMenu_type(), null,
-			// c.getSize());
+			// arg.getMenu_type(), img_url, c.getSize());
 			// if (row.next()) {
 			// id = row.getInt("menu_id");
 			// Type t = arg.getTypes().get(i);
@@ -55,7 +53,7 @@ public class MenuRepo {
 				ps.setString(1, arg.getName());
 				ps.setString(2, c.getPrice().toString());
 				ps.setString(3, arg.getMenu_type());
-				ps.setString(4, null);
+				ps.setString(4, img_url);
 				ps.setString(5, c.getSize());
 
 				return ps;
