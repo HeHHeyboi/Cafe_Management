@@ -3,7 +3,6 @@ package com.CafeManagement.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.CafeManagement.repo.MenuRepo;
 import com.CafeManagement.dto.MenuRequest;
@@ -18,7 +17,7 @@ public class MenuService {
 		this.repo = repo;
 	}
 
-	public void CreateMenu(MenuRequest req, MultipartFile file) throws Exception {
-		repo.CreateMenu(req, "");
+	public void CreateMenu(MenuRequest req, String img_url) throws Exception {
+		repo.CreateMenu(req, img_url);
 	}
 }
