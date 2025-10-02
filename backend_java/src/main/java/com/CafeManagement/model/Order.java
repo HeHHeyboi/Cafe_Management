@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public class Order {
     UUID bill_id;
-    UUID menu_id;
+    int menu_id;
     double amount;
     double total_price;
     String menu_name;
@@ -13,7 +13,7 @@ public class Order {
 
     }
 
-    public Order(UUID bill_id,UUID menu_id,double amount,double total_price,String menu_name){
+    public Order(UUID bill_id,int menu_id,double amount,double total_price,String menu_name){
         this.bill_id = bill_id;
         this.menu_id = menu_id;
         this.amount = amount;
@@ -26,7 +26,7 @@ public class Order {
         return bill_id;
     }
 
-    public UUID getMenu_id(){
+    public int getMenu_id(){
         return menu_id;
     }
 
@@ -47,7 +47,7 @@ public class Order {
         this.bill_id = bill_id;
     }
 
-    public void setMenu_id(UUID menu_id){
+    public void setMenu_id(int menu_id){
         this.menu_id = menu_id;
     }
 

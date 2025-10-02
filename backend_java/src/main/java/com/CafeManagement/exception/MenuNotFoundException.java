@@ -1,16 +1,16 @@
 package com.CafeManagement.exception;
 
-public class MenuNotFoundExeception extends RuntimeException {
+public class MenuNotFoundException extends RuntimeException {
 
 	public static String GenMessage(int menu_id) {
 		return "Can't find Menu with menu_id = " + menu_id;
 	}
 
-	public MenuNotFoundExeception(String message) {
+	public MenuNotFoundException(String message) {
 		super(message);
 	}
 
-	public MenuNotFoundExeception(String message, Throwable cause) {
+	public MenuNotFoundException(String message, Throwable cause) {
 		super(message, cause);
 	}
 }

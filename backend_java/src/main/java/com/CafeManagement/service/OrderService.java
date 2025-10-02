@@ -22,33 +22,38 @@ public class OrderService {
         this.repo = repo;
     }
 
-    public void CreateOrder(OrderRequest req, String img_url) throws Exception {
-		repo.CreateOrder(req, img_url);
+	// Create Order
+    public void CreateOrder(OrderRequest req) throws Exception {
+		repo.CreateOrder(req);
 	}
 
+	// get all Orders
     public List<OrderResponse> GetAllOrder() throws Exception {
 		List<Order> orders = repo.GetAllOrder();
-		List<OrderResponse> responses = new ArrayList<OrderResponse>();
+		List<OrderResponse> responses = new ArrayList<>();
 		for (Order order : orders) {
 			responses.add(new OrderResponse(order));
 		}
-
 		return responses;
 	}
 
+	// get Order by id
     public OrderResponse GetOrder(int id) throws Exception {
 		Order order = repo.GetOrderById(id);
 		return new OrderResponse(order);
 	}
 
-	public void UpdateOrderById(OrderRequest req, int order_id, String img_url) throws Exception {
-		repo.UpdateOrderById(req, order_id, img_url);
+	// update Order
+	public void UpdateOrderById(OrderRequest req, int order_id) throws Exception {
+		repo.UpdateOrderById(req, order_id);
 	}
 
-	public void DeleteOrderById(int order_id) {
+	// delete Order
+	public void DeleteOrderById(int order_id) throws Exception {
 		repo.DeleteOrderrById(order_id);
 	}
 
+	// delete all Orders
 	public void DeleteAllOrder() throws Exception {
 		repo.DeleteAllOrder();
 
