@@ -1,6 +1,12 @@
 # Java API Documentation
-[/menu Endpoint](#menu-endpoint)
 
+[/user Endpoint](#user-endpoint)
+- [POST /user](#post-userregister)
+- [POST /user/login](#post-userlogin)
+- [GET /user/logout](#get-userlogout)
+
+
+[/menu Endpoint](#menu-endpoint)
 - [GET /menu](#get-menu)
 - [POST /menu](#post-menu)
 - [GET /menu/{id}](#get-menuid)
@@ -20,6 +26,90 @@
 - [DELETE /order/{bill_id}](#delete-orderbill_id)
 
 
+## [/user Endpoint](#user-endpoint)
+API สำหรับจัดการผู้ใช้ในระบบ.
+### [POST /user](#post-userregister)
+- **คำอธิบาย**: ลงทะเบียนผู้ใช้ใหม่.
+- **Request**:
+  - **Headers**:
+	- Content-Type: application/json
+  - **Body**:
+	```json
+	{
+		
+	  "first_name": "johndoe",
+	  "last_name": "doe",
+	  "email": "johndoe@example.com",
+	  "password": "securepassword"
+	}
+	```
+
+	`first_name`: ชื่อผู้ใช้ (String, required)
+
+	`last_name`: นามสกุลผู้ใช้ (String, required)
+
+	`email`: อีเมลผู้ใช้ (String, required, unique)
+
+	`password`: รหัสผ่านผู้ใช้ (String, required)
+
+- **Response**:
+  - **Status Code**: 201 Created
+  - **Body**:
+	```json
+	{
+	  "msg": "User registered successfully"
+	}
+	```
+- **Error Responses**:
+  - **Status Code**: 400 Bad Request
+  - **Body**:
+	```json
+	{
+	  "error": "Email already in use"
+	}
+	```
+### [POST /user/login](#post-userlogin)
+- **คำอธิบาย**: เข้าสู่ระบบผู้ใช้.
+- **Request**:
+  - **Headers**:
+	- Content-Type: application/json
+  - **Body**:
+	```json
+	{
+	  "email": "johndoe@example.com",
+	  "password": "securepassword"
+	}
+	```
+	`email`: อีเมลผู้ใช้ (String, required)
+
+	`password`: รหัสผ่านผู้ใช้ (String, required)
+- **Response**:
+  - **Status Code**: 200 OK
+  - **Body**:
+	```json
+	{
+	  "msg": "Login successful"
+	}
+	```
+- **Error Responses**:
+  - **Status Code**: 401 Unauthorized
+  - **Body**:
+	```json
+	{
+	  "error": "Invalid email or password"
+	}
+	```
+### [GET /user/logout](#get-userlogout)
+- **คำอธิบาย**: ออกจากระบบผู้ใช้.
+- **Response**:
+  - **Status Code**: 200 OK
+  - **Body**:
+	```json
+	{
+	  "msg": "Logout successful"
+	}
+	```
+	
 ## [/menu Endpoint](#menu-endpoint)
 API สำหรับจัดการเมนูอาหารและเครื่องดื่มในร้านกาแฟ.
 ### [GET /menu](#get-menu)
