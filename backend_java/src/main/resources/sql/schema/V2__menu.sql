@@ -6,17 +6,4 @@ CREATE TABLE IF NOT EXISTS menu(
 	img_url TEXT
 );
 
-CREATE TABLE IF NOT EXISTS type_table(
-	menu_id INTEGER,
-	type TEXT,
-	addition_price REAL DEFAULT 0,
-	FOREIGN KEY (menu_id) REFERENCES menu(menu_id) ON DELETE CASCADE
-);
 
-CREATE TABLE IF NOT EXISTS "category"(
-	menu_id INTEGER,
-	size TEXT,
-	price REAL DEFAULT 0 NOT NULL,
-	PRIMARY KEY(menu_id, size),
-	FOREIGN KEY (menu_id) REFERENCES menu(menu_id) ON DELETE CASCADE
-);

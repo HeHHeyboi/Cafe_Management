@@ -5,16 +5,16 @@ import java.util.UUID;
 
 public class Bill {
 	UUID bill_id;
-	LocalDateTime pay_date; // วันที่ + เวลา
+	LocalDateTime created_at; // วันที่ + เวลา
 	double total;
 
 	public Bill() {
 
 	}
 
-	public Bill(UUID bill_id, LocalDateTime pay_date, double total) {
+	public Bill(UUID bill_id, LocalDateTime created_at, double total) {
 		this.bill_id = bill_id;
-		this.pay_date = pay_date;
+		this.created_at = created_at;
 		this.total = total;
 	}
 
@@ -23,11 +23,11 @@ public class Bill {
 		return bill_id;
 	}
 
-	public LocalDateTime getPay_date() {
-		return pay_date;
+	public LocalDateTime getCreated_at() {
+		return created_at;
 	}
 
-	public double getTotal() {
+	public Double getTotal() {
 		return total;
 	}
 
@@ -36,11 +36,11 @@ public class Bill {
 		this.bill_id = bill_id;
 	}
 
-	public void setPay_date(LocalDateTime pay_date) {
-		this.pay_date = pay_date;
+	public void setCreated_at(LocalDateTime pay_date) {
+		this.created_at = pay_date;
 	}
 
-	public void setTotal(double total) {
+	public void setTotal(Double total) {
 		this.total = total;
 	}
 
