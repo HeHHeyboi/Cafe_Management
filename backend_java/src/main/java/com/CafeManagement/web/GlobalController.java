@@ -28,7 +28,7 @@ public class GlobalController {
 		try {
 			// userService.DeleteAllUser();
 			menuService.DeleteAllMenu();
-			billService.DeleteAllBill();
+			billService.DeleteAllBills();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("""

@@ -15,109 +15,108 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.CafeManagement.service.FileSystemStorageService;
+import com.CafeManagement.dto.OrderRequest;
+import com.CafeManagement.dto.OrderResponse;
+import com.CafeManagement.exception.OrderNotFoundException;
 import com.CafeManagement.service.OrderService;
 
 import jakarta.validation.Valid;
 
-
 @RestController
 @RequestMapping("/order")
 public class OrderController {
-    private final OrderService service;
-	
-    @Autowired
-    public OrderController(OrderService service){
-        this.service = service;
-    }
+	private final OrderService service;
 
-    // Get All Orders
-    @GetMapping
-    public ResponseEntity<?> getAllOrders() {
-        List<OrderResponse> responses = new ArrayList<>();
-        try {
-            responses = service.GetAllOrders();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("""
-                {"error":"%s"}
-                """.formatted(e.getMessage()));
-        }
-        return ResponseEntity.ok(responses);
-    }
+	@Autowired
+	public OrderController(OrderService service) {
+		this.service = service;
+	}
 
-    // Get Order By ID
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getOrderById(@PathVariable int id) {
-        OrderResponse response;
-        try {
-            response = service.GetOrder(id);
-        } catch (OrderNotFoundException notfound) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("""
-                {"error":"%s"}
-                """.formatted(notfound.getMessage()));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("""
-                {"error":"%s"}
-                """.formatted(e.getMessage()));
-        }
-        return ResponseEntity.ok(response);
-    }
+	// Get All Orders
+	@GetMapping
+	public ResponseEntity<?> getAllOrders() {
+		List<OrderResponse> responses = new ArrayList<>();
+		try {
+			// responses = service.GetAllOrders();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.internalServerError().body("""
+					{"error":"%s"}
+					""".formatted(e.getMessage()));
+		}
+		return ResponseEntity.ok(responses);
+	}
 
-    // Create Order
-    @PostMapping
-    public ResponseEntity<String> addOrder(@Valid @RequestBody OrderRequest req) {
-        try {
-            service.CreateOrder(req);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("""
-                {"error":"Can't Create Order"}
-                """);
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body("""
-            {"msg":"Create Order Success"}
-            """);
-    }
+	// Get Order By ID
+	@GetMapping("/{id}")
+	public ResponseEntity<?> getOrderById(@PathVariable int id) {
+		OrderResponse response = new OrderResponse();
+		try {
+			// response = service.GetOrder(id);
+		} catch (OrderNotFoundException notfound) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("""
+					{"error":"%s"}
+					""".formatted(notfound.getMessage()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.internalServerError().body("""
+					{"error":"%s"}
+					""".formatted(e.getMessage()));
+		}
+		return ResponseEntity.ok(response);
+	}
 
-    // Update Order
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateOrderById(
-            @Valid @RequestBody OrderRequest req, @PathVariable int id) {
-        try {
-            service.UpdateOrderById(req, id);
-        } catch (OrderNotFoundException notfound) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("""
-                {"error":"%s"}
-                """.formatted(notfound.getMessage()));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("""
-                {"error":"%s"}
-                """.formatted(e.getMessage()));
-        }
-        return ResponseEntity.ok("""
-            {"msg":"Order updated successfully"}
-            """);
-    }
+	// Create Order
+	@PostMapping
+	public ResponseEntity<String> addOrder(@Valid @RequestBody OrderRequest req) {
+		try {
+			// service.CreateOrder(req);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.internalServerError().body("""
+					{"error":"Can't Create Order"}
+					""");
+		}
+		return ResponseEntity.status(HttpStatus.CREATED).body("""
+				{"msg":"Create Order Success"}
+				""");
+	}
 
-    // Delete Order
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteOrderById(@PathVariable int id) {
-        try {
-            service.DeleteOrderById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("""
-                {"error":"%s"}
-                """.formatted(e.getMessage()));
-        }
-        return ResponseEntity.ok("""
-            {"msg":"Order deleted successfully"}
-            """);
-    }
-    
+	// Update Order
+	@PutMapping("/{id}")
+	public ResponseEntity<String> updateOrderById(
+			@Valid @RequestBody OrderRequest req, @PathVariable int id) {
+		try {
+			// service.UpdateOrderById(req, id);
+		} catch (OrderNotFoundException notfound) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("""
+					{"error":"%s"}
+					""".formatted(notfound.getMessage()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.internalServerError().body("""
+					{"error":"%s"}
+					""".formatted(e.getMessage()));
+		}
+		return ResponseEntity.ok("""
+				{"msg":"Order updated successfully"}
+				""");
+	}
 
+	// Delete Order
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteOrderById(@PathVariable int id) {
+		try {
+			// service.DeleteOrderById(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.internalServerError().body("""
+					{"error":"%s"}
+					""".formatted(e.getMessage()));
+		}
+		return ResponseEntity.ok("""
+				{"msg":"Order deleted successfully"}
+				""");
+	}
 
 }

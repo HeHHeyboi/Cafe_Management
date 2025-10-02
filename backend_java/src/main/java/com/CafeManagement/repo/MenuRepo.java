@@ -12,7 +12,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
 import com.CafeManagement.dto.MenuRequest;
-import com.CafeManagement.exception.MenuNotFoundExeception;
+import com.CafeManagement.exception.MenuNotFoundException;
 import com.CafeManagement.model.Menu;
 
 @Repository
@@ -89,7 +89,7 @@ public class MenuRepo {
 				menu.getTypes().add(new Menu.Type(type, addition_price));
 			}
 		} else {
-			throw new MenuNotFoundExeception(MenuNotFoundExeception.GenMessage(menu_id));
+			throw new MenuNotFoundException(MenuNotFoundException.GenMessage(menu_id));
 		}
 
 		return menu;
@@ -119,7 +119,7 @@ public class MenuRepo {
 
 		row_affected = jdbc.update(updateMenuById, arg.getName(), arg.getMenu_type(), img_url, menu_id);
 		if (row_affected == 0) {
-			throw new MenuNotFoundExeception(MenuNotFoundExeception.GenMessage(menu_id));
+			throw new MenuNotFoundException(MenuNotFoundException.GenMessage(menu_id));
 		}
 		jdbc.update(resetCategoryById, menu_id);
 		for (var c : arg.getCategory()) {

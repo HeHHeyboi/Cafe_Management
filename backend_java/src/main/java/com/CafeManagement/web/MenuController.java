@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.CafeManagement.dto.MenuRequest;
 import com.CafeManagement.dto.MenuResponse;
-import com.CafeManagement.exception.MenuNotFoundExeception;
+import com.CafeManagement.exception.MenuNotFoundException;
 import com.CafeManagement.service.FileSystemStorageService;
 import com.CafeManagement.service.MenuService;
 
@@ -58,7 +58,7 @@ public class MenuController {
 		try {
 			response = service.GetMenu(id);
 
-		} catch (MenuNotFoundExeception notfound) {
+		} catch (MenuNotFoundException notfound) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("""
 					{"error": "%s"}
 					""".formatted(notfound.getMessage()));
@@ -80,7 +80,7 @@ public class MenuController {
 			MenuRequest req = mapper.readValue(data, MenuRequest.class);
 			String img_url = fileService.store(file);
 			service.UpdateMenuById(req, id, img_url);
-		} catch (MenuNotFoundExeception notfound) {
+		} catch (MenuNotFoundException notfound) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("""
 					{"error": "%s"}
 					""".formatted(notfound.getMessage()));

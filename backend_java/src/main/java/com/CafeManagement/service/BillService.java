@@ -21,6 +21,10 @@ public class BillService {
 		return new BillResponse(repo.CreateBill());
 	}
 
+	public void DeleteAllBills() throws Exception {
+		repo.DeleteAllBill();
+	}
+
 	// // get all Bills
 	// public List<BillResponse> GetAllBills() throws Exception {
 	// List<Bill> bills = repo.GetAllBills();
