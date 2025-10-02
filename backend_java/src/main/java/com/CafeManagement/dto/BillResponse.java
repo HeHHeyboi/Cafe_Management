@@ -1,9 +1,5 @@
 package com.CafeManagement.dto;
 
-public class BillResponse {
-
-
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
