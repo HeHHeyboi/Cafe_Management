@@ -15,47 +15,44 @@ import com.CafeManagement.repo.OrderRepo;
 @Service
 @Transactional
 public class OrderService {
-    OrderRepo repo;
+	OrderRepo repo;
 
-    @Autowired
-    public OrderService(OrderRepo repo){
-        this.repo = repo;
-    }
-
-	// Create Order
-    public void CreateOrder(OrderRequest req) throws Exception {
-		repo.CreateOrder(req);
+	@Autowired
+	public OrderService(OrderRepo repo) {
+		this.repo = repo;
 	}
 
-	// get all Orders
-    public List<OrderResponse> GetAllOrder() throws Exception {
-		List<Order> orders = repo.GetAllOrder();
-		List<OrderResponse> responses = new ArrayList<>();
-		for (Order order : orders) {
-			responses.add(new OrderResponse(order));
-		}
-		return responses;
-	}
-
-	// get Order by id
-    public OrderResponse GetOrder(int id) throws Exception {
-		Order order = repo.GetOrderById(id);
-		return new OrderResponse(order);
-	}
-
-	// update Order
-	public void UpdateOrderById(OrderRequest req, int order_id) throws Exception {
-		repo.UpdateOrderById(req, order_id);
-	}
-
-	// delete Order
-	public void DeleteOrderById(int order_id) throws Exception {
-		repo.DeleteOrderrById(order_id);
-	}
-
-	// delete all Orders
-	public void DeleteAllOrder() throws Exception {
-		repo.DeleteAllOrder();
-
+	// public void CreateOrder(OrderRequest req, String img_url) throws Exception {
+	// repo.CreateOrder(req, img_url);
+	// }
+	//
+	// public List<OrderResponse> GetAllOrder() throws Exception {
+	// List<Order> orders = repo.GetAllOrder();
+	// List<OrderResponse> responses = new ArrayList<OrderResponse>();
+	// for (Order order : orders) {
+	// responses.add(new OrderResponse(order));
+	// }
+	//
+	// return responses;
+	// }
+	//
+	// public OrderResponse GetOrder(int id) throws Exception {
+	// Order order = repo.GetOrderById(id);
+	// return new OrderResponse(order);
+	// }
+	//
+	// public void UpdateOrderById(OrderRequest req, int order_id, String img_url)
+	// throws Exception {
+	// repo.UpdateOrderById(req, order_id, img_url);
+	// }
+	//
+	// public void DeleteOrderById(int order_id) {
+	// repo.DeleteOrderrById(order_id);
+	// }
+	//
+	// public void DeleteAllOrder() throws Exception {
+	// repo.DeleteAllOrder();
+	// }
+	//
 
 }

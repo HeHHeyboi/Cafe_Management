@@ -24,98 +24,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/bill")
 public class BillController {
-    private final BillService service;
+	BillService service;
 
-    @Autowired
-    public BillController(illService service){
-        this.service = service;
-    }
+	@Autowired
+	public BillController(BillService service) {
+		this.service = service;
+	}
 
-    // Get all Bills
-    @GetMapping
-    public ResponseEntity<?> getAllBills() {
-        List<BillResponse> responses = new ArrayList<>();
-        try {
-            responses = service.GetAllBills();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("""
-                {"error":"%s"}
-                """.formatted(e.getMessage()));
-        }
-        return ResponseEntity.ok(responses);
-    }
+	@GetMapping("/new")
+	public ResponseEntity<?> createBill() {
+		BillResponse response = new BillResponse();
+		try {
+			response = service.CreatedBill();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.internalServerError().body("""
+					{"error":"Internal Error, %s"}
+					""".formatted(e.getMessage()));
+		}
 
-    //Get Bill By ID
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getBillById(@PathVariable int id) {
-        BillResponse response;
-        try {
-            response = service.GetBill(id);
-        } catch (BillNotFoundException notfound) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("""
-                {"error":"%s"}
-                """.formatted(notfound.getMessage()));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("""
-                {"error":"%s"}
-                """.formatted(e.getMessage()));
-        }
-        return ResponseEntity.ok(response);
-    }
-    
-    // Create Bill
-    @PostMapping
-    public ResponseEntity<String> addBill(@Valid @RequestBody BillRequest req) {
-        try {
-            service.CreateBill(req);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("""
-                {"error":"Can't Create Bill"}
-                """);
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body("""
-            {"msg":"Create Bill Success"}
-            """);
-    }
-
-    // Update Bill
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateBillById(
-            @Valid @RequestBody BillRequest req, @PathVariable int id) {
-        try {
-            service.UpdateBillById(req, id);
-        } catch (BillNotFoundException notfound) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("""
-                {"error":"%s"}
-                """.formatted(notfound.getMessage()));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("""
-                {"error":"%s"}
-                """.formatted(e.getMessage()));
-        }
-        return ResponseEntity.ok("""
-            {"msg":"Bill updated successfully"}
-            """);
-    }
-
-    // Delete Bill
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteBillById(@PathVariable int id) {
-        try {
-            service.DeleteBillById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("""
-                {"error":"%s"}
-                """.formatted(e.getMessage()));
-        }
-        return ResponseEntity.ok("""
-            {"msg":"Bill deleted successfully"}
-            """);
-    }
-    
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	}
 }

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.CafeManagement.service.BillService;
 import com.CafeManagement.service.MenuService;
 import com.CafeManagement.service.UserService;
 
@@ -13,11 +14,13 @@ import com.CafeManagement.service.UserService;
 public class GlobalController {
 	UserService userService;
 	MenuService menuService;
+	BillService billService;
 
 	@Autowired
-	public GlobalController(UserService service, MenuService menuService) {
+	public GlobalController(UserService service, MenuService menuService, BillService billService) {
 		this.userService = service;
 		this.menuService = menuService;
+		this.billService = billService;
 	}
 
 	@GetMapping("/reset")
@@ -25,7 +28,9 @@ public class GlobalController {
 		try {
 			// userService.DeleteAllUser();
 			menuService.DeleteAllMenu();
+			billService.DeleteAllBill();
 		} catch (Exception e) {
+			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("""
 					{"Error" : "Can't Create User"}""");
 		}

@@ -417,10 +417,16 @@ API สำหรับจัดการบิลในร้านกาแฟ.
   - **Body**:
 	```json
 	{
-	  "bill_id": "0t1Y8Ccg"
+	  "bill_id": "0t1Y8Ccg",
+	  "total": 0.00,
+	  "created_at": "2023-10-01T10:00:00Z"
 	}
 	```
 	`bill_id`: รหัสบิลที่ถูกสร้างขึ้นใหม่ (String)
+
+	`total`: ยอดรวมของบิล (Decimal, เริ่มต้นที่ 0.00)
+
+	`created_at`: วันที่และเวลาที่บิลถูกสร้าง (ISO 8601 String)
 
 ### [GET /bill/{id}](#get-billid)
 - **คำอธิบาย**: แสดงข้อมูลของบิลตาม ID ของบิล.
@@ -450,6 +456,21 @@ API สำหรับจัดการบิลในร้านกาแฟ.
 	  "error": "Bill not found"
 	}
 	```
+
+### [PUT /bill/{id}](#put-billid)
+- **คำอธิบาย**: แก้ไขข้อมูลของบิลตาม ID ของบิล.
+- **Parameters**:
+  - `id`: รหัสบิลที่ต้องการแก้ไข (String, required)
+- **Request**:
+  - **Headers**:
+	- Content-Type: application/json
+  - **Body**:
+	```json
+	{
+	  "total": 300.00
+	}
+	```
+	`total`: ยอดรวมของบิล (Decimal, required)
 ### [DELETE /bill/{id}](#delete-billid)
 - **คำอธิบาย**: ลบบิลตาม ID ของบิล.
 - **Parameters**:
