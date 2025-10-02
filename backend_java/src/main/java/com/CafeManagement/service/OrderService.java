@@ -56,6 +56,7 @@ public class OrderService {
 	// delete all Orders
 	public void DeleteAllOrder() throws Exception {
 		repo.DeleteAllOrder();
+	}
 
 
 }
