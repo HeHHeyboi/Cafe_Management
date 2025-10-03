@@ -36,8 +36,8 @@ public class Bill {
 		this.bill_id = bill_id;
 	}
 
-	public void setCreated_at(LocalDateTime pay_date) {
-		this.created_at = pay_date;
+	public void setCreated_at(LocalDateTime created_at) {
+		this.created_at = created_at;
 	}
 
 	public void setTotal(Double total) {
