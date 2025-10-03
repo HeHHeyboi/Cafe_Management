@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 
 public class UpdateBillRequest {
-	@NotBlank
 	@JsonProperty("total")
 	double total;
 
