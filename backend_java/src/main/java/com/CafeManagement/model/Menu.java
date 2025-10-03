@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Menu {
-	private int id;
+	private int menu_id;
 	private String name;
 	private String menu_type;
 	private String img_url;
@@ -53,19 +53,19 @@ public class Menu {
 
 	}
 
-	public Menu(int id, String name, String menu_type, String img_url) {
-		this.id = id;
+	public Menu(int menu_id, String name, String menu_type, String img_url) {
+		this.menu_id = menu_id;
 		this.name = name;
 		this.menu_type = menu_type;
 		this.img_url = img_url;
 	}
 
-	public int getId() {
-		return id;
+	public int getMenu_id() {
+		return menu_id;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setMenu_id(int menu_id) {
+		this.menu_id = menu_id;
 	}
 
 	public String getName() {

@@ -40,7 +40,7 @@ public class MenuRequest {
 	public void setMenu_type(String menu_type) {
 		this.menu_type = menu_type;
 	}
-
+	
 	public List<Category> getCategory() {
 		return category;
 	}

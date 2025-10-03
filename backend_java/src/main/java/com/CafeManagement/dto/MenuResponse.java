@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ "menu_id", "name", "price", "menu_type", "size", "types", "" })
 public class MenuResponse {
 	@JsonProperty("menu_id")
-	int id;
+	int menu_id;
 	@JsonProperty("name")
 	String name;
 	@JsonProperty("category")
@@ -25,7 +25,7 @@ public class MenuResponse {
 	}
 
 	public MenuResponse(Menu menu) {
-		this.id = menu.getId();
+		this.menu_id = menu.getMenu_id();
 		this.name = menu.getName();
 		for (Menu.Category c : menu.getCategories()) {
 			this.categories.add(new Category(c.getSize(), c.getPrice()));
@@ -36,8 +36,8 @@ public class MenuResponse {
 		}
 	}
 
-	public int getId() {
-		return id;
+	public int getMenu_id() {
+		return menu_id;
 	}
 
 	public String getName() {
