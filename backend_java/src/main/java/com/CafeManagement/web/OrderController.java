@@ -37,7 +37,7 @@ public class OrderController {
 	public ResponseEntity<?> getAllOrders() {
 		List<OrderResponse> responses = new ArrayList<>();
 		try {
-			// responses = service.GetAllOrders();
+			responses = service.GetAllOrder();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.internalServerError().body("""
@@ -48,11 +48,11 @@ public class OrderController {
 	}
 
 	// Get Order By ID
-	@GetMapping("/{id}")
-	public ResponseEntity<?> getOrderById(@PathVariable int id) {
-		OrderResponse response = new OrderResponse();
+	@GetMapping("/{bill_id}")
+	public ResponseEntity<?> getOrderByBillId(@PathVariable String bill_id) {
+		List<OrderResponse> response = new ArrayList<>();
 		try {
-			// response = service.GetOrder(id);
+			response = service.GetOrderByBillId(bill_id);
 		} catch (OrderNotFoundException notfound) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("""
 					{"error":"%s"}
@@ -67,10 +67,10 @@ public class OrderController {
 	}
 
 	// Create Order
-	@PostMapping
-	public ResponseEntity<String> addOrder(@Valid @RequestBody OrderRequest req) {
+	@PostMapping("/{bill_id}")
+	public ResponseEntity<String> addOrder(@PathVariable String bill_id, @Valid @RequestBody OrderRequest req) {
 		try {
-			// service.CreateOrder(req);
+			service.CreateOrder(req, bill_id);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.internalServerError().body("""
@@ -83,40 +83,41 @@ public class OrderController {
 	}
 
 	// Update Order
-	@PutMapping("/{id}")
-	public ResponseEntity<String> updateOrderById(
-			@Valid @RequestBody OrderRequest req, @PathVariable int id) {
-		try {
-			// service.UpdateOrderById(req, id);
-		} catch (OrderNotFoundException notfound) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("""
-					{"error":"%s"}
-					""".formatted(notfound.getMessage()));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.internalServerError().body("""
-					{"error":"%s"}
-					""".formatted(e.getMessage()));
-		}
-		return ResponseEntity.ok("""
-				{"msg":"Order updated successfully"}
-				""");
-	}
-
+	// @PutMapping("/{bill_id}/{order_id}")
+	// public ResponseEntity<String> updateOrderById(
+	// @Valid @RequestBody OrderRequest req, @PathVariable String bill_id,
+	// @PathVariable int order_id) {
+	// try {
+	// service.UpdateOrderById(req, order_id, bill_id);
+	// } catch (OrderNotFoundException notfound) {
+	// return ResponseEntity.status(HttpStatus.NOT_FOUND).body("""
+	// {"error":"%s"}
+	// """.formatted(notfound.getMessage()));
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// return ResponseEntity.internalServerError().body("""
+	// {"error":"%s"}
+	// """.formatted(e.getMessage()));
+	// }
+	// return ResponseEntity.ok("""
+	// {"msg":"Order updated successfully"}
+	// """);
+	// }
+	//
 	// Delete Order
-	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteOrderById(@PathVariable int id) {
-		try {
-			// service.DeleteOrderById(id);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.internalServerError().body("""
-					{"error":"%s"}
-					""".formatted(e.getMessage()));
-		}
-		return ResponseEntity.ok("""
-				{"msg":"Order deleted successfully"}
-				""");
-	}
+	// @DeleteMapping("/{order_id}")
+	// public ResponseEntity<String> deleteOrderById(@PathVariable int order_id) {
+	// try {
+	// service.DeleteOrderById(order_id);
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// return ResponseEntity.internalServerError().body("""
+	// {"error":"%s"}
+	// """.formatted(e.getMessage()));
+	// }
+	// return ResponseEntity.ok("""
+	// {"msg":"Order deleted successfully"}
+	// """);
+	// }
 
 }

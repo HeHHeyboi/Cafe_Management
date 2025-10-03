@@ -9,77 +9,95 @@ import com.CafeManagement.model.Order;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({ "bill_id", "menu_name", "amount", "size", "type", "total_price", "img_url" })
+@JsonPropertyOrder({ "order_id", "bill_id", "menu_id", "amount", "size", "type", "total_price", "img_url" })
 public class OrderResponse {
+	@JsonProperty("order_id")
+	int order_id;
 
-    @JsonProperty("bill_id")
-    UUID bill_id;
+	@JsonProperty("bill_id")
+	UUID bill_id;
 
-    @JsonProperty("menu_name")
-    String menu_name;
+	@JsonProperty("menu_id")
+	int menu_id;
 
-    @JsonProperty("amount")
-    int amount;
+	@JsonProperty("amount")
+	int amount;
 
-    @JsonProperty("size")
-    String size;
+	@JsonProperty("size")
+	String size;
 
-    @JsonProperty("types")
-	List<Type> types = new ArrayList<>();
+	@JsonProperty("type")
+	String type;
 
-    @JsonProperty("total_price")
-    double total_price;
+	@JsonProperty("total_price")
+	double total_price;
 
-    @JsonProperty("img_url")
-	String img_url;
+	public OrderResponse() {
 
-    public OrderResponse() {
-
-    }
-
-    public OrderResponse(Order order, Menu menu) {
-        this.bill_id = order.getBill_id();
-        this.amount = order.getAmount();
-        this.size = order.getSize();
-        this.total_price = order.getTotal_price();
-
-        if(menu != null){
-            this.menu_name = menu.getName();
-            this.img_url = menu.getImg_url();
-
-            for (Menu.Type t : menu.getTypes()){
-                this.types.add(new Type(t.getType(), t.getAddition_price()));
-            }
-        }
-    }
-
-    // getter
-    public UUID getBill_id(){
-        return bill_id;
-    }
-
-    public String getMenu_name(){
-        return menu_name;
-    }
-
-    public int getAmount(){
-        return amount;
-    }
-
-    public String getSize(){
-        return size;
-    }
-
-    public List<Type> getTypes() {
-		return types;
 	}
 
-    public double getTotal_price(){
-        return total_price;
-    }
+	public OrderResponse(Order order) {
+		this.bill_id = order.getBill_id();
+		this.menu_id = order.getMenu_id();
+		this.amount = order.getAmount();
+		this.size = order.getSize();
+		this.total_price = order.getTotal_price();
+		this.type = order.getType();
+	}
 
-    public String getImg_url(){
-        return img_url;
-    }
+	public int getOrder_id() {
+		return order_id;
+	}
 
+	public void setOrder_id(int order_id) {
+		this.order_id = order_id;
+	}
+
+	public UUID getBill_id() {
+		return bill_id;
+	}
+
+	public void setBill_id(UUID bill_id) {
+		this.bill_id = bill_id;
+	}
+
+	public int getMenu_id() {
+		return menu_id;
+	}
+
+	public void setMenu_id(int menu_id) {
+		this.menu_id = menu_id;
+	}
+
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+
+	public String getSize() {
+		return size;
+	}
+
+	public void setSize(String size) {
+		this.size = size;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public double getTotal_price() {
+		return total_price;
+	}
+
+	public void setTotal_price(double total_price) {
+		this.total_price = total_price;
+	}
 }

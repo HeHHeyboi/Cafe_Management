@@ -7,11 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.CafeManagement.dto.MenuRequest;
-import com.CafeManagement.dto.MenuResponse;
 import com.CafeManagement.dto.OrderRequest;
 import com.CafeManagement.dto.OrderResponse;
-import com.CafeManagement.model.Menu;
 import com.CafeManagement.model.Order;
 import com.CafeManagement.repo.OrderRepo;
 
@@ -25,35 +22,36 @@ public class OrderService {
 		this.repo = repo;
 	}
 
-	public void CreateOrder(OrderRequest req, String img_url) throws Exception {
-		repo.CreateOrder(req, img_url);
+	public void CreateOrder(OrderRequest req, String bill_id) throws Exception {
+		repo.CreateOrder(req, bill_id);
 	}
-	
+
 	public List<OrderResponse> GetAllOrder() throws Exception {
-		List<Order> orders = repo.GetAllOrder();
+		List<Order> orders = repo.GetAllOrders();
 		List<OrderResponse> responses = new ArrayList<OrderResponse>();
 		for (Order order : orders) {
 			responses.add(new OrderResponse(order));
 		}
-	
+
 		return responses;
 	}
-	
-	public OrderResponse GetOrder(int id) throws Exception {
-		Order order = repo.GetOrderById(id);
-		return new OrderResponse(order);
+
+	public List<OrderResponse> GetOrderByBillId(String id) throws Exception {
+		List<Order> orders = repo.GetOrdersByBillId(id);
+		List<OrderResponse> responses = new ArrayList<OrderResponse>();
+		for (Order order : orders) {
+			responses.add(new OrderResponse(order));
+		}
+		return responses;
 	}
-	
-	public void UpdateOrderById(OrderRequest req, int order_id, String img_url) throws Exception {
-		repo.UpdateOrderById(req, order_id, img_url);
-	}
-	
-	public void DeleteOrderById(int order_id) {
-		repo.DeleteOrderById(order_id);
-	}
-	
+
+	// public void UpdateOrderById(OrderRequest req, int order_id, String bill_id)
+	// throws Exception {
+	// repo.UpdateOrderById(req, bill_id, order_id);
+	// }
+
 	public void DeleteAllOrder() throws Exception {
-		repo.DeleteAllOrder();
+		repo.DeleteAllOrders();
 	}
 
 }

@@ -70,7 +70,7 @@ public class MenuRepo {
 		SqlRowSet row = jdbc.queryForRowSet(getMenuById, menu_id);
 		Menu menu = new Menu();
 		if (row.next()) {
-			menu.setId(row.getInt("menu_id"));
+			menu.setMenu_id(row.getInt("menu_id"));
 			menu.setName(row.getString("name"));
 			menu.setMenu_type(row.getString("menu_type"));
 			menu.setImg_url(row.getString("img_url"));

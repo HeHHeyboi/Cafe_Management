@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
-import com.CafeManagement.exception.BillNotFoundException;
+import com.CafeManagement.exception.TypeNotFoundException;
 import com.CafeManagement.model.Bill;
 
 @Repository
@@ -76,7 +76,7 @@ public class BillRepo {
 	public void UpdateBillById(String id, double total) throws Exception {
 		int apply = jdbc.update(updateBillById, total, id);
 		if (apply == 0) {
-			throw new BillNotFoundException("Can't find bill with id " + id);
+			throw new TypeNotFoundException("Can't find bill with id " + id);
 		}
 	}
 
@@ -86,7 +86,7 @@ public class BillRepo {
 			""";
 
 	public void DeleteBillById(String id) {
-		jdbc.update(deleteBillById);
+		jdbc.update(deleteBillById, id);
 	}
 
 	final String deleteAllBill = """
