@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
 import com.CafeManagement.dto.UserRequest;
+import com.CafeManagement.exception.UserNotFoundException;
 import com.CafeManagement.model.User;
 
 @Repository
@@ -31,12 +32,14 @@ public class UserRepo {
 		String lastName;
 		String email;
 		String password;
+		String role;
 
 		public CreateUserParams(UserRequest req) {
 			this.firstName = req.getFirtName();
 			this.lastName = req.getLastName();
 			this.email = req.getEmail();
 			this.password = req.getPassword();
+			this.role = req.getRole();
 		}
 
 		public void setUserId(String uuid) {
@@ -51,13 +54,13 @@ public class UserRepo {
 	 * backend_go/go/internal/database
 	 */
 	private final String createUser = """
-			INSERT INTO users(user_id, FName, LName, email, password)
-			VALUES(?, ?, ?, ?, ?)
+			INSERT INTO users(user_id, FName, LName, email, password,role)
+			VALUES(?, ?, ?, ?, ?,?)
 			""";
 
 	public void CreateUser(CreateUserParams param) throws Exception {
 		jdbc.update(createUser, param.userId, param.firstName, param.lastName,
-				param.email, param.password);
+				param.email, param.password, param.role);
 	}
 
 	/*
@@ -70,7 +73,7 @@ public class UserRepo {
 	 */
 	private final String deleteAllUser = """
 			DELETE from users
-			WHERE role = 'customer'
+			WHERE role != 'admin'
 			""";
 
 	public void DeleteAllUser() throws Exception {
@@ -129,6 +132,8 @@ public class UserRepo {
 			user.setLastName(data.getString("lname"));
 			user.setEmail(data.getString("email"));
 			user.setPassword(data.getString("password"));
+		} else {
+			throw new UserNotFoundException("Can't find User with email: " + email);
 		}
 		return user;
 	}
@@ -146,7 +151,22 @@ public class UserRepo {
 			user.setFirstName(data.getString("fname"));
 			user.setLastName(data.getString("lname"));
 			user.setEmail(data.getString("email"));
+		} else {
+			throw new UserNotFoundException("Can't find User with id:" + id);
 		}
 		return user;
 	}
+
+	private final String deleteUserById = """
+			DELETE from users
+			WHERE user_id = ?
+			""";
+
+	public void DeleteUserById(String id) {
+		jdbc.update(deleteUserById, id);
+	}
+
+	private final String updateUserById = """
+			UPDATE users;
+			""";
 }

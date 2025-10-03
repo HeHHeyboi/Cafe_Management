@@ -20,19 +20,46 @@ public class UserRequest {
 	@JsonProperty(value = "password")
 	String password;
 
-	public String getFirtName() { return firtName; }
+	@JsonProperty(value = "role")
+	String role;
 
-	public void setFirtName(String firtName) { this.firtName = firtName; }
+	public String getRole() {
+		return role;
+	}
 
-	public String getLastName() { return lastName; }
+	public void setRole(String role) {
+		this.role = role;
+	}
 
-	public void setLastName(String lastName) { this.lastName = lastName; }
+	public String getFirtName() {
+		return firtName;
+	}
 
-	public String getEmail() { return email; }
+	public void setFirtName(String firtName) {
+		this.firtName = firtName;
+	}
 
-	public void setEmail(String email) { this.email = email; }
+	public String getLastName() {
+		return lastName;
+	}
 
-	public String getPassword() { return password; }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-	public void setPassword(String password) { this.password = password; }
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 }
