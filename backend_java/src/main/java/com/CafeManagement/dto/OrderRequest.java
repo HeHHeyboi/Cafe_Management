@@ -1,93 +1,70 @@
 package com.CafeManagement.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-@JsonPropertyOrder({ "bill_id", "menu_name", "amount", "total_price", "size", "type" })
+@JsonPropertyOrder({ "menu_id", "amount", "total_price", "size", "type" })
 public class OrderRequest {
 
-    @NotNull(message = "Bill ID is required")
-    @JsonProperty("bill_id")
-    UUID bill_id;
+	@NotNull(message = "Menu id is required")
+	@JsonProperty("menu_id")
+	int menu_id;
 
-    @NotNull(message = "Menu Name is required")
-    @JsonProperty("menu_name")
-    String menu_name;
+	@Min(value = 1, message = "Amount must be at least 1")
+	@JsonProperty("amount")
+	int amount;
 
-    @Min(value = 1, message = "Amount must be at least 1")
-    @JsonProperty("amount")
-    int amount;
+	@Min(value = 1, message = "Total price must be greater than 0")
+	@JsonProperty("total_price")
+	double total_price;
 
-    @Min(value = 1, message = "Total price must be greater than 0")
-    @JsonProperty("total_price")
-    double total_price;
+	@JsonProperty("size")
+	String size;
 
-    @JsonProperty("size")
-    String size;
+	@JsonProperty("type")
+	String type;
 
-    @NotBlank(message = "Must have Menu Type")
-	@JsonProperty("menu_type")
-	String menu_type;
-
-    @JsonProperty("types")
-	List<Type> types = new ArrayList<>();
-
-    // getter
-    public UUID getBill_id(){
-        return bill_id;
-    }
-
-    public String getMenu_name() {
-        return menu_name;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public double getTotal_price(){
-        return total_price;
-    }
-
-    public String getSize() {
-        return size;
-    }
-
-    public String getMenu_type() {
-		return menu_type;
+	public int getMenu_id() {
+		return menu_id;
 	}
 
-    // setter
-    public void setBill_id(UUID bill_id) {
-        this.bill_id = bill_id;
-    }
+	public void setMenu_id(int menu_id) {
+		this.menu_id = menu_id;
+	}
 
-    public void setMenu_name(String menu_name) {
-        this.menu_name = menu_name;
-    }
+	public int getAmount() {
+		return amount;
+	}
 
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
 
-    public void setToal_price(double total_price){
-        this.total_price = total_price;
-    }
+	public double getTotal_price() {
+		return total_price;
+	}
 
-    public void setSize(String size) {
-        this.size = size;
-    }
+	public void setTotal_price(double total_price) {
+		this.total_price = total_price;
+	}
 
-   public void setMenu_type(String menu_type) {
-		this.menu_type = menu_type;
+	public String getSize() {
+		return size;
+	}
+
+	public void setSize(String size) {
+		this.size = size;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

@@ -507,13 +507,17 @@ API สำหรับจัดการคำสั่งซื้อในร�
 	    "order_id": 1,
 	    "menu_id": 2,
 	    "amount": 2,
-	    "total_price": 100.00
+	    "total_price": 100.00,
+		"type": "ร้อน",
+		"size": "m"
 	  },
 	  {
 	    "order_id": 2,
 	    "menu_id": 1,
 	    "amount": 1,
-	    "total_price": 100.00
+	    "total_price": 100.00,
+		"type": "เย็น",
+		"size": "l"
 	  }
 	]
 	```
@@ -536,12 +540,21 @@ API สำหรับจัดการคำสั่งซื้อในร�
 	```json
 	{
 	  "menu_id": 2,
-	  "amount": 2
+	  "amount": 2,
+	  "total_price": 100.00,
+	  "type": "ร้อน",
+	  "size": "m"
 	}
 	```
 	`menu_id`: รหัสเมนูที่ต้องการสั่ง (Integer, required)
+
+	`total_price`: ราคาทั้งหมดของคำสั่งซื้อนี้ (Decimal, required)
 	
 	`amount`: จำนวนที่ต้องการสั่ง (Integer, required)
+
+	`type`: ประเภทของเมนู (String, required) - "ร้อน", "เย็น", หรือ "ปั่น"
+
+	`size`: ขนาดของเมนู (String, required) - "s", "m", "l", "xl"
 
 - **Response**:
   - **Status Code**: 201 Created
@@ -560,84 +573,4 @@ API สำหรับจัดการคำสั่งซื้อในร�
 	  "error": "Invalid menu ID or amount"
 	}
 	```
-### [PUT /order/{bill_id}](#put-orderbill_id)
-- **คำอธิบาย**: แก้ไขคำสั่งซื้อในบิลที่ระบุ.
-- **Parameters**:
-  - `bill_id`: รหัสบิลที่ต้องการแก้ไขคำสั่งซื้อ (String, required)
-- **Request**:
-  - **Headers**:
-	- Content-Type: application/json
-  - **Body**:
-	```json
-	{
-	  "order_id": 1,
-	  "menu_id": 2,
-	  "amount": 3
-	}
-	```
-	`order_id`: รหัสคำสั่งซื้อที่ต้องการแก้ไข (Integer, required)
 
-	`menu_id`: รหัสเมนูที่ต้องการสั่ง (Integer, optional)
-
-	`amount`: จำนวนที่ต้องการสั่ง (Integer, optional)
-
-- **Response**:
-  - **Status Code**: 200 OK
-  - **Body**:
-	```json
-	{
-	  "msg": "Order updated successfully"
-	}
-	```
-- **Error Responses**:
-  - **Status Code**: 400 Bad Request
-  - **Body**:
-	```json
-	{
-	  "error": "Invalid order ID, menu ID, or amount"
-	}
-	```
-  - **Status Code**: 404 Not Found
-  - **Body**:
-	```json
-	{	
-	  "error": "Order not found"
-	}
-	```
-### [DELETE /order/{bill_id}](#delete-orderbill_id)
-- **คำอธิบาย**: ลบคำสั่งซื้อในบิลที่ระบุ.
-- **Parameters**:
-  - `bill_id`: รหัสบิลที่ต้องการลบคำสั่งซื้อ (String, required)
-- **Request**:
-  - **Headers**:
-	- Content-Type: application/json
-  - **Body**:
-	```json
-	{
-	  "order_id": 1
-	}
-	```
-	`order_id`: รหัสคำสั่งซื้อที่ต้องการลบ (Integer, required)
-- **Response**:
-  - **Status Code**: 200 OK
-  - **Body**:
-	```json
-	{
-	  "msg": "Order deleted successfully"
-	}
-	```
-- **Error Responses**:
-  - **Status Code**: 400 Bad Request
-  - **Body**:
-	```json
-	{
-	  "error": "Invalid order ID"
-	}
-	```
-  - **Status Code**: 404 Not Found
-  - **Body**:
-	```json
-	{
-	  "error": "Order not found"
-	}
-	```

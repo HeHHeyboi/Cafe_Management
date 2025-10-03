@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.CafeManagement.dto.BillResponse;
 import com.CafeManagement.dto.UpdateBillRequest;
-import com.CafeManagement.exception.BillNotFoundException;
+import com.CafeManagement.exception.TypeNotFoundException;
 import com.CafeManagement.service.BillService;
 
 import jakarta.validation.Valid;
@@ -66,7 +66,7 @@ public class BillController {
 		BillResponse response;
 		try {
 			response = service.GetBill(id);
-		} catch (BillNotFoundException notfound) {
+		} catch (TypeNotFoundException notfound) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("""
 					{"error":"%s"}
 					""".formatted(notfound.getMessage()));
@@ -83,7 +83,7 @@ public class BillController {
 	public ResponseEntity<String> updateBillById(@Valid @RequestBody UpdateBillRequest req, @PathVariable String id) {
 		try {
 			service.UpdateBillById(req, id);
-		} catch (BillNotFoundException notfound) {
+		} catch (TypeNotFoundException notfound) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("""
 					{"error":"%s"}
 					""".formatted(notfound.getMessage()));
