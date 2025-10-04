@@ -5,7 +5,6 @@
 - [POST /user/login](#post-userlogin)
 - [GET /user/logout](#get-userlogout)
 
-
 [/menu Endpoint](#menu-endpoint)
 - [GET /menu](#get-menu)
 - [POST /menu](#post-menu)
@@ -25,6 +24,12 @@
 - [PUT /order/{bill_id}](#put-orderbill_id)
 - [DELETE /order/{bill_id}](#delete-orderbill_id)
 
+[/member Endpoint](#member-endpoint)
+- [GET /member](#get-member)
+- [POST /member](#post-member)
+- [GET /member/{id}](#get-memberid)
+- [PUT /member/{id}](#put-memberid)
+- [DELETE /member/{id}](#delete-memberid)
 
 ## [/user Endpoint](#user-endpoint)
 API สำหรับจัดการผู้ใช้ในระบบ.
@@ -574,3 +579,195 @@ API สำหรับจัดการคำสั่งซื้อในร�
 	}
 	```
 
+## [/member Endpoint](#member-endpoint)
+API สำหรับจัดการสมาชิกในร้านกาแฟ.
+### [GET /member](#get-member)
+- **คำอธิบาย**: แสดงข้อมูลของสมาชิกทั้งหมด.
+- **Response**:
+  - **Status Code**: 200 OK
+  - **Body**: Array ของสมาชิกในรูปแบบ JSON
+	```json
+	[
+	  {
+	    "id": 1,
+		"name": "John Doe",
+		"status": "active",
+		"role": "Owner"
+	  },
+	  {
+	    "id": 2,
+		"name": "Jane Smith",
+		"status": "inactive",
+		"role": "Employee"
+	  }
+	]
+	```
+
+	`id`: รหัสสมาชิก (Integer)
+
+	`name`: ชื่อสมาชิก (String)
+
+	`status`: สถานะสมาชิก (String) - "active" หรือ "inactive"
+
+	`role`: บทบาทของสมาชิก (String) - "Owner" หรือ "Employee"
+
+### [POST /member](#post-member)
+- **คำอธิบาย**: เพิ่มสมาชิกใหม่.
+- **Request**:
+  - **Headers**:
+	- Content-Type: application/json
+  - **Body**:
+	```json
+	{
+	  "name": "John Doe",
+	  "status": "active",
+	  "role": "Owner"
+	}
+	```
+	`name`: ชื่อสมาชิก (String, required)
+	
+	`status`: สถานะสมาชิก (String, required) - "active" หรือ "inactive"
+
+	`role`: บทบาทของสมาชิก (String, required) - "Owner" หรือ "Employee"
+
+
+	**หรือ**
+
+  - **Headers**:
+	- Content-Type: multipart/form-data
+  - **Body**:
+	```form-data
+	name: John Doe
+	status: active
+	role: Owner
+	```
+	`name`: ชื่อสมาชิก (String, required)
+
+	`status`: สถานะสมาชิก (String, required) - "active" หรือ "inactive"
+
+	`role`: บทบาทของสมาชิก (String, required) - "Owner" หรือ "Employee"
+
+- **Response**:
+  - **Status Code**: 201 Created
+  - **Body**:
+	```json
+	{
+	  "msg": "Member created successfully",
+	  "member_id": 1
+	}
+	```
+	`member_id`: รหัสสมาชิกที่ถูกสร้างขึ้นใหม่ (Integer)
+- **Error Responses**:
+  - **Status Code**: 400 Bad Request
+  - **Body**:
+	```json
+	{
+	  "error": "Invalid member data"
+	}
+	```
+
+### [GET /member/{id}](#get-memberid)
+- **คำอธิบาย**: แสดงข้อมูลของสมาชิกตาม ID ของสมาชิก.
+- **Parameters**:
+  - `id`: รหัสสมาชิกที่ต้องการดึงข้อมูล (Integer, required)
+- **Response**:
+  - **Status Code**: 200 OK
+  - **Body**:
+	```json
+	{
+	  "id": 1,
+	  "name": "John Doe",
+	  "status": "active",
+	  "role": "Owner"
+	}
+	```
+	`id`: รหัสสมาชิก (Integer)
+
+	`name`: ชื่อสมาชิก (String)
+
+	`status`: สถานะสมาชิก (String) - "active" หรือ "inactive"
+
+	`role`: บทบาทของสมาชิก (String) - "Owner" หรือ "Employee"
+- **Error Responses**:
+  - **Status Code**: 404 Not Found
+  - **Body**:
+	```json
+	{
+	  "error": "Member not found"
+	}
+	```
+
+### [PUT /member/{id}](#put-memberid)
+- **คำอธิบาย**: แก้ไขข้อมูลของสมาชิกตาม ID ของสมาชิก.
+- **Parameters**:
+  - `id`: รหัสสมาชิกที่ต้องการแก้ไข (Integer, required)
+- **Request**:
+  - **Headers**:
+	- Content-Type: application/json
+  - **Body**:
+	```json
+	{
+	  "name": "John Doe",
+	  "status": "active",
+	  "role": "Owner"
+	}
+	```
+	`name`: ชื่อสมาชิก (String, optional)
+
+	`status`: สถานะสมาชิก (String, optional) - "active" หรือ "inactive"
+
+	`role`: บทบาทของสมาชิก (String, optional) - "Owner" หรือ "Employee"
+
+	**หรือ**
+
+  - **Headers**:
+	- Content-Type: multipart/form-data
+  - **Body**:
+	```form-data
+	name: John Doe
+	status: active
+	role: Owner	
+	```
+	`name`: ชื่อสมาชิก (String, optional)
+
+	`status`: สถานะสมาชิก (String, optional) - "active" หรือ "inactive"
+
+	`role`: บทบาทของสมาชิก (String, optional) - "Owner" หรือ "Employee"
+
+- **Response**:
+  - **Status Code**: 200 OK
+  - **Body**:
+	```json
+	{
+	  "msg": "Member updated successfully"
+	}
+	```
+- **Error Responses**:
+  - **Status Code**: 404 Not Found
+  - **Body**:
+	```json
+	{
+	  "error": "Member not found"
+	}
+	```
+
+### [DELETE /member/{id}](#delete-memberid)
+- **คำอธิบาย**: ลบสมาชิกตาม ID ของสมาชิก.
+- **Parameters**:
+  - `id`: รหัสสมาชิกที่ต้องการลบ (Integer, required)
+- **Response**:
+  - **Status Code**: 200 OK
+  - **Body**:
+	```json
+	{
+	  "msg": "Member deleted successfully"
+	}
+	```
+- **Error Responses**:
+  - **Status Code**: 404 Not Found
+  - **Body**:
+	```json
+	{
+	  "error": "Member not found"
+	}
+	```
