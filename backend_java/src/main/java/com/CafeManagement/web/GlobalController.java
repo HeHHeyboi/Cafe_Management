@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.CafeManagement.service.BillService;
+import com.CafeManagement.service.MemberService;
 import com.CafeManagement.service.MenuService;
 import com.CafeManagement.service.OrderService;
 import com.CafeManagement.service.UserService;
@@ -21,6 +22,8 @@ public class GlobalController {
 	BillService billService;
 	@Autowired
 	OrderService orderService;
+	@Autowired
+	MemberService memberService;
 
 	@GetMapping("/reset")
 	public ResponseEntity<String> deleteAllUser() {
@@ -29,6 +32,7 @@ public class GlobalController {
 			menuService.DeleteAllMenu();
 			billService.DeleteAllBills();
 			orderService.DeleteAllOrder();
+			memberService.DeleteAllMembers();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("""

@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS members(
+	member_id INTEGER PRIMARY KEY, 
+	name TEXT NOT NULL,
+	status TEXT
+);
