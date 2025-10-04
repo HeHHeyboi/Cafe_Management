@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 // UI Components
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -94,50 +94,56 @@ export default function HistoryPage() {
       <h1 className="text-2xl font-bold text-gray-800">Order History</h1>
 
       {/* Summary Cards */}
-<div className="flex flex-col md:flex-row gap-6">
-  {/* Status Summary Card */}
-  <Card className="bg-white rounded-2xl shadow p-4 text-center hover:shadow-md transition flex-1">
-    <CardHeader className="p-0 mb-2 flex flex-col items-center space-y-2">
-      <CardTitle className="text-sm font-medium text-gray-500">Orders Summary</CardTitle>
-      <Select value={selectedStatusSummary} onValueChange={val => setSelectedStatusSummary(val)}>
-        <SelectTrigger className="w-40">
-          <SelectValue placeholder="Select Status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="All">All</SelectItem>
-          <SelectItem value="Completed">Completed</SelectItem>
-          <SelectItem value="Pending">Pending</SelectItem>
-          <SelectItem value="Canceled">Canceled</SelectItem>
-        </SelectContent>
-      </Select>
-    </CardHeader>
-    <CardContent className="p-0">
-      <div className="text-2xl font-bold text-gray-900">{totalOrders} Orders</div>
-      <div className="text-blue-700 font-semibold mt-1">{totalAmount.toFixed(2)} ฿</div>
-    </CardContent>
-  </Card>
+        <div className="flex flex-col md:flex-row gap-6">
+        {/* Status Summary Card */}
+        <Card className="bg-white rounded-2xl shadow p-4 text-center hover:shadow-md transition flex-1">
+          <CardHeader className="p-0 mb-2 flex flex-col items-center space-y-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Orders Summary</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0 flex flex-col items-center space-y-2">
+            {/* ค่าที่สรุป */}
+            <div className="text-2xl font-bold text-gray-900">{totalOrders} Orders</div>
+            <div className="text-blue-700 font-semibold mt-1">{totalAmount.toFixed(2)} บาท</div>
 
-  {/* Product Summary Card */}
-  <Card className="bg-white rounded-2xl shadow p-4 text-center hover:shadow-md transition flex-1">
-    <CardHeader className="p-0 mb-2 flex flex-col items-center space-y-2">
-      <CardTitle className="text-sm font-medium text-gray-500">Product Summary</CardTitle>
-      <Select value={selectedProductSummary} onValueChange={val => setSelectedProductSummary(val)}>
-        <SelectTrigger className="w-40">
-          <SelectValue placeholder="Select Product" />
-        </SelectTrigger>
-        <SelectContent className="max-h-40 overflow-y-auto">
-          {sortedItems.map(item => (
-            <SelectItem key={item} value={item}>{item}</SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </CardHeader>
-    <CardContent className="p-0">
-      <div className="text-2xl font-bold text-gray-900">{productQty} pcs</div>
-      <div className="text-blue-700 font-semibold mt-1">{productAmount.toFixed(2)} ฿</div>
-    </CardContent>
-  </Card>
-</div>
+            {/* ฟิลเตอร์ */}
+            <Select value={selectedStatusSummary} onValueChange={val => setSelectedStatusSummary(val)}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Select Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">All</SelectItem>
+                <SelectItem value="Completed">Completed</SelectItem>
+                <SelectItem value="Pending">Pending</SelectItem>
+                <SelectItem value="Canceled">Canceled</SelectItem>
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
+
+        {/* Product Summary Card */}
+        <Card className="bg-white rounded-2xl shadow p-4 text-center hover:shadow-md transition flex-1">
+          <CardHeader className="p-0 mb-2 flex flex-col items-center space-y-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Product Summary</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0 flex flex-col items-center space-y-2">
+            {/* ค่าที่สรุป */}
+            <div className="text-2xl font-bold text-gray-900">{productQty} pcs</div>
+            <div className="text-blue-700 font-semibold mt-1">{productAmount.toFixed(2)} บาท</div>
+
+            {/* ฟิลเตอร์ */}
+            <Select value={selectedProductSummary} onValueChange={val => setSelectedProductSummary(val)}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Select Product" />
+              </SelectTrigger>
+              <SelectContent className="max-h-40 overflow-y-auto">
+                {sortedItems.map(item => (
+                  <SelectItem key={item} value={item}>{item}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Table + Filter */}
       <Card className="bg-white rounded-2xl shadow p-6">
@@ -191,7 +197,7 @@ export default function HistoryPage() {
                 <TableHead className="text-center">Product</TableHead>
                 <TableHead className="cursor-pointer" onClick={() => { setSortField("amount"); setSortAsc(!sortAsc); }}>
                   <div className="flex items-center justify-center gap-1 text-center">
-                    Amount {sortAsc && sortField==="amount" ? <ChevronUpIcon className="w-4 h-4"/> : <ChevronDownIcon className="w-4 h-4"/>}
+                    Amount (บาท) {sortAsc && sortField==="amount" ? <ChevronUpIcon className="w-4 h-4"/> : <ChevronDownIcon className="w-4 h-4"/>}
                   </div>
                 </TableHead>
                 <TableHead className="cursor-pointer" onClick={() => { setSortField("date"); setSortAsc(!sortAsc); }}>
@@ -200,7 +206,7 @@ export default function HistoryPage() {
                   </div>
                 </TableHead>
                 <TableHead className="text-center">Status</TableHead>
-                <TableHead className="text-center">Action</TableHead>
+                <TableHead className="text-center">Receipt</TableHead>
               </TableRow>
             </TableHeader>
 
@@ -210,7 +216,7 @@ export default function HistoryPage() {
                   <TableCell>{h.id}</TableCell>
                   <TableCell>{h.customer}</TableCell>
                   <TableCell className="max-w-[120px] break-words whitespace-normal">{h.item.join(", ")}</TableCell>  
-                  <TableCell>{h.amount} ฿</TableCell>
+                  <TableCell>{h.amount} บาท</TableCell>
                   <TableCell>{h.date}</TableCell>
                   <TableCell>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -220,9 +226,9 @@ export default function HistoryPage() {
                     }`}>{h.status}</span>
                   </TableCell>
                   <TableCell>
-                    <Link href={`/Slip/${h.id}`}>
+                    <Link href={`/Receipt/${h.id}`} target="_blank">
                       <button className="px-3 py-1 bg-gray-700 hover:bg-gray-800 text-white rounded-sm text-sm transition">
-                        View Slip
+                        View
                       </button>
                     </Link>
                   </TableCell>

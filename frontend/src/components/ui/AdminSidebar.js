@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link";
-import { CircleUserRound, Home, BarChart2 } from "lucide-react";
+import { CircleUserRound, Home, BarChart2 , LogOut } from "lucide-react";
 import { Clock } from "lucide-react"; 
 import { Coffee } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -13,12 +13,13 @@ export default function AdminSidebar() {
   { title: "MenuOrder", href: "/Admin/MenuOrder", icon: Coffee },
   { title: "History", href: "/Admin/History", icon: Clock },
   { title: "Member", href: "/Admin/Member", icon: CircleUserRound },
+  { title: "Log Out", href: "/login", icon: LogOut },
   
 ];
 
 
   return (
-    <nav className="p-6 bg-gray-50 min-h-screen w-64   shadow-md">
+    <nav className=" p-6 pt-12 bg-gray-50 min-h-screen w-64 shadow-md ">
       <ul className="space-y-4">
         {menuItems.map((item) => {
           const isActive = pathname === item.href;

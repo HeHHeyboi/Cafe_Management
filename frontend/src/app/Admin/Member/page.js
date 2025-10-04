@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 // UI Components
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -43,7 +43,7 @@ export default function MembersPage() {
   const [roleFilter, setRoleFilter] = useState("All"); // กรองตาม role
   const [statusFilter, setStatusFilter] = useState("All"); // กรองตาม status
   const [searchName, setSearchName] = useState(""); // ค้นหาตามชื่อ
-  const [sortAsc, setSortAsc] = useState(true); // การจัดเรียง ID (asc/desc)
+  const [sortAsc, setSortAsc] = useState(true); // การจัดเรียง ID (asc true/desc false)
 
   // --------------------------
   // Filter + Search + Sort
@@ -87,7 +87,7 @@ export default function MembersPage() {
       -------------------------- */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Member List</h1>
-        <Link href="/Admin/AddNewMember" passHref>
+        <Link href="/Admin/Member/AddNewMember" passHref>
           <button className="px-4 py-2 bg-amber-700 text-white rounded-xl hover:bg-amber-800 transition shadow">
             Add New Member
           </button>
