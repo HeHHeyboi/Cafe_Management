@@ -22,8 +22,8 @@ public class MenuService {
 		this.repo = repo;
 	}
 
-	public void CreateMenu(MenuRequest req, String img_url) throws Exception {
-		repo.CreateMenu(req, img_url);
+	public int CreateMenu(MenuRequest req, String img_url) throws Exception {
+		return repo.CreateMenu(req, img_url);
 	}
 
 	public List<MenuResponse> GetAllMenu() throws Exception {

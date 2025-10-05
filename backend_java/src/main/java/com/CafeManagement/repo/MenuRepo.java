@@ -170,7 +170,7 @@ public class MenuRepo {
 			VALUES(?,?,?)
 			""";
 
-	public void CreateMenu(MenuRequest arg, String img_url) throws Exception {
+	public int CreateMenu(MenuRequest arg, String img_url) throws Exception {
 		int id;
 		// NOTE: Can use this like Golang
 		// SqlRowSet row = jdbc.queryForRowSet(createMenu, arg.getName(), c.getPrice(),
@@ -204,5 +204,6 @@ public class MenuRepo {
 		for (var t : arg.getTypes()) {
 			jdbc.update(createType, id, t.getType(), t.getAddition_price());
 		}
+		return id;
 	}
 }

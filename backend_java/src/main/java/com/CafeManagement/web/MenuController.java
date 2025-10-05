@@ -103,9 +103,10 @@ public class MenuController {
 		ObjectMapper mapper = new ObjectMapper();
 		MenuRequest req = mapper.readValue(data, MenuRequest.class);
 		String img_url = fileService.store(file);
+		int id = 0;
 
 		try {
-			service.CreateMenu(req, img_url);
+			id = service.CreateMenu(req, img_url);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.internalServerError().body("""
@@ -116,8 +117,8 @@ public class MenuController {
 		}
 
 		return ResponseEntity.status(HttpStatus.CREATED).body("""
-				{"msg":"Create Menu Success","img":"%s"}
-				""".formatted(file.getName()));
+				{"msg":"Create Menu Success","menu_id":%d}
+				""".formatted(id));
 		// return ResponseEntity.ok("""
 		// {"msg":"Create Menu Success","img":"%s"}
 		// """.formatted(file.getName()));
