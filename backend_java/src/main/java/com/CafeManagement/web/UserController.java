@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseCookie.ResponseCookieBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -74,6 +75,7 @@ public class UserController {
 		return ResponseEntity.ok(response);
 	}
 
+	@CrossOrigin(origins = "http://localhost:8080")
 	@PostMapping("/login")
 	ResponseEntity<?> UserLogin(@Valid @RequestBody LoginRequest req) {
 		LoginResult result = null;
@@ -98,6 +100,7 @@ public class UserController {
 				""".formatted(result.msg()));
 	}
 
+	@CrossOrigin(origins = "http://localhost:8080")
 	@GetMapping("/logout")
 	ResponseEntity<?> UserLogout() {
 		ResponseCookieBuilder cookie = ResponseCookie.from("id", "");
