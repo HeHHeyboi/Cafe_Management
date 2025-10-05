@@ -97,7 +97,7 @@ public class MenuController {
 	}
 
 	@PostMapping(consumes = { "multipart/form-data" })
-	public ResponseEntity<String> addMenu(@RequestParam("img") MultipartFile file,
+	public ResponseEntity<String> addMenu(@RequestParam(value = "img", required = false) MultipartFile file,
 			@Valid @RequestParam("data") String data) {
 
 		ObjectMapper mapper = new ObjectMapper();

@@ -14,6 +14,9 @@ public class MenuResponse {
 	int menu_id;
 	@JsonProperty("name")
 	String name;
+	@JsonProperty("menu_type")
+	String menu_type;
+
 	@JsonProperty("category")
 	List<Category> categories = new ArrayList<>();
 	@JsonProperty("types")
@@ -31,9 +34,14 @@ public class MenuResponse {
 			this.categories.add(new Category(c.getSize(), c.getPrice()));
 		}
 		this.img_url = menu.getImg_url();
+		this.menu_type = menu.getMenu_type();
 		for (Menu.Type t : menu.getTypes()) {
 			types.add(new Type(t.getType(), t.getAddition_price()));
 		}
+	}
+
+	public String getMenu_type() {
+		return menu_type;
 	}
 
 	public int getMenu_id() {
