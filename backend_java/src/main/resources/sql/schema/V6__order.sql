@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS "order"(
 	size TEXT,
 	type TEXT,
 	FOREIGN KEY (bill_id) REFERENCES bill(bill_id) ON DELETE CASCADE,
-	FOREIGN KEY (menu_id) REFERENCES menu(menu_id) ON DELETE SET NULL,
+	FOREIGN KEY (menu_id) REFERENCES menu(menu_id) ON DELETE SET NULL
 );
