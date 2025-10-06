@@ -6,6 +6,17 @@ public class NewBillRequest {
 	@JsonProperty("payment_method")
 	String payment_method;
 
+	@JsonProperty("total")
+	Double total;
+
+	public Double getTotal() {
+		return total;
+	}
+
+	public void setTotal(Double total) {
+		this.total = total;
+	}
+
 	public String getPayment_method() {
 		return payment_method;
 	}

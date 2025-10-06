@@ -28,8 +28,8 @@ public class BillRepo {
 		UUID id = UUID.randomUUID();
 		LocalDateTime now = LocalDateTime.now();
 
-		jdbc.update(createBill, id.toString(), 0.0, now.toString(), arg.getPayment_method());
-		return new Bill(id, now, 0.0, arg.getPayment_method());
+		jdbc.update(createBill, id.toString(), arg.getTotal(), now.toString(), arg.getPayment_method());
+		return new Bill(id, now, arg.getTotal(), arg.getPayment_method());
 	}
 
 	final String getBillById = """
