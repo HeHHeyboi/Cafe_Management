@@ -75,7 +75,6 @@ public class UserController {
 		return ResponseEntity.ok(response);
 	}
 
-	@CrossOrigin(origins = "http://localhost:8080")
 	@PostMapping("/login")
 	ResponseEntity<?> UserLogin(@Valid @RequestBody LoginRequest req) {
 		LoginResult result = null;
@@ -100,7 +99,6 @@ public class UserController {
 				""".formatted(result.msg()));
 	}
 
-	@CrossOrigin(origins = "http://localhost:8080")
 	@GetMapping("/logout")
 	ResponseEntity<?> UserLogout() {
 		ResponseCookieBuilder cookie = ResponseCookie.from("id", "");
