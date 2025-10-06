@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.CafeManagement.dto.BillResponse;
+import com.CafeManagement.dto.NewBillRequest;
 import com.CafeManagement.dto.UpdateBillRequest;
 import com.CafeManagement.model.Bill;
 import com.CafeManagement.repo.BillRepo;
@@ -22,8 +23,8 @@ public class BillService {
 		this.repo = repo;
 	}
 
-	public BillResponse CreateBill() throws Exception {
-		return new BillResponse(repo.CreateBill());
+	public BillResponse CreateBill(NewBillRequest req) throws Exception {
+		return new BillResponse(repo.CreateBill(req));
 	}
 
 	public void DeleteAllBills() throws Exception {

@@ -7,15 +7,17 @@ public class Bill {
 	UUID bill_id;
 	LocalDateTime created_at; // วันที่ + เวลา
 	double total;
+	String payment_method;
 
 	public Bill() {
 
 	}
 
-	public Bill(UUID bill_id, LocalDateTime created_at, double total) {
+	public Bill(UUID bill_id, LocalDateTime created_at, double total, String payment) {
 		this.bill_id = bill_id;
 		this.created_at = created_at;
 		this.total = total;
+		this.payment_method = payment;
 	}
 
 	// getter
@@ -44,4 +46,11 @@ public class Bill {
 		this.total = total;
 	}
 
+	public void setPayment_method(String payment) {
+		this.payment_method = payment;
+	}
+
+	public String getPayment_method() {
+		return payment_method;
+	}
 }

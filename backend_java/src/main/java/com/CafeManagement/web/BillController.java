@@ -9,12 +9,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.CafeManagement.dto.BillResponse;
+import com.CafeManagement.dto.NewBillRequest;
 import com.CafeManagement.dto.UpdateBillRequest;
 import com.CafeManagement.exception.TypeNotFoundException;
 import com.CafeManagement.service.BillService;
@@ -31,11 +33,11 @@ public class BillController {
 		this.service = service;
 	}
 
-	@GetMapping("/new")
-	public ResponseEntity<?> createBill() {
+	@PostMapping("/new")
+	public ResponseEntity<?> createBill(@RequestBody NewBillRequest req) {
 		BillResponse response = new BillResponse();
 		try {
-			response = service.CreateBill();
+			response = service.CreateBill(req);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.internalServerError().body("""

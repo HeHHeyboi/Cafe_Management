@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
+import com.CafeManagement.dto.NewBillRequest;
 import com.CafeManagement.exception.TypeNotFoundException;
 import com.CafeManagement.model.Bill;
 
@@ -19,20 +20,20 @@ public class BillRepo {
 	JdbcTemplate jdbc;
 
 	final String createBill = """
-			INSERT INTO bill(bill_id, total, created_at)
-			VALUES (?,?,?)
+			INSERT INTO bill(bill_id, total, created_at,payment_method)
+			VALUES (?,?,?,?)
 			""";
 
-	public Bill CreateBill() throws Exception {
+	public Bill CreateBill(NewBillRequest arg) throws Exception {
 		UUID id = UUID.randomUUID();
 		LocalDateTime now = LocalDateTime.now();
 
-		jdbc.update(createBill, id.toString(), 0.0, now.toString());
-		return new Bill(id, now, 0.0);
+		jdbc.update(createBill, id.toString(), 0.0, now.toString(), arg.getPayment_method());
+		return new Bill(id, now, 0.0, arg.getPayment_method());
 	}
 
 	final String getBillById = """
-			SELECT bill_id, total, created_at FROM bill
+			SELECT bill_id, total, created_at ,payment_method FROM bill
 			WHERE bill_id = ?
 			""";
 
@@ -44,12 +45,13 @@ public class BillRepo {
 			bill.setTotal(row.getDouble("total"));
 			LocalDateTime created_at = LocalDateTime.parse(row.getString("created_at"));
 			bill.setCreated_at(created_at);
+			bill.setPayment_method(row.getString("payment_method"));
 		}
 		return bill;
 	}
 
 	final String getAllBill = """
-			SELECT bill_id, total, created_at FROM bill;
+			SELECT bill_id, total, created_at ,payment_method FROM bill;
 			""";
 
 	public List<Bill> GetAllBill() throws Exception {
@@ -59,8 +61,9 @@ public class BillRepo {
 			UUID id = UUID.fromString(rows.getString("bill_id"));
 			Double total = rows.getDouble("total");
 			LocalDateTime created_at = LocalDateTime.parse(rows.getString("created_at"));
+			String payment_method = rows.getString("payment_method");
 
-			Bill bill = new Bill(id, created_at, total);
+			Bill bill = new Bill(id, created_at, total, payment_method);
 			bills.add(bill);
 		}
 

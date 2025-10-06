@@ -15,6 +15,8 @@ public class BillResponse {
 	double total;
 	@JsonProperty("created_at")
 	LocalDateTime created_at;
+	@JsonProperty("payment_method")
+	String payment_method;
 
 	public BillResponse() {
 
@@ -24,6 +26,7 @@ public class BillResponse {
 		this.bill_id = bill.getBill_id();
 		this.total = bill.getTotal();
 		this.created_at = bill.getCreated_at();
+		this.payment_method = bill.getPayment_method();
 	}
 
 	public UUID getBill_id() {
@@ -38,4 +41,7 @@ public class BillResponse {
 		return created_at;
 	}
 
+	public String getPayment_method() {
+		return payment_method;
+	}
 }

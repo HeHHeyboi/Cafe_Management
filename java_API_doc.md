@@ -14,7 +14,7 @@
 
 [/bill Endpoint](#bill-endpoint)
 - [GET /bill](#get-bill)
-- [GET /bill/new](#get-billnew)
+- [POST /bill/new](#post-billnew)
 - [GET /bill/{id}](#get-billid)
 - [DELETE /bill/{id}](#delete-billid)
 
@@ -400,12 +400,14 @@ API สำหรับจัดการบิลในร้านกาแฟ.
 	  {
 	    "bill_id": "0t1Y8Ccg",
 	    "total": 250.00,
-	    "created_at": "2023-10-01T10:00:00Z"
+	    "created_at": "2023-10-01T10:00:00Z",
+		"payment": "cash"
 	  },
 	  {
 	    "bill_id": "DaZdJTjL",
 	    "total_amount": 150.00,
-	    "created_at": "2023-10-01T11:00:00Z"
+	    "created_at": "2023-10-01T11:00:00Z",
+		"payment": "promptpay"
 	  }
 	]
 	```
@@ -415,8 +417,19 @@ API สำหรับจัดการบิลในร้านกาแฟ.
 
 	`created_at`: วันที่และเวลาที่บิลถูกสร้าง (ISO 8601 String)
 
-### [GET /bill/new](#get-billnew)
+	`payment`: วิธีการชำระเงิน (String) - "cash", "credit_card", หรือ "mobile_payment"
+
+### [POST /bill/new](#post-billnew)
 - **คำอธิบาย**: สร้างบิลใหม่และคืนค่า ID ของบิล.
+- **Request**:
+  - Headers:
+	- Content-Type: application/json
+  - Body: 
+	```json
+	{
+		"payment": "cash"
+	}
+	```
 - **Response**:
   - **Status Code**: 201 Created
   - **Body**:
@@ -424,7 +437,8 @@ API สำหรับจัดการบิลในร้านกาแฟ.
 	{
 	  "bill_id": "0t1Y8Ccg",
 	  "total": 0.00,
-	  "created_at": "2023-10-01T10:00:00Z"
+	  "created_at": "2023-10-01T10:00:00Z",
+	  "payment": "cash"
 	}
 	```
 	`bill_id`: รหัสบิลที่ถูกสร้างขึ้นใหม่ (String)
@@ -432,6 +446,8 @@ API สำหรับจัดการบิลในร้านกาแฟ.
 	`total`: ยอดรวมของบิล (Decimal, เริ่มต้นที่ 0.00)
 
 	`created_at`: วันที่และเวลาที่บิลถูกสร้าง (ISO 8601 String)
+
+	`payment`: วิธีการชำระเงิน (String) - "cash", "credit_card", หรือ "mobile_payment"
 
 ### [GET /bill/{id}](#get-billid)
 - **คำอธิบาย**: แสดงข้อมูลของบิลตาม ID ของบิล.
@@ -445,6 +461,7 @@ API สำหรับจัดการบิลในร้านกาแฟ.
 	  "bill_id": "0t1Y8Ccg",
 	  "total": 250.00,
 	  "created_at": "2023-10-01T10:00:00Z",
+	  "payment": "cash"
 	}
 	```
 	`bill_id`: รหัสบิล (String)
@@ -452,6 +469,8 @@ API สำหรับจัดการบิลในร้านกาแฟ.
 	`total`: ยอดรวมของบิล (Decimal)
 
 	`created_at`: วันที่และเวลาที่บิลถูกสร้าง (ISO 8601 String)
+
+	`payment`: วิธีการชำระเงิน (String) - "cash", "credit_card", หรือ "mobile_payment"
 
 - **Error Responses**:
   - **Status Code**: 404 Not Found
