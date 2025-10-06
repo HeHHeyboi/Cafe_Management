@@ -1,9 +1,13 @@
 GET http://localhost:8080/reset
 HTTP 200
 
-GET http://localhost:8080/bill/new
+POST http://localhost:8080/bill/new
 [Options]
 output: -
+{
+	"payment_method":"cash",
+	"total":500
+}
 HTTP 201
 [Captures]
 bill_id: jsonpath "$.id"
