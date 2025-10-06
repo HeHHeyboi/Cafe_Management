@@ -18,22 +18,33 @@ public class OrderRepo {
 	JdbcTemplate jdbc;
 
 	final String createOrder = """
-			INSERT INTO orders(bill_id, menu_id, amount, size, type, total_price)
-			VALUES (?,?,?,?,?,?)
+			INSERT INTO orders(bill_id, menu_id,menu_name, amount, size, type, total_price)
+			VALUES (?,?,?,?,?,?,?)
+			""";
+
+	final String getMenuName = """
+			select name from menu
+			where menu_id = ?;
 			""";
 
 	public void CreateOrder(OrderRequest arg, String bill_id) throws Exception {
+		SqlRowSet row = jdbc.queryForRowSet(getMenuName, arg.getMenu_id());
+		String name = "";
+		if (row.next()) {
+			name = row.getString("name");
+		}
 		jdbc.update(createOrder,
 				UUID.fromString(bill_id),
 				arg.getMenu_id(),
+				name,
 				arg.getAmount(),
-				arg.getSize().isBlank() ? null : arg.getSize(),
-				arg.getType().isBlank() ? null : arg.getType(),
+				arg.getSize() != null ? arg.getSize().isBlank() ? null : arg.getSize() : null,
+				arg.getType() != null ? arg.getType().isBlank() ? null : arg.getType() : null,
 				arg.getTotal_price());
 	}
 
 	final String getOrdersByBillId = """
-			SELECT bill_id, menu_id, amount, size, type, total_price
+			SELECT bill_id, menu_id, amount, size, type, total_price, menu_name
 			FROM orders
 			WHERE bill_id = ?
 			""";
@@ -49,6 +60,7 @@ public class OrderRepo {
 			order.setSize(rows.getString("size"));
 			order.setType(rows.getString("type"));
 			order.setTotal_price(rows.getDouble("total_price"));
+			order.setMenu_name(rows.getString("menu_name"));
 			orders.add(order);
 		}
 		return orders;
@@ -84,7 +96,7 @@ public class OrderRepo {
 	// }
 
 	final String getAllOrders = """
-			SELECT bill_id, menu_id, amount, size, type, total_price
+			SELECT bill_id, menu_id, amount, size, type, total_price,menu_name
 			FROM orders
 			""";
 
@@ -99,6 +111,7 @@ public class OrderRepo {
 			order.setSize(rows.getString("size"));
 			order.setType(rows.getString("type"));
 			order.setTotal_price(rows.getDouble("total_price"));
+			order.setMenu_name(rows.getString("menu_name"));
 			orders.add(order);
 		}
 		return orders;

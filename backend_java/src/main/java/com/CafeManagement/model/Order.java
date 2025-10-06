@@ -6,6 +6,8 @@ public class Order {
 	UUID bill_id;
 	int menu_id;
 	int amount;
+	String menu_name;
+
 	double total_price;
 	String size;
 	String type;
@@ -14,13 +16,14 @@ public class Order {
 
 	}
 
-	public Order(UUID bill_id, int menu_id, int amount, double total_price, String size, String type) {
+	public Order(UUID bill_id, int menu_id, int amount, String name, double total_price, String size, String type) {
 		this.bill_id = bill_id;
 		this.menu_id = menu_id;
 		this.amount = amount;
 		this.total_price = total_price;
 		this.size = size;
 		this.type = type;
+		this.menu_name = name;
 	}
 
 	public UUID getBill_id() {
@@ -71,4 +74,11 @@ public class Order {
 		this.type = type;
 	}
 
+	public String getMenu_name() {
+		return menu_name;
+	}
+
+	public void setMenu_name(String menu_name) {
+		this.menu_name = menu_name;
+	}
 }

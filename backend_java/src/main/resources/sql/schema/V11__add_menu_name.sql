@@ -1,0 +1,2 @@
+ALTER TABLE "orders"
+ADD COLUMN menu_name TEXT DEFAULT NULL;

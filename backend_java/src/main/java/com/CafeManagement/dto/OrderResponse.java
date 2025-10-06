@@ -32,6 +32,9 @@ public class OrderResponse {
 	@JsonProperty("total_price")
 	double total_price;
 
+	@JsonProperty("menu_name")
+	String name;
+
 	public OrderResponse() {
 
 	}
@@ -43,6 +46,7 @@ public class OrderResponse {
 		this.size = order.getSize();
 		this.total_price = order.getTotal_price();
 		this.type = order.getType();
+		this.name = order.getMenu_name();
 	}
 
 	public int getOrder_id() {
