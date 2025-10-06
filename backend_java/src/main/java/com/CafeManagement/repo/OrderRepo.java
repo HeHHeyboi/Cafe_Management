@@ -27,8 +27,8 @@ public class OrderRepo {
 				UUID.fromString(bill_id),
 				arg.getMenu_id(),
 				arg.getAmount(),
-				arg.getSize(),
-				arg.getType(),
+				arg.getSize().isBlank() ? null : arg.getSize(),
+				arg.getType().isBlank() ? null : arg.getType(),
 				arg.getTotal_price());
 	}
 
