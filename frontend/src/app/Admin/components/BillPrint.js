@@ -6,7 +6,7 @@ import { Bell, Trash2, MinusCircle, PlusCircle, Landmark, Wallet } from 'lucide-
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-
+import Image from "next/image";
 // Sub-component for the user profile header
 const UserProfileHeader = ({ userName }) => ( 
   <div className="flex items-center justify-between p-4 bg-white border-b border-gray-100">
@@ -33,7 +33,12 @@ const BillItem = ({ item, onUpdateQuantity, onRemoveItem }) => (
   <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
     <div className="flex items-center space-x-3 w-3/5">
       <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
-        IMG
+          <Image
+    src={item.image}
+    alt={item.name || 'Image'}
+    fill
+    className="object-cover"
+  />
       </div>
       <div className="flex-grow">
         <h3 className="font-medium text-gray-800 truncate">{item.name}</h3>
@@ -119,11 +124,11 @@ export default function BillPrint({
       const bill_id = billRes.data.id;
 
       console.log('Bill_id: ', bill_id);
-      console.table(billItems);
-      console.log("original")
+      // console.table(billItems);
+      // console.log("original", billItems[0]['originalId'])
       for (const item in billItems) {
         const data = {
-          menu_id: Number(billItems[item]['originalId']),
+          menu_id: Number(billItems[item]['originalId']) == null ? Number(billItems[item]['id']) : Number(billItems[item]['originalId']),
           amount: Number(billItems[item]['quantity']),
           total_price: Number(billItems[item]['price']) * Number(billItems[item]['quantity']),
           type:  String(billItems[item]['drinkType']).trim(),

@@ -114,10 +114,11 @@ export default function AdminOrderPage() {
       // สร้าง option สำหรับ Snack/Dessert
 
       // const optionId = `${menuItemPending.id}|${drinkType}|${cupSize}`;
-
-      const optionId = item.id;
+      // console.log(optionId);
+      const originalId = item.id;
       const option = {
-        id: optionId,
+        id: originalId,
+        originalId: originalId,
         name: item.name,
         category: item.category,
         price: snackPrice,
@@ -127,6 +128,8 @@ export default function AdminOrderPage() {
         cupSize: "",
       };
 
+
+      console.log("Option: ", option);
       setCurrentBillItems(prevItems => {
         const exist = prevItems.find(i => i.id === option.id);
         if (exist) {
@@ -195,6 +198,8 @@ export default function AdminOrderPage() {
       cupSize,
     };
 
+
+    console.log("Options: ", option);
     setCurrentBillItems(prevItems => {
 
       const exist = prevItems.find(i => i.id === option.id);

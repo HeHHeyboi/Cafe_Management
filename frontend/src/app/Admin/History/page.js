@@ -252,7 +252,7 @@ useEffect(() => {
                       <TableCell className="text-left">{idx === 0 ? g.bill_id : ""}</TableCell>
                       <TableCell className="text-left">{it.menu_name}</TableCell>
                       <TableCell className="text-left">{it.amount}</TableCell>
-                      <TableCell className="text-left">{it.size ?? "-"}</TableCell>
+                      <TableCell className="text-left uppercase">{it.size ?? "-"}</TableCell>
                       <TableCell className="text-left">{it.type ?? "-"}</TableCell>
                       <TableCell className="text-left">{it.total_price.toFixed(2)} บาท</TableCell>
                     </TableRow>
