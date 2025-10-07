@@ -25,7 +25,12 @@ public class CookieAuth {
 		ResponseCookieBuilder builder = ResponseCookie.fromClientResponse("id", encrypt);
 		builder.path("/");
 		builder.secure(true);
+<<<<<<< HEAD
 		builder.sameSite("None");
+=======
+		builder.sameSite("Lax");
+		builder.domain("localhost");
+>>>>>>> 8bd3e429c2b785572441d2d9bcdb5c5a60000020
 		builder.maxAge(expire);
 		builder.httpOnly(true);
 		return builder.build();
