@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Card, CardHeader, CardTitle, CardContent } from "../../../components/ui/card";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "../../../components/ui/table";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../../../components/ui/select";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from "chart.js";
 

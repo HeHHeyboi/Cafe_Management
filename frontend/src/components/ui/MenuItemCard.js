@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React, { useState } from "react";
 
 export default function MenuItemCard({ name, image, sizes, price }) {
@@ -10,7 +11,7 @@ export default function MenuItemCard({ name, image, sizes, price }) {
       {/* รูปภาพเมนู */}
       <div className="w-full h-32 bg-gray-100 flex items-center justify-center rounded-lg mb-3 overflow-hidden">
         {image ? (
-          <img
+          <Image
             src={image}
             alt={name}
             className="h-full object-cover"

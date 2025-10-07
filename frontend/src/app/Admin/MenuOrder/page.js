@@ -1,13 +1,14 @@
 // app/admin/order/page.js
 'use client';
 
-import React, { useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
 import Link from "next/link";
-import { Coffee, Milk, CupSoda, Cake, UtensilsCrossed, Grid, Plus } from "lucide-react";
+import { Coffee, Milk, CupSoda, Cake, UtensilsCrossed, Grid, Plus, Edit2, Trash2 } from "lucide-react";
 import clsx from 'clsx';
 
 import BillPrint from '../components/BillPrint';
+import axios from 'axios';
+import Image from 'next/image';
 
 const menuCategories = [
   { title: "All", icon: Grid },
@@ -18,53 +19,176 @@ const menuCategories = [
   { title: "Dessert", icon: Cake },
 ];
 
-const allMenuItems = [
-  { id: 'm1', name: "Latte", category: "Coffee", price: 60, image: "#f0f0f0" },
-  { id: 'm2', name: "Cappuccino", category: "Coffee", price: 65, image: "#d0d0d0" },
-  { id: 'm3', name: "Orange Juice", category: "Juice", price: 45, image: "#f0f0c0" },
-  { id: 'm4', name: "Milk Tea", category: "Milk", price: 50, image: "#e0e0e0" },
-  { id: 'm5', name: "Croissant", category: "Snack", price: 40, image: "#c0f0f0" },
-  { id: 'm6', name: "Cheesecake", category: "Dessert", price: 80, image: "#f0d0f0" },
-  { id: 'm7', name: "Espresso", category: "Coffee", price: 50, image: "#a0a0a0" },
-  { id: 'm8', name: "Apple Pie", category: "Dessert", price: 70, image: "#f0b0b0" },
-  { id: 'm9', name: "Sandwich", category: "Snack", price: 60, image: "#b0f0b0" },
-];
+const sizes = ["S", "M", "L", "XL"];
+const types = ["ร้อน", "เย็น", "ปั่น"];
 
 export default function AdminOrderPage() {
+  const [menu, setMenu] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentBillItems, setCurrentBillItems] = useState([]);
 
-  // ---------- เพิ่ม state สำหรับ Modal ----------
+  // Modal สำหรับเลือก option
   const [showOptionModal, setShowOptionModal] = useState(false);
   const [menuItemPending, setMenuItemPending] = useState(null);
-  const [drinkType, setDrinkType] = useState(""); // "ร้อน", "เย็น", "ปั่น"
-  const [cupSize, setCupSize] = useState(""); // "S", "M", "L"
+  const [drinkType, setDrinkType] = useState(""); // ร้อน/เย็น/ปั่น
+  const [cupSize, setCupSize] = useState(""); // S/M/L/XL
+
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/menu`);
+        const apiData = response.data;
+        // แปลงข้อมูลให้อยู่ในรูปแบบที่ component ใช้ได้
+        const formattedMenu = apiData.map((item) => {
+          const pricesBySize = {};
+          const pricesByType = {};
+
+          item.category?.forEach(c => {
+            pricesBySize[c.size.toUpperCase()] = Number(c.price);
+          });
+
+          item.types?.forEach(t => {
+            const typeKey = t.type === "ร้อน" ? "ร้อน" : t.type === "เย็น" ? "เย็น" : "ปั่น";
+            pricesByType[typeKey] = Number(t.addition_price);
+          });
+
+          // หา basePrice จากราคาขนาดที่ต่ำที่สุด (แปลงเป็น number ด้วย)
+          const basePrice = Object.values(pricesBySize).length > 0 ? Math.min(...Object.values(pricesBySize)) : 0;
+          const price = item.price ? Number(item.price) : basePrice;
+
+          return {
+            id: item.menu_id,
+            name: item.name,
+            category: convertMenuTypeToCategory(item.menu_type),
+            image: item.img_url ? `${process.env.NEXT_PUBLIC_API_URL}/${item.img_url}` : "#f0f0f0",
+            pricesBySize: Object.keys(pricesBySize).length > 0 ? pricesBySize : undefined,
+            pricesByType: Object.keys(pricesByType).length > 0 ? pricesByType : undefined,
+            basePrice,
+            price,
+          };
+        });
+
+        setMenu(formattedMenu);
+        localStorage.setItem("menu", JSON.stringify(formattedMenu));
+      } catch (error) {
+        console.error("Error fetching menu:", error);
+      }
+    };
+
+
+    fetchMenu();
+  }, []);
+
+  const convertMenuTypeToCategory = (type) => {
+    if (!type) {
+      return "Other";
+    }
+    switch (type.toLowerCase()) {
+      case "coffee":
+        return "Coffee";
+      case "juice":
+        return "Juice";
+      case "milk":
+        return "Milk";
+      case "dessert":
+        return "Dessert";
+      case "snack":
+        return "Snack";
+      case "drink":
+        return "Coffee"; // หรือให้เป็น “Drink” แล้วเพิ่ม category ใหม่ก็ได้
+      default:
+        return "Other";
+    }
+  };
 
   const filteredMenuItems =
     selectedCategory === "All"
-      ? allMenuItems
-      : allMenuItems.filter((item) => item.category === selectedCategory);
+      ? (menu ?? [])
+      : (menu ?? []).filter((item) => item.category === selectedCategory);
 
-  // ---------- ปรับจากเดิม: คลิกใช้ modal ----------
+  // ฟังก์ชันคลิกเมนู
   const handleMenuClick = (item) => {
+    if (item.category === "Snack" || item.category === "Dessert") {
+      const snackPriceRaw = item.pricesBySize?.["Normal"] || item.price || 0;
+      const snackPrice = Number(snackPriceRaw) || 0;
+      // สร้าง option สำหรับ Snack/Dessert
+
+      // const optionId = `${menuItemPending.id}|${drinkType}|${cupSize}`;
+
+      const optionId = item.id;
+      const option = {
+        id: optionId,
+        name: item.name,
+        category: item.category,
+        price: snackPrice,
+        image: item.image,
+        quantity: 1,
+        drinkType: "",
+        cupSize: "",
+      };
+
+      setCurrentBillItems(prevItems => {
+        const exist = prevItems.find(i => i.id === option.id);
+        if (exist) {
+          return prevItems.map(i =>
+            i.id === option.id ? { ...i, quantity: i.quantity + 1 } : i
+          );
+        } else {
+          return [...prevItems, option];
+        }
+      });
+
+      return; // ป้องกันการเปิด modal
+    }
+
+    // สำหรับเมนูอื่นๆ ที่ต้องเลือก size/type
     setMenuItemPending(item);
     setDrinkType("");
     setCupSize("");
     setShowOptionModal(true);
   };
 
-  // ---------- เพิ่ม: ยืนยันการเลือก option ----------
+  // ฟังก์ชันลบเมนู
+  const handleDeleteMenu = async (id) => {
+    if (!confirm("คุณแน่ใจจะลบเมนูนี้ใช่ไหม?")) return;
+    try {
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/menu/${id}`);
+
+      if (response.status === 200) {
+        alert(response.data.msg || "ลบเมนูสำเร็จ");
+
+        setMenu((prevMenu) => prevMenu.filter(item => item.id !== id));
+        const updatedMenu = (menu ?? []).filter(item => item.id !== id);
+        localStorage.setItem("menu", JSON.stringify(updatedMenu));
+      }
+    } catch (error) {
+      if (error.response?.status === 404) {
+        alert("ไม่พบเมนูที่ต้องการลบ");
+      } else {
+        alert("เกิดข้อผิดพลาดในการลบเมนู");
+      }
+      console.error("Delete menu error:", error);
+    }
+  };
+
   const handleConfirmAdd = () => {
     if (!menuItemPending) return;
+    if (!cupSize || !drinkType) return;
 
-    // สร้าง id ใหม่เพื่อระบุตัวเลือกที่ต่างกัน (กันชนกัน)
-    const optionId = menuItemPending.id + "|" + drinkType + "|" + cupSize;
+    // คำนวณราคาโดยแปลง string เป็น number ก่อนทุกครั้ง
+    const sizePrice = Number(menuItemPending.pricesBySize?.[cupSize] ?? menuItemPending.basePrice ?? 0);
+    const typePrice = Number(menuItemPending.pricesByType?.[drinkType] ?? 0);
+
+    const totalPrice = sizePrice + typePrice;
+
+    const optionId = `${menuItemPending.id}|${drinkType}|${cupSize}`;
 
     const option = {
       id: optionId,
+      originalId: menuItemPending.id,
       name: menuItemPending.name,
       category: menuItemPending.category,
-      price: menuItemPending.price,
+      price: totalPrice,
       image: menuItemPending.image,
       quantity: 1,
       drinkType,
@@ -72,6 +196,7 @@ export default function AdminOrderPage() {
     };
 
     setCurrentBillItems(prevItems => {
+
       const exist = prevItems.find(i => i.id === option.id);
       if (exist) {
         return prevItems.map(i =>
@@ -86,7 +211,6 @@ export default function AdminOrderPage() {
     setMenuItemPending(null);
   };
 
-  // ---------- ส่วนลดจำนวน/ลบ ----------
   const handleUpdateItemQuantity = (id, newQuantity) => {
     if (newQuantity < 1) {
       handleRemoveItem(id);
@@ -110,7 +234,7 @@ export default function AdminOrderPage() {
   return (
     <div className="flex h-[calc(100vh-64px)] bg-gray-100 font-sans">
       {/* ===== ส่วนซ้าย: Menu Order ===== */}
-      <div className="w-3/5 bg-white shadow-lg overflow-hidden border-r border-gray-200 flex flex-col">
+      <div className="w-[65%] bg-white shadow-lg overflow-hidden border-r border-gray-200 flex flex-col">
         <div className="flex-shrink-0 p-6 pb-2 border-b border-gray-200 bg-white z-10">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold">Menu Order</h1>
@@ -152,28 +276,50 @@ export default function AdminOrderPage() {
               <div
                 key={item.id}
                 className="relative border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-all duration-200 cursor-pointer"
-                onClick={() => handleMenuClick(item)} aria-label={`Select ${item.name}`}
               >
                 <div
                   className="relative w-full h-32 bg-gray-100 rounded-t-xl overflow-hidden"
-                  style={{ backgroundColor: item.image }}
-                ></div>
+                  onClick={() => handleMenuClick(item)}
+                >
+                  <Image src={item.image}
+                    alt={item.name}
+                    className="object-cover w-full h-full"
+                    onClick={() => handleMenuClick(item)}/>
+                </div>
                 <div className="p-3 flex-grow">
                   <h2 className="text-lg font-semibold text-gray-800">{item.name}</h2>
                   <p className="text-sm text-gray-500">{item.category}</p>
                 </div>
                 <div className="p-3 pt-0 flex items-center justify-between">
-                  <p className="text-md font-bold text-amber-700">{item.price} บาท</p>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleMenuClick(item);
-                    }}
-                    className="p-2 bg-amber-100 text-amber-700 rounded-full hover:bg-amber-200 transition"
-                    aria-label={`Add ${item.name} to order`}
-                  >
-                    <Plus className="w-5 h-5" />
-                  </button>
+                  <p className="text-md font-bold text-amber-700">{item.price ?? item.basePrice} บาท</p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleMenuClick(item); }}
+                      className="p-2 bg-amber-100 text-amber-700 rounded-full hover:bg-amber-200 transition"
+                      aria-label={`Add ${item.name} to order`}
+                    >
+                      <Plus className="w-5 h-5" />
+                    </button>
+                    <Link href={`/Admin/EditMenu/${item.id}`} passHref>
+                      <button
+                        onClick={(e)=>e.stopPropagation()}
+                        className="p-2 bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition"
+                        aria-label={`Edit ${item.name}`}
+                      >
+                        <Edit2 className="w-5 h-5" />
+                      </button>
+                    </Link>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteMenu(item.id);
+                      }}
+                      className="p-2 bg-red-100 text-red-700 rounded-full hover:bg-red-200 transition"
+                      aria-label={`Delete ${item.name}`}
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -182,52 +328,95 @@ export default function AdminOrderPage() {
       </div>
 
       {/* ===== ฝั่งขวา: Bill Display ===== */}
-      <div className="w-2/5 bg-white shadow-lg overflow-hidden flex flex-col">
+      <div className="w-[35%] bg-white shadow-lg overflow-hidden flex flex-col">
         <BillPrint
           billItems={currentBillItems}
           onUpdateItemQuantity={handleUpdateItemQuantity}
           onRemoveItem={handleRemoveItem}
           onClearBill={handleClearBill}
+          showTypeAndSize={true} 
+          paymentMethods={["Cash", "PromptPay"]} 
         />
       </div>
 
       {/* ===== Modal เลือกตัวเลือก ===== */}
-      {showOptionModal && (
-        <div className=" flex fixed z-50 inset-0 flex items-center justify-center bg-black/30">
-          <div className="bg-white rounded-xl p-6 w-[320px] shadow-xl">
-            <h2 className="font-bold text-xl mb-4 text-center">{menuItemPending?.name}</h2>
-            <div className="mb-5">
-              <label className="block mb-3 ">ประเภท</label>
-              <div className=" flex gap-3 justify-center">
-                {["Hot", "Ice", "Frappe"].map(type => (
-                  <button key={type}
-                    onClick={() => setDrinkType(type)}
-                    className={`px-4 py-2 rounded-full border ${drinkType === type ? "bg-amber-700 text-white" : "bg-gray-100"}`}>
-                    {type}
-                  </button>
-                ))}
+      {showOptionModal && menuItemPending && (
+        <div className="flex fixed z-50 inset-0 items-center justify-center bg-black/30 px-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-lg md:max-w-2xl shadow-xl">
+            <h2 className="font-bold text-xl mb-4 text-center">{menuItemPending.name}</h2>
+
+            {/* เลือก Size */}
+            <div className="mb-3">
+              <label className="block mb-2 font-medium">ขนาดแก้ว</label>
+              <div className="flex gap-3 justify-center flex-wrap">
+                {sizes.map((size) => {
+                  const priceRaw = menuItemPending.pricesBySize?.[size];
+                  const price = Number(priceRaw);
+                  const isDisabled = !price || isNaN(price) || price <= 0;
+
+                  return (
+                    <button
+                      key={size}
+                      onClick={() => !isDisabled && setCupSize(size)}
+                      className={`px-4 py-2 rounded-full border 
+                        ${cupSize === size ? "bg-amber-700 text-white" : "bg-gray-100"}
+                        ${isDisabled ? "opacity-50 cursor-not-allowed" : "hover:bg-amber-200"}
+                      `}
+                      disabled={isDisabled}
+                    >
+                      {size} ({!isDisabled ? price + " บาท" : "ไม่พร้อมใช้งาน"})
+                    </button>
+                  );
+                })}
               </div>
             </div>
-            <div className="mb-7">
-              <label className="block mb-1">ขนาดแก้ว</label>
-              <div className="flex gap-3 justify-center">
-                {["S", "M", "L","XL"].map(size => (
-                  <button key={size}
-                    onClick={() => setCupSize(size)}
-                    className={`px-4 py-2 rounded-full border ${cupSize === size ? "bg-amber-700 text-white" : "bg-gray-100"}`}>
-                    {size}
-                  </button>
-                ))}
+
+            {/* เลือก Type */}
+            <div className="mb-3">
+              <label className="block mb-2 font-medium">ประเภทเครื่องดื่ม</label>
+              <div className="flex gap-3 justify-center flex-wrap">
+                {types.map((type) => {
+                  const additional = Number(menuItemPending.pricesByType?.[type] ?? 0);
+
+                  return (
+                    <button
+                      key={type}
+                      onClick={() => setDrinkType(type)}
+                      className={`px-4 py-2 rounded-full border ${drinkType === type ? "bg-amber-700 text-white" : "bg-gray-100"}`}
+                    >
+                      {type} (+{additional} บาท)
+                    </button>
+                  );
+                })}
               </div>
             </div>
-            <div className="flex gap-3 justify-center">
-              <button onClick={() => setShowOptionModal(false)}
-                      className="px-4 py-2 bg-gray-200 rounded-lg">ยกเลิก</button>
-              <button 
+
+            {/* แสดงราคาจริง */}
+            {cupSize && drinkType && (
+              <div className="mt-4 text-center text-lg font-bold text-amber-800">
+                ราคาจริง: { 
+                  (
+                    Number(menuItemPending.pricesBySize?.[cupSize] ?? menuItemPending.price ?? 0) + 
+                    Number(menuItemPending.pricesByType?.[drinkType] ?? 0)
+                  ).toFixed(2) 
+                } บาท
+              </div>
+            )}
+
+            <div className="flex gap-3 justify-center mt-6">
+              <button
+                onClick={() => setShowOptionModal(false)}
+                className="px-4 py-2 bg-gray-200 rounded-lg"
+              >
+                ยกเลิก
+              </button>
+              <button
                 onClick={handleConfirmAdd}
+                disabled={!cupSize || !drinkType}
                 className="px-4 py-2 bg-amber-700 text-white rounded-lg disabled:bg-gray-400"
-                disabled={!drinkType || !cupSize}
-              >AddMenu</button>
+              >
+                AddMenu
+              </button>
             </div>
           </div>
         </div>

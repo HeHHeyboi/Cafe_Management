@@ -1,6 +1,6 @@
 'use client';
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import {
   Coffee,
   Milk,
@@ -26,6 +26,8 @@ const types = ["ร้อน", "เย็น", "ปั่น"];
 
 // --- Reusable Components ---
 function ImageUpload({ image, onChange }) {
+  const isURL = typeof image === "string";
+
   return (
     <div className="w-full">
       <label className="block text-sm font-medium mb-2">Upload Image</label>
@@ -38,7 +40,7 @@ function ImageUpload({ image, onChange }) {
         />
         {image ? (
           <Image
-            src={URL.createObjectURL(image)}
+            src={isURL ? `${process.env.NEXT_PUBLIC_API_URL}/${image}` : URL.createObjectURL(image)}
             alt="preview"
             className="w-full h-auto max-h-[600px] object-contain"
           />
@@ -139,7 +141,9 @@ function DescriptionInput({ value, onChange }) {
 }
 
 // --- Main Page ---
-export default function AddNewMenuPage() {
+export default function EditMenuPage() {
+  const { id } = useParams();
+console.log("menuId", id); // ✅ ควรแสดงเป็น string เช่น "12"
   const router = useRouter();
 
   const initialFormData = {
@@ -152,6 +156,48 @@ export default function AddNewMenuPage() {
   };
 
   const [formData, setFormData] = useState(initialFormData);
+
+  const isSnackOrDessert =
+    formData.category === "Snack" || formData.category === "Dessert";
+
+  // 🟦 Load existing menu data
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/menu/${id}`);
+        const data = res.data;
+        console.log(`Data: ${data}`);
+        const categoryFormatted = capitalize(data.menu_type); // coffee -> Coffee
+
+        const pricesBySize = { S: "", M: "", L: "", XL: "", normal: "" };
+        data.category.forEach(({ size, price }) => {
+          const key = size.toLowerCase() === "normal" ? "normal" : size.toUpperCase();
+          pricesBySize[key] = price;
+        });
+
+        const pricesByType = { ร้อน: "", เย็น: "", ปั่น: "" };
+        data.types.forEach(({ type, addition_price }) => {
+          pricesByType[type] = addition_price;
+        });
+
+        setFormData({
+          name: data.name,
+          category: categoryFormatted,
+          description: data.description || "",
+          image: data.img_url,
+          pricesBySize,
+          pricesByType,
+        });
+      } catch (err) {
+        console.error("❌ Failed to load menu:", err);
+      }
+    };
+
+    fetchMenu();
+  }, [id]);
+
+  const capitalize = (str) =>
+    String(str).charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
   const handleImageChange = (e) =>
     setFormData({ ...formData, image: e.target.files[0] });
@@ -176,9 +222,10 @@ export default function AddNewMenuPage() {
       menu_type: formData.category.toLowerCase(),
       category: [],
       types: [],
+      description: formData.description,
     };
 
-    if (formData.category === "Snack" || formData.category === "Dessert") {
+    if (isSnackOrDessert) {
       if (formData.pricesBySize.normal) {
         payload.category.push({
           size: "normal",
@@ -195,46 +242,43 @@ export default function AddNewMenuPage() {
           });
         }
       }
-    }
 
-    for (const type of ["ร้อน", "เย็น", "ปั่น"]) {
-      const price = formData.pricesByType[type];
-      if (price) {
-        payload.types.push({
-          type,
-          addition_price: parseFloat(price),
-        });
+      for (const type of ["ร้อน", "เย็น", "ปั่น"]) {
+        const price = formData.pricesByType[type];
+        if (price !== "") {
+          payload.types.push({
+            type,
+            addition_price: parseFloat(price),
+          });
+        }
       }
     }
 
     const form = new FormData();
     form.append("data", JSON.stringify(payload));
-    if (formData.image) {
+    if (formData.image && typeof formData.image !== "string") {
       form.append("img", formData.image);
     }
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/menu`, form, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      console.log("✅ API Response:", response.data);
-      alert(`✅ Menu Added: ${formData.name}`);
-      setFormData(initialFormData); // 🔄 Reset form
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/menu/${id}`,
+        form,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      alert(`✅ Updated: ${formData.name}`);
+      router.push("/Admin/MenuOrder"); // หรือกลับไปหน้าเมนู
     } catch (error) {
-      console.error("❌ Upload failed:", error);
-      alert("❌ Upload failed: " + error.message);
+      console.error("❌ Update failed:", error);
+      alert("❌ Update failed: " + error.message);
     }
   };
 
-  const isSnackOrDessert =
-    formData.category === "Snack" || formData.category === "Dessert";
-
   return (
     <div className="p-6 w-full">
-      <h1 className="text-2xl font-bold mb-6">Add New Menu</h1>
+      <h1 className="text-2xl font-bold mb-6">Edit Menu</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <ImageUpload image={formData.image} onChange={handleImageChange} />
@@ -242,17 +286,13 @@ export default function AddNewMenuPage() {
         <TextInput
           label="Menu Name"
           value={formData.name}
-          onChange={(e) =>
-            setFormData({ ...formData, name: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           placeholder="Enter menu name"
         />
 
         <CategorySelector
           selected={formData.category}
-          onSelect={(cat) =>
-            setFormData({ ...formData, category: cat })
-          }
+          onSelect={(cat) => setFormData({ ...formData, category: cat })}
         />
 
         {isSnackOrDessert ? (
@@ -288,9 +328,9 @@ export default function AddNewMenuPage() {
 
         <button
           type="submit"
-          className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
         >
-          Add Menu
+          Update Menu
         </button>
       </form>
     </div>
