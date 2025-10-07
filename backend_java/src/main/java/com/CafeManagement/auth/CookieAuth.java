@@ -24,10 +24,10 @@ public class CookieAuth {
 		Duration expire = Duration.ofDays(7);
 		ResponseCookieBuilder builder = ResponseCookie.fromClientResponse("id", encrypt);
 		builder.path("/");
-		builder.secure(false);
-		builder.sameSite("Lax");
-		builder.domain("localhost");
+		builder.secure(true);
+		builder.sameSite("None");
 		builder.maxAge(expire);
+		builder.httpOnly(true);
 		return builder.build();
 	}
 

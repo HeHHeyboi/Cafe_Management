@@ -16,6 +16,14 @@ export default function AdminLoginPage() {
     password: "admin123",
   };
 
+
+  useEffect(() => {
+    const isLoggined = localStorage.getItem('isLoggined');
+    console.log("isLoggined: ", isLoggined);
+    if (isLoggined) {
+      router.push("/Admin/MenuOrder");
+    }
+  }, []);
   // ฟังก์ชันตรวจสอบ login
   const handleLogin = (e) => {
     e.preventDefault(); // ป้องกันการ reload หน้าเมื่อ submit
@@ -28,6 +36,7 @@ export default function AdminLoginPage() {
     }).then((response) => {
       console.log(response);
       if (response.status == 201 || response.status == 200) {
+        localStorage.setItem("isLoggined", true);
         router.push('/Admin/MenuOrder');
       } else {
         setError(response.data.msg);
@@ -37,6 +46,7 @@ export default function AdminLoginPage() {
       const msg = error.response?.data?.['Bad Requst'] ?? error.response.data?.['error'];
       alert(msg);
     })
+    // router.push("/Admin/MenuOrder")
   };
 
   return (

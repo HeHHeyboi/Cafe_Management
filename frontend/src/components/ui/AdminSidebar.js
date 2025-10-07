@@ -22,13 +22,19 @@ export default function AdminSidebar() {
   const handleLogout = async () => {
     setLoadingLogout(true);
     try {
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/logout`, {
-        withCredentials: true,
-      });
-      if (res.status === 200) {
-        router.push('/Login');
+      // const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/logout`, {
+      //   withCredentials: true,
+      // });
+      // if (res.status === 200) {
+      //   
+      // } else {
+      //   alert('Logout failed');
+      // }
+      localStorage.removeItem("isLoggined")
+      if (localStorage.getItem("isLoggined")) {
+        alert("Logout failed");
       } else {
-        alert('Logout failed');
+        router.push('/Login');
       }
     } catch (error) {
       alert('Logout error');
