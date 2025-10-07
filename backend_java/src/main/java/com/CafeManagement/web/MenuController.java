@@ -78,7 +78,10 @@ public class MenuController {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			MenuRequest req = mapper.readValue(data, MenuRequest.class);
-			String img_url = fileService.store(file);
+			String img_url = "";
+			if (file != null) {
+				img_url = fileService.store(file);
+			}
 			service.UpdateMenuById(req, id, img_url);
 		} catch (MenuNotFoundException notfound) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("""

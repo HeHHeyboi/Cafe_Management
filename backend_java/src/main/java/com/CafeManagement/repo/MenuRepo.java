@@ -100,6 +100,11 @@ public class MenuRepo {
 			SET name = ?,  menu_type = ?,img_url = ?
 			WHERE menu_id = ?;
 			""";
+	final String updateMenuByIdWithout = """
+			UPDATE menu
+			SET name = ?,  menu_type = ?
+			WHERE menu_id = ?;
+			""";
 	final String resetCategoryById = """
 			DELETE FROM category
 			WHERE menu_id = ?
@@ -116,8 +121,12 @@ public class MenuRepo {
 
 	public void UpdateMenuById(MenuRequest arg, int menu_id, String img_url) throws Exception {
 		int row_affected = 0;
+		if (img_url.isEmpty()) {
+			row_affected = jdbc.update(updateMenuByIdWithout, arg.getName(), arg.getMenu_type(), menu_id);
+		} else {
+			row_affected = jdbc.update(updateMenuById, arg.getName(), arg.getMenu_type(), img_url, menu_id);
+		}
 
-		row_affected = jdbc.update(updateMenuById, arg.getName(), arg.getMenu_type(), img_url, menu_id);
 		if (row_affected == 0) {
 			throw new MenuNotFoundException(MenuNotFoundException.GenMessage(menu_id));
 		}
