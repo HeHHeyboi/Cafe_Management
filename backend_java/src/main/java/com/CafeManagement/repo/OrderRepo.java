@@ -46,11 +46,6 @@ public class OrderRepo {
 	public List<Order> GetOrdersByBillId(String bill_id) throws Exception {
 		List<Order> orders = new ArrayList<>();
 		SqlRowSet rows = jdbc.queryForRowSet(getOrdersByBillId, bill_id);
-		SqlRowSet row = jdbc.queryForRowSet(getMenuName, bill_id);
-		String name = "";
-		if (row.next()) {
-			name = row.getString("name");
-		}
 		while (rows.next()) {
 			Order order = new Order();
 			order.setBill_id(UUID.fromString(rows.getString("bill_id")));
@@ -59,6 +54,11 @@ public class OrderRepo {
 			order.setSize(rows.getString("size"));
 			order.setType(rows.getString("type"));
 			order.setTotal_price(rows.getDouble("total_price"));
+			SqlRowSet row = jdbc.queryForRowSet(getMenuName, order.getMenu_id());
+			String name = "";
+			if (row.next()) {
+				name = row.getString("name");
+			}
 			order.setMenu_name(name);
 			orders.add(order);
 		}
@@ -109,7 +109,7 @@ public class OrderRepo {
 			order.setAmount(rows.getInt("amount"));
 			order.setSize(rows.getString("size"));
 			order.setType(rows.getString("type"));
-			SqlRowSet row = jdbc.queryForRowSet(getMenuName, order.getBill_id());
+			SqlRowSet row = jdbc.queryForRowSet(getMenuName, order.getMenu_id());
 			String name = "";
 			if (row.next()) {
 				name = row.getString("name");
