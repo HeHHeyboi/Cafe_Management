@@ -1,11 +1,12 @@
 "use client";
 
-import AdminSidebar from "@/components/ui/AdminSidebar";
+import AdminSidebar from "../../components/ui/AdminSidebar";
 
 export default function AdminLayout({ children }) {
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <AdminSidebar />
+      {/* <AdminSidebar /> */}
+      <AdminSidebar/>
       <main className="flex-1 p-8">{children}</main>
     </div>
   );
