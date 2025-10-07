@@ -73,7 +73,7 @@ public class MenuController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<String> updateMenuById(@RequestParam("img") MultipartFile file,
+	public ResponseEntity<String> updateMenuById(@RequestParam(value = "img", required = false) MultipartFile file,
 			@Valid @RequestParam("data") String data, @PathVariable int id) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
