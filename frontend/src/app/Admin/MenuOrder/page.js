@@ -283,6 +283,7 @@ export default function AdminOrderPage() {
                 >
                   <Image src={item.image}
                     alt={item.name}
+                    fill
                     className="object-cover w-full h-full"
                     onClick={() => handleMenuClick(item)}/>
                 </div>
