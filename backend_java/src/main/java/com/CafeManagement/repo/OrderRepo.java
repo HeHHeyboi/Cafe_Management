@@ -18,8 +18,8 @@ public class OrderRepo {
 	JdbcTemplate jdbc;
 
 	final String createOrder = """
-			INSERT INTO orders(bill_id, menu_id,menu_name, amount, size, type, total_price)
-			VALUES (?,?,?,?,?,?,?)
+			INSERT INTO orders(bill_id, menu_id, amount, size, type, total_price)
+			VALUES (?,?,?,?,?,?)
 			""";
 
 	final String getMenuName = """
@@ -28,15 +28,9 @@ public class OrderRepo {
 			""";
 
 	public void CreateOrder(OrderRequest arg, String bill_id) throws Exception {
-		SqlRowSet row = jdbc.queryForRowSet(getMenuName, arg.getMenu_id());
-		String name = "";
-		if (row.next()) {
-			name = row.getString("name");
-		}
 		jdbc.update(createOrder,
 				UUID.fromString(bill_id),
 				arg.getMenu_id(),
-				name,
 				arg.getAmount(),
 				arg.getSize() != null ? arg.getSize().isBlank() ? null : arg.getSize() : null,
 				arg.getType() != null ? arg.getType().isBlank() ? null : arg.getType() : null,
@@ -44,7 +38,7 @@ public class OrderRepo {
 	}
 
 	final String getOrdersByBillId = """
-			SELECT bill_id, menu_id, amount, size, type, total_price, menu_name
+			SELECT bill_id, menu_id, amount, size, type, total_price
 			FROM orders
 			WHERE bill_id = ?
 			""";
@@ -52,6 +46,11 @@ public class OrderRepo {
 	public List<Order> GetOrdersByBillId(String bill_id) throws Exception {
 		List<Order> orders = new ArrayList<>();
 		SqlRowSet rows = jdbc.queryForRowSet(getOrdersByBillId, bill_id);
+		SqlRowSet row = jdbc.queryForRowSet(getMenuName, bill_id);
+		String name = "";
+		if (row.next()) {
+			name = row.getString("name");
+		}
 		while (rows.next()) {
 			Order order = new Order();
 			order.setBill_id(UUID.fromString(rows.getString("bill_id")));
@@ -60,7 +59,7 @@ public class OrderRepo {
 			order.setSize(rows.getString("size"));
 			order.setType(rows.getString("type"));
 			order.setTotal_price(rows.getDouble("total_price"));
-			order.setMenu_name(rows.getString("menu_name"));
+			order.setMenu_name(name);
 			orders.add(order);
 		}
 		return orders;
@@ -96,7 +95,7 @@ public class OrderRepo {
 	// }
 
 	final String getAllOrders = """
-			SELECT bill_id, menu_id, amount, size, type, total_price,menu_name
+			SELECT bill_id, menu_id, amount, size, type, total_price
 			FROM orders
 			""";
 
@@ -110,8 +109,13 @@ public class OrderRepo {
 			order.setAmount(rows.getInt("amount"));
 			order.setSize(rows.getString("size"));
 			order.setType(rows.getString("type"));
+			SqlRowSet row = jdbc.queryForRowSet(getMenuName, order.getBill_id());
+			String name = "";
+			if (row.next()) {
+				name = row.getString("name");
+			}
 			order.setTotal_price(rows.getDouble("total_price"));
-			order.setMenu_name(rows.getString("menu_name"));
+			order.setMenu_name(name);
 			orders.add(order);
 		}
 		return orders;
