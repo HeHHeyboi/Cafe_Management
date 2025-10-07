@@ -24,7 +24,7 @@ public class CookieAuth {
 		Duration expire = Duration.ofDays(7);
 		ResponseCookieBuilder builder = ResponseCookie.fromClientResponse("id", encrypt);
 		builder.path("/");
-		builder.secure(false);
+		builder.secure(true);
 		builder.sameSite("Lax");
 		builder.domain("localhost");
 		builder.maxAge(expire);
