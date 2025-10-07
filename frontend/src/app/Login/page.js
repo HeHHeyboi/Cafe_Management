@@ -16,7 +16,6 @@ export default function AdminLoginPage() {
     password: "admin123",
   };
 
-
   useEffect(() => {
     const isLoggined = localStorage.getItem('isLoggined');
     console.log("isLoggined: ", isLoggined);
