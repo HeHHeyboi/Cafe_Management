@@ -74,5 +74,3 @@ cloudflared tunnel run http://localhost:<port>
 * You can save PM2 state using `pm2 save` and resurrect with `pm2 resurrect`.
 
 ---
-
-หากคุณมีข้อมูลเฉพาะเกี่ยวกับไฟล์ `.jar`, พอร์ต, หรือ config เพิ่มเติมที่ต้องการให้ใส่เข้าไปด้วย บอกได้เลยครับ!
