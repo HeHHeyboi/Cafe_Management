@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type UserRepository interface {
+type UserRepo interface {
 	CreateAdmin(ctx context.Context, user model.User) error
 	CreateUser(ctx context.Context, user model.User) error
 	DeleteAllUser(ctx context.Context) error
@@ -22,7 +22,7 @@ type userRepository struct {
 	db *database.Queries
 }
 
-func NewUserRepository(q *database.Queries) UserRepository {
+func NewUserRepo(q *database.Queries) UserRepo {
 	return &userRepository{db: q}
 }
 

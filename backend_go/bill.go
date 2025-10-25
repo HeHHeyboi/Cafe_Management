@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/HeHHeyboi/Cafe_Management/backend/internal/auth"
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
+	"github.com/HeHHeyboi/Cafe_Management/backend/internal/dto"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
@@ -37,11 +39,11 @@ func CreateNewBill(cfg *Config, ctx *gin.Context) {
 
 	var param Param
 	if err := ctx.ShouldBind(&param); err != nil {
-		bindingErrorMsg(err.(validator.ValidationErrors), ctx)
+		dto.BindingErrorMsg(err.(validator.ValidationErrors), ctx)
 		return
 	}
 
-	id, status, err := checkCookie(cfg, ctx)
+	id, status, err := auth.CheckCookie(cfg, ctx)
 	if err != nil {
 		ctx.JSON(status, gin.H{"error": err.Error()})
 		return

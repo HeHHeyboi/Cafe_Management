@@ -28,15 +28,25 @@ func CheckDataBaseError(err error) string {
 	}
 }
 
-func BindingErrorMsg(err validator.ValidationErrors, ctx *gin.Context) {
+func BindingErrorMsg(err error, ctx *gin.Context) {
 	var msg string
-	for _, e := range err {
-		switch e.Tag() {
-		case requireTag:
-			msg = fmt.Sprint("ไม่มีข้อมูลหรือชื่อผิดที่ ", strings.ToLower(e.Field()))
-		default:
-			msg = e.Error()
+	switch err := err.(type) {
+	case validator.ValidationErrors:
+		var res []string
+		for _, e := range err {
+			switch e.Tag() {
+			case requireTag:
+				msg = fmt.Sprintf("ไม่มีข้อมูลหรือชื่อผิดที่ %s\n", strings.ToLower(e.Field()))
+				res = append(res, msg)
+			default:
+				msg = e.Error() + "\n"
+				res = append(res, msg)
+			}
 		}
+		ctx.Error(fmt.Errorf("%v", res))
+		ctx.JSON(400, gin.H{"error": res})
+	case LoginError:
+		msg = err.Error()
 		ctx.Error(fmt.Errorf("%v", msg))
 		ctx.JSON(400, gin.H{"error": msg})
 	}
