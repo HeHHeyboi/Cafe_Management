@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/HeHHeyboi/Cafe_Management/backend/internal/auth"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
@@ -15,7 +16,7 @@ const (
 	requireTag        = "required"
 )
 
-func CheckDataBaseError(err error) string {
+func checkDataBaseError(err error) string {
 	switch err.Error() {
 	case foreignKeyMissing:
 		return "Please Created User first with Email"
@@ -49,5 +50,13 @@ func BindingErrorMsg(err error, ctx *gin.Context) {
 		msg = err.Error()
 		ctx.Error(fmt.Errorf("%v", msg))
 		ctx.JSON(400, gin.H{"error": msg})
+	case auth.HashError:
+		msg = err.Error()
+		ctx.Error(fmt.Errorf("%v", msg))
+		ctx.JSON(401, gin.H{"error": msg})
+	default:
+		msg = checkDataBaseError(err)
+		ctx.Error(fmt.Errorf("%v", msg))
+		ctx.JSON(500, gin.H{"error": msg})
 	}
 }

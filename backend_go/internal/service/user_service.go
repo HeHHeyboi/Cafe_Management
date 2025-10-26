@@ -9,13 +9,12 @@ import (
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/dto"
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/model"
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/repository"
-	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
 type UserService struct {
-	repo   repository.UserRepo
-	secret string
+	Repo   repository.UserRepo
+	Secret string
 }
 
 func (us UserService) CreateUser(ctx context.Context, userReq dto.UserRequest) (dto.UserResponse, error) {
@@ -28,7 +27,7 @@ func (us UserService) CreateUser(ctx context.Context, userReq dto.UserRequest) (
 		return dto.UserResponse{}, err
 	}
 
-	err = us.repo.CreateUser(ctx, user)
+	err = us.Repo.CreateUser(ctx, user)
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
@@ -37,7 +36,7 @@ func (us UserService) CreateUser(ctx context.Context, userReq dto.UserRequest) (
 }
 
 func (us UserService) GetAllUser(ctx context.Context) ([]dto.UserResponse, error) {
-	users, err := us.repo.GetAllUser(ctx)
+	users, err := us.Repo.GetAllUser(ctx)
 	if err != nil {
 		return []dto.UserResponse{}, err
 	}
@@ -49,10 +48,8 @@ func (us UserService) GetAllUser(ctx context.Context) ([]dto.UserResponse, error
 	return response, nil
 }
 
-func (us UserService) GetUserByID(ctx *gin.Context) (dto.UserResponse, error) {
-	userid := ctx.Param("id")
-
-	data, err := us.repo.GetUserByID(ctx.Request.Context(), userid)
+func (us UserService) GetUserByID(ctx context.Context, userid string) (dto.UserResponse, error) {
+	data, err := us.Repo.GetUserByID(ctx, userid)
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
@@ -68,47 +65,28 @@ func (us UserService) GetUserByID(ctx *gin.Context) (dto.UserResponse, error) {
 	return response, nil
 }
 
-func (us UserService) Login(ctx *gin.Context, req dto.LoginRequest) error {
-	data, err := us.repo.GetUserByEmail(ctx, req.Email)
+func (us UserService) Login(ctx context.Context, req dto.LoginRequest) (*http.Cookie, error) {
+	data, err := us.Repo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
-		return dto.LoginError{Email: req.Email}
+		return nil, dto.LoginError{Email: req.Email}
 	}
 
 	ok := auth.ComparePassword(&req.Password, &data.Password)
 	if !ok {
-		return dto.LoginError{Email: req.Email}
+		return nil, dto.LoginError{Email: req.Email}
 	}
 
-	cookie, err := auth.CreateCookie("id", data.UserID.String(), us.secret)
+	cookie, err := auth.CreateCookie("id", data.UserID.String(), us.Secret)
 	if err != nil {
-		return fmt.Errorf("Create Cookie Error, %s", err.Error())
+		return nil, fmt.Errorf("Create Cookie Error, %s", err.Error())
 	}
-	http.SetCookie(ctx.Writer, cookie)
+	return cookie, nil
+}
+
+func (us UserService) DeleteAllUser(ctx context.Context) error {
+	err := us.Repo.DeleteAllUser(ctx)
+	if err != nil {
+		return err
+	}
 	return nil
-}
-
-func (us UserService) Logout(ctx *gin.Context) (int, error) {
-	_, status, err := us.checkCookie(ctx)
-	if err != nil {
-		return status, err
-	}
-	ctx.SetCookie("id", "", -1, "/", "localhost", false, false)
-	return status, nil
-}
-func (us UserService) checkCookie(ctx *gin.Context) (string, int, error) {
-	cookie, err := ctx.Request.Cookie("id")
-	if err != nil {
-		return "0", 400, fmt.Errorf("User didn't login")
-	}
-
-	id, err := auth.ReadCookie(cookie, us.secret)
-	if err != nil {
-		return "0", 400, fmt.Errorf("Invalid Cookie")
-	}
-
-	data, err := us.repo.GetUserByID(ctx.Request.Context(), id)
-	if err != nil {
-		return "0", 400, fmt.Errorf("Please Login first")
-	}
-	return data.UserID.String(), 201, nil
 }

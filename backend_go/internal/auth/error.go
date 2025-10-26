@@ -4,7 +4,7 @@ type HashError struct {
 	msg string
 }
 
-func (he *HashError) Error() string {
+func (he HashError) Error() string {
 	return he.msg
 }
 

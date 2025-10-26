@@ -96,7 +96,7 @@ func (ur userRepository) GetUserByID(ctx context.Context, userID any) (model.Use
 
 func toUser(data database.User) model.User {
 	var user model.User
-	user.UserID = data.UserID.(uuid.UUID)
+	user.UserID = uuid.MustParse(data.UserID.(string))
 	user.Email = data.Email
 	user.Fname = data.Fname.String
 	user.Lname = data.Lname.String
