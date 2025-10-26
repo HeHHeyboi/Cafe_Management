@@ -1,13 +1,12 @@
 package model
 
+import "github.com/HeHHeyboi/Cafe_Management/backend/internal/dto"
+
 type Menu struct {
-	MenuID   int64
-	Name     string
-	MenuType string
-	Price    float64
-	ImgUrl   string
-}
-
-func (m Menu) ToMenuResponse() {
-
+	Categories []dto.Category
+	Types      []dto.Type
+	Name       string
+	MenuType   string
+	ImgUrl     string
+	MenuID     int64
 }

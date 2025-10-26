@@ -11,7 +11,7 @@ import (
 
 const createNewOrder = `-- name: CreateNewOrder :one
 INSERT INTO "orders"(bill_id, menu_id, amount, menu_name)
-SELECT ?,?,?,? * menu.price, menu.name FROM menu
+SELECT ?,?,?, menu.name FROM menu
 	WHERE menu.menu_id = ?
 RETURNING order_id, bill_id, menu_id, amount, size, type
 `
@@ -20,7 +20,6 @@ type CreateNewOrderParams struct {
 	BillID       string
 	MenuID       int64
 	Amount       int64
-	CalAmount    float64
 	TargetMenuID int64
 }
 
@@ -29,7 +28,6 @@ func (q *Queries) CreateNewOrder(ctx context.Context, arg CreateNewOrderParams) 
 		arg.BillID,
 		arg.MenuID,
 		arg.Amount,
-		arg.CalAmount,
 		arg.TargetMenuID,
 	)
 	var i Order

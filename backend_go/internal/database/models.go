@@ -24,7 +24,6 @@ type Category struct {
 type Menu struct {
 	MenuID   int64
 	Name     string
-	Price    float64
 	MenuType string
 	ImgUrl   sql.NullString
 	Type     sql.NullString
