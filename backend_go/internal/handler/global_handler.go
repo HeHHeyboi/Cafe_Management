@@ -16,5 +16,5 @@ func (gh *GlobalHandler) Reset(ctx *gin.Context) {
 		dto.BindingErrorMsg(err, ctx)
 	}
 
-	ctx.String(200, "reset success")
+	ctx.JSON(200, gin.H{"msg": "reset success"})
 }

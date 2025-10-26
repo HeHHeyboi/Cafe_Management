@@ -119,6 +119,10 @@ func main() {
 	r.Static("/upload", uploadDir)
 	r.GET("/reset", global_handler.Reset)
 	r.GET("/user", user_handler.GetUser)
+	r.POST("/user", user_handler.CreateUser)
+	r.GET("/user/:id", user_handler.GetUserByID)
+	r.POST("/user/login", user_handler.Login)
+	r.GET("/user/logout", user_handler.Logout)
 	// r.GET("/checkAuth", func(ctx *gin.Context) {
 	// 	checkAuth(&cfg, ctx)
 	// })

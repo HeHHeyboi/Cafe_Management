@@ -15,7 +15,6 @@ type User struct {
 }
 
 func (u *User) FromUserReq(userReq dto.UserRequest) {
-	u.UserID = userReq.UserID
 	u.Fname = userReq.Fname
 	u.Lname = userReq.Lname
 	u.Email = userReq.Email

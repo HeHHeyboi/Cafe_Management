@@ -68,7 +68,7 @@ func (uh UserHandler) Login(ctx *gin.Context) {
 	}
 
 	http.SetCookie(ctx.Writer, cookie)
-	ctx.String(200, "login success")
+	ctx.JSON(200, gin.H{"msg": "login success"})
 }
 
 func (uh UserHandler) Logout(ctx *gin.Context) {
@@ -78,7 +78,8 @@ func (uh UserHandler) Logout(ctx *gin.Context) {
 		return
 	}
 	ctx.SetCookie("id", "", -1, "/", "localhost", false, false)
-	ctx.String(status, "logout success")
+	fmt.Println("logout")
+	ctx.JSON(status, gin.H{"msg": "logout success"})
 }
 
 func (uh UserHandler) checkCookie(ctx *gin.Context) (string, int, error) {
