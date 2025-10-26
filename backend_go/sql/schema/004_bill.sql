@@ -4,8 +4,7 @@ CREATE TABLE IF NOT EXISTS bill(
 	total FLOAT NOT NULL,
 	pay_date TEXT NOT NULL,
 	user_id UUID,
-	giveAway_id INTEGER,
-	FOREIGN KEY (user_id) REFERENCES users(user_id)
+	FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
 );
 -- +goose Down
 DROP TABLE bill;
