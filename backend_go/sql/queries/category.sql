@@ -11,4 +11,4 @@ DELETE FROM "category";
 
 -- name: DeleteCategoryByMenuID :exec
 DELETE FROM "category"
-where menu_id = id;
+where menu_id = ?;

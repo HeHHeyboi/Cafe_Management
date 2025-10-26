@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
+	"github.com/HeHHeyboi/Cafe_Management/backend/internal/dto"
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/model"
 )
 
@@ -25,7 +26,6 @@ func NewMenuRepo(db *database.Queries) MenuRepo {
 	return &menuRepo{db: db}
 }
 
-// TODO: AddMenu needed to add 'category' & 'type' to db
 func (m menuRepo) AddMenu(ctx context.Context, arg model.Menu) error {
 	param := database.AddMenuParams{
 		Name:     arg.Name,
@@ -35,10 +35,40 @@ func (m menuRepo) AddMenu(ctx context.Context, arg model.Menu) error {
 			Valid:  arg.ImgUrl != "",
 		},
 	}
-
-	_, err := m.db.AddMenu(ctx, param)
+	menu_id, err := m.db.AddMenu(ctx, param)
 	if err != nil {
 		return err
+	}
+
+	for _, c := range arg.Categories {
+		param := database.CreateCategoryParams{
+			MenuID: menu_id,
+			Size: sql.NullString{
+				String: c.Size,
+				Valid:  c.Size != "",
+			},
+			Price: c.Price,
+		}
+		err = m.db.CreateCategory(ctx, param)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, t := range arg.Types {
+		param := database.CreateTypeParams{
+			MenuID: menu_id,
+			Type: sql.NullString{
+				String: t.Type,
+				Valid:  t.Type != "",
+			},
+			AdditionPrice: t.AdditonalPrice,
+		}
+
+		err = m.db.CreateType(ctx, param)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -60,6 +90,30 @@ func (m menuRepo) GetAllMenus(ctx context.Context) ([]model.Menu, error) {
 			ImgUrl:   data.ImgUrl.String,
 		}
 
+		category_data, err := m.db.GetCategoryByMenuID(ctx, menu.MenuID)
+		if err != nil {
+			return nil, err
+		}
+		for _, data := range category_data {
+			c := dto.Category{
+				Size:  data.Size.String,
+				Price: data.Price,
+			}
+			menu.Categories = append(menu.Categories, c)
+		}
+
+		type_data, err := m.db.GetTypeByMenuID(ctx, menu.MenuID)
+		if err != nil {
+			return nil, err
+		}
+		for _, data := range type_data {
+			t := dto.Type{
+				Type:           data.Type.String,
+				AdditonalPrice: data.AdditionPrice,
+			}
+			menu.Types = append(menu.Types, t)
+		}
+
 		menus = append(menus, menu)
 	}
 
@@ -77,6 +131,29 @@ func (m menuRepo) GetMenuByID(ctx context.Context, id int64) (model.Menu, error)
 		MenuType: data.MenuType,
 		ImgUrl:   data.ImgUrl.String,
 	}
+	category_data, err := m.db.GetCategoryByMenuID(ctx, menu.MenuID)
+	if err != nil {
+		return model.Menu{}, err
+	}
+	for _, data := range category_data {
+		c := dto.Category{
+			Size:  data.Size.String,
+			Price: data.Price,
+		}
+		menu.Categories = append(menu.Categories, c)
+	}
+
+	type_data, err := m.db.GetTypeByMenuID(ctx, menu.MenuID)
+	if err != nil {
+		return model.Menu{}, err
+	}
+	for _, data := range type_data {
+		t := dto.Type{
+			Type:           data.Type.String,
+			AdditonalPrice: data.AdditionPrice,
+		}
+		menu.Types = append(menu.Types, t)
+	}
 
 	return menu, nil
 }
@@ -93,9 +170,46 @@ func (m menuRepo) UpdateMenuByID(ctx context.Context, id int64, arg model.Menu) 
 		},
 	}
 
-	_, err := m.db.UpdateMenuByID(ctx, param)
+	menu_id, err := m.db.UpdateMenuByID(ctx, param)
 	if err != nil {
 		return err
+	}
+
+	err = m.db.DeleteCategoryByMenuID(ctx, menu_id)
+	err = m.db.DeleteTypeByMenuID(ctx, menu_id)
+	if err != nil {
+		return err
+	}
+
+	for _, c := range arg.Categories {
+		param := database.CreateCategoryParams{
+			MenuID: menu_id,
+			Size: sql.NullString{
+				String: c.Size,
+				Valid:  c.Size != "",
+			},
+			Price: c.Price,
+		}
+		err = m.db.CreateCategory(ctx, param)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, t := range arg.Types {
+		param := database.CreateTypeParams{
+			MenuID: menu_id,
+			Type: sql.NullString{
+				String: t.Type,
+				Valid:  t.Type != "",
+			},
+			AdditionPrice: t.AdditonalPrice,
+		}
+
+		err = m.db.CreateType(ctx, param)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -105,7 +219,6 @@ func (m menuRepo) DeleteAllMenu(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -114,6 +227,5 @@ func (m menuRepo) DeleteMenuByID(ctx context.Context, id int64) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }

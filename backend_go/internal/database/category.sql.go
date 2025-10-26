@@ -16,7 +16,7 @@ VALUES(?, ?, ?)
 `
 
 type CreateCategoryParams struct {
-	MenuID sql.NullInt64
+	MenuID int64
 	Size   sql.NullString
 	Price  float64
 }
@@ -37,11 +37,11 @@ func (q *Queries) DeleteAllCategory(ctx context.Context) error {
 
 const deleteCategoryByMenuID = `-- name: DeleteCategoryByMenuID :exec
 DELETE FROM "category"
-where menu_id = id
+where menu_id = ?
 `
 
-func (q *Queries) DeleteCategoryByMenuID(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, deleteCategoryByMenuID)
+func (q *Queries) DeleteCategoryByMenuID(ctx context.Context, menuID int64) error {
+	_, err := q.db.ExecContext(ctx, deleteCategoryByMenuID, menuID)
 	return err
 }
 
@@ -50,7 +50,7 @@ SELECT menu_id, size, price FROM "category"
 WHERE menu_id = ?
 `
 
-func (q *Queries) GetCategoryByMenuID(ctx context.Context, menuID sql.NullInt64) ([]Category, error) {
+func (q *Queries) GetCategoryByMenuID(ctx context.Context, menuID int64) ([]Category, error) {
 	rows, err := q.db.QueryContext(ctx, getCategoryByMenuID, menuID)
 	if err != nil {
 		return nil, err

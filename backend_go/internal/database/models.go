@@ -16,7 +16,7 @@ type Bill struct {
 }
 
 type Category struct {
-	MenuID sql.NullInt64
+	MenuID int64
 	Size   sql.NullString
 	Price  float64
 }
@@ -39,9 +39,9 @@ type Order struct {
 }
 
 type Type struct {
-	MenuID        sql.NullInt64
+	MenuID        int64
 	Type          sql.NullString
-	AdditionPrice sql.NullFloat64
+	AdditionPrice float64
 }
 
 type User struct {

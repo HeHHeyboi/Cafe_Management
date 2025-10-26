@@ -10,5 +10,5 @@ CREATE TABLE IF NOT EXISTS "orders"(
 	FOREIGN KEY (menu_id) REFERENCES menu(menu_id) ON DELETE SET NULL
 );
 -- +goose Down
-DROP TABLE "order";
+DROP TABLE "orders";
 

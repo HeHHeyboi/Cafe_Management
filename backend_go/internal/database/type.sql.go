@@ -16,9 +16,9 @@ VALUES (?, ?, ?)
 `
 
 type CreateTypeParams struct {
-	MenuID        sql.NullInt64
+	MenuID        int64
 	Type          sql.NullString
-	AdditionPrice sql.NullFloat64
+	AdditionPrice float64
 }
 
 func (q *Queries) CreateType(ctx context.Context, arg CreateTypeParams) error {
@@ -40,7 +40,7 @@ delete from "type"
 where menu_id = ?
 `
 
-func (q *Queries) DeleteTypeByMenuID(ctx context.Context, menuID sql.NullInt64) error {
+func (q *Queries) DeleteTypeByMenuID(ctx context.Context, menuID int64) error {
 	_, err := q.db.ExecContext(ctx, deleteTypeByMenuID, menuID)
 	return err
 }
@@ -50,7 +50,7 @@ select menu_id, type, addition_price from "type"
 where menu_id = ?
 `
 
-func (q *Queries) GetTypeByMenuID(ctx context.Context, menuID sql.NullInt64) ([]Type, error) {
+func (q *Queries) GetTypeByMenuID(ctx context.Context, menuID int64) ([]Type, error) {
 	rows, err := q.db.QueryContext(ctx, getTypeByMenuID, menuID)
 	if err != nil {
 		return nil, err

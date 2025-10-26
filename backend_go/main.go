@@ -43,7 +43,10 @@ const uploadDir = "upload/"
 		3. When create bill and user select /giveAway decreate giveAway.remain by 1 and when it reach zero delete it
 */
 func main() {
-	godotenv.Load()
+	err := godotenv.Load()
+	if err != nil {
+		panic("Dont' have .env file")
+	}
 	dbName := "main.db"
 
 	db, err := sql.Open("sqlite", dbName)

@@ -52,17 +52,21 @@ func ReadCookie(cookie *http.Cookie, secret string) (string, error) {
 func encryptCookie(name, value, secret string) (string, error) {
 	block, err := aes.NewCipher([]byte(secret))
 	if err != nil {
+		fmt.Println("one", err.Error())
+		fmt.Println(secret)
 		return "", err
 	}
 
 	aesGCM, err := cipher.NewGCM(block)
 	if err != nil {
+		fmt.Println("two", err.Error())
 		return "", err
 	}
 
 	nonce := make([]byte, aesGCM.NonceSize())
 	_, err = io.ReadFull(rand.Reader, nonce)
 	if err != nil {
+		fmt.Println("three", err.Error())
 		return "", err
 	}
 

@@ -44,6 +44,4 @@ output: -
 HTTP 200
 
 GET http://localhost:8080/user/logout
-[Options]
-output: -
-HTTP 200
+HTTP 201

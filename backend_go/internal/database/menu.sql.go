@@ -13,7 +13,7 @@ import (
 const addMenu = `-- name: AddMenu :one
 INSERT INTO menu(name, menu_type,img_url) 
 VALUES(?, ?, ?)
-RETURNING menu_id, name, menu_type, img_url, type
+RETURNING menu_id
 `
 
 type AddMenuParams struct {
@@ -22,17 +22,11 @@ type AddMenuParams struct {
 	ImgUrl   sql.NullString
 }
 
-func (q *Queries) AddMenu(ctx context.Context, arg AddMenuParams) (Menu, error) {
+func (q *Queries) AddMenu(ctx context.Context, arg AddMenuParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, addMenu, arg.Name, arg.MenuType, arg.ImgUrl)
-	var i Menu
-	err := row.Scan(
-		&i.MenuID,
-		&i.Name,
-		&i.MenuType,
-		&i.ImgUrl,
-		&i.Type,
-	)
-	return i, err
+	var menu_id int64
+	err := row.Scan(&menu_id)
+	return menu_id, err
 }
 
 const deleteAllMenu = `-- name: DeleteAllMenu :exec
@@ -109,7 +103,7 @@ const updateMenuByID = `-- name: UpdateMenuByID :one
 UPDATE menu
 SET name = ?, menu_type = ? , img_url = ?
 WHERE menu_id = ?
-RETURNING menu_id, name, menu_type, img_url, type
+RETURNING menu_id
 `
 
 type UpdateMenuByIDParams struct {
@@ -119,20 +113,14 @@ type UpdateMenuByIDParams struct {
 	MenuID   int64
 }
 
-func (q *Queries) UpdateMenuByID(ctx context.Context, arg UpdateMenuByIDParams) (Menu, error) {
+func (q *Queries) UpdateMenuByID(ctx context.Context, arg UpdateMenuByIDParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, updateMenuByID,
 		arg.Name,
 		arg.MenuType,
 		arg.ImgUrl,
 		arg.MenuID,
 	)
-	var i Menu
-	err := row.Scan(
-		&i.MenuID,
-		&i.Name,
-		&i.MenuType,
-		&i.ImgUrl,
-		&i.Type,
-	)
-	return i, err
+	var menu_id int64
+	err := row.Scan(&menu_id)
+	return menu_id, err
 }

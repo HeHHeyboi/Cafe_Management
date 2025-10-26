@@ -1,7 +1,7 @@
 -- name: AddMenu :one
 INSERT INTO menu(name, menu_type,img_url) 
 VALUES(?, ?, ?)
-RETURNING *;
+RETURNING menu_id;
 
 -- name: GetAllMenus :many
 SELECT * FROM menu;
@@ -21,5 +21,5 @@ WHERE menu_id = ?;
 UPDATE menu
 SET name = ?, menu_type = ? , img_url = ?
 WHERE menu_id = ?
-RETURNING *;
+RETURNING menu_id;
 

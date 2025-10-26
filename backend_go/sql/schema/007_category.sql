@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE IF NOT EXISTS "category"(
-	menu_id INTEGER,
+	menu_id INTEGER NOT NULL,
 	size TEXT,
 	price REAL DEFAULT 0 NOT NULL,
 	PRIMARY KEY(menu_id, size),
