@@ -7,31 +7,22 @@ package database
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createBill = `-- name: CreateBill :one
-INSERT INTO bill(bill_id, pay_date, total, user_id, giveAway_id)
-VALUES (lower(hex(randomblob(8))), ?, 0 ,? ,?)
-RETURNING bill_id, total, pay_date, user_id, giveaway_id, paid_status
+INSERT INTO bill(bill_id, pay_date, total)
+VALUES (lower(hex(randomblob(8))), ?, 0)
+RETURNING bill_id, total, pay_date, payment_method
 `
 
-type CreateBillParams struct {
-	PayDate    string
-	UserID     interface{}
-	GiveawayID sql.NullInt64
-}
-
-func (q *Queries) CreateBill(ctx context.Context, arg CreateBillParams) (Bill, error) {
-	row := q.db.QueryRowContext(ctx, createBill, arg.PayDate, arg.UserID, arg.GiveawayID)
+func (q *Queries) CreateBill(ctx context.Context, payDate string) (Bill, error) {
+	row := q.db.QueryRowContext(ctx, createBill, payDate)
 	var i Bill
 	err := row.Scan(
 		&i.BillID,
 		&i.Total,
 		&i.PayDate,
-		&i.UserID,
-		&i.GiveawayID,
-		&i.PaidStatus,
+		&i.PaymentMethod,
 	)
 	return i, err
 }
@@ -56,7 +47,7 @@ func (q *Queries) DeleteBillByID(ctx context.Context, billID string) error {
 }
 
 const getBillByID = `-- name: GetBillByID :one
-SELECT bill_id, total, pay_date, user_id, giveaway_id, paid_status FROM bill
+SELECT bill_id, total, pay_date, payment_method FROM bill
 WHERE bill_id = ?
 `
 
@@ -67,74 +58,13 @@ func (q *Queries) GetBillByID(ctx context.Context, billID string) (Bill, error) 
 		&i.BillID,
 		&i.Total,
 		&i.PayDate,
-		&i.UserID,
-		&i.GiveawayID,
-		&i.PaidStatus,
-	)
-	return i, err
-}
-
-const getUserBill = `-- name: GetUserBill :many
-SELECT bill_id, total, pay_date, user_id, giveaway_id, paid_status FROM bill
-WHERE user_id = ?
-`
-
-func (q *Queries) GetUserBill(ctx context.Context, userID interface{}) ([]Bill, error) {
-	rows, err := q.db.QueryContext(ctx, getUserBill, userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Bill
-	for rows.Next() {
-		var i Bill
-		if err := rows.Scan(
-			&i.BillID,
-			&i.Total,
-			&i.PayDate,
-			&i.UserID,
-			&i.GiveawayID,
-			&i.PaidStatus,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getUserBillByID = `-- name: GetUserBillByID :one
-SELECT bill_id, total, pay_date, user_id, giveaway_id, paid_status FROM bill
-WHERE user_id = ? AND bill_id = ?
-`
-
-type GetUserBillByIDParams struct {
-	UserID interface{}
-	BillID string
-}
-
-func (q *Queries) GetUserBillByID(ctx context.Context, arg GetUserBillByIDParams) (Bill, error) {
-	row := q.db.QueryRowContext(ctx, getUserBillByID, arg.UserID, arg.BillID)
-	var i Bill
-	err := row.Scan(
-		&i.BillID,
-		&i.Total,
-		&i.PayDate,
-		&i.UserID,
-		&i.GiveawayID,
-		&i.PaidStatus,
+		&i.PaymentMethod,
 	)
 	return i, err
 }
 
 const listBill = `-- name: ListBill :many
-SELECT bill_id, total, pay_date, user_id, giveaway_id, paid_status FROM bill
+SELECT bill_id, total, pay_date, payment_method FROM bill
 `
 
 func (q *Queries) ListBill(ctx context.Context) ([]Bill, error) {
@@ -150,9 +80,7 @@ func (q *Queries) ListBill(ctx context.Context) ([]Bill, error) {
 			&i.BillID,
 			&i.Total,
 			&i.PayDate,
-			&i.UserID,
-			&i.GiveawayID,
-			&i.PaidStatus,
+			&i.PaymentMethod,
 		); err != nil {
 			return nil, err
 		}
@@ -167,32 +95,11 @@ func (q *Queries) ListBill(ctx context.Context) ([]Bill, error) {
 	return items, nil
 }
 
-const updateBillStatus = `-- name: UpdateBillStatus :one
-UPDATE bill
-SET paid_status = NOT paid_status
-WHERE bill_id = ?
-RETURNING bill_id, total, pay_date, user_id, giveaway_id, paid_status
-`
-
-func (q *Queries) UpdateBillStatus(ctx context.Context, billID string) (Bill, error) {
-	row := q.db.QueryRowContext(ctx, updateBillStatus, billID)
-	var i Bill
-	err := row.Scan(
-		&i.BillID,
-		&i.Total,
-		&i.PayDate,
-		&i.UserID,
-		&i.GiveawayID,
-		&i.PaidStatus,
-	)
-	return i, err
-}
-
 const updateBillTotal = `-- name: UpdateBillTotal :one
 UPDATE bill
 SET total = ?
 WHERE bill_id = ?
-RETURNING bill_id, total, pay_date, user_id, giveaway_id, paid_status
+RETURNING bill_id, total, pay_date, payment_method
 `
 
 type UpdateBillTotalParams struct {
@@ -207,9 +114,7 @@ func (q *Queries) UpdateBillTotal(ctx context.Context, arg UpdateBillTotalParams
 		&i.BillID,
 		&i.Total,
 		&i.PayDate,
-		&i.UserID,
-		&i.GiveawayID,
-		&i.PaidStatus,
+		&i.PaymentMethod,
 	)
 	return i, err
 }

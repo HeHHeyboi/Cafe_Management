@@ -36,7 +36,7 @@ func (q *Queries) CreateAdmin(ctx context.Context, arg CreateAdminParams) error 
 
 const createUser = `-- name: CreateUser :exec
 INSERT INTO users(user_id, FName, LName, email, password)
-VALUES( ?, ?, ?, ?, ?)
+VALUES(?, ?, ?, ?, ?)
 `
 
 type CreateUserParams struct {

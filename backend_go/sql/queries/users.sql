@@ -1,6 +1,6 @@
 -- name: CreateUser :exec
 INSERT INTO users(user_id, FName, LName, email, password)
-VALUES( ?, ?, ?, ?, ?);
+VALUES(?, ?, ?, ?, ?);
 
 -- name: CreateAdmin :exec
 INSERT INTO users(user_id,FName,LName,email,password,role)
