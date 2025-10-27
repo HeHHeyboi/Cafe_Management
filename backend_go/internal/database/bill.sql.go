@@ -7,24 +7,20 @@ package database
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createBill = `-- name: CreateBill :one
-INSERT INTO bill(bill_id, pay_date, total)
+INSERT INTO bill(bill_id, created_at, total)
 VALUES (lower(hex(randomblob(8))), ?, 0)
-RETURNING bill_id, total, pay_date, payment_method
+RETURNING bill_id
 `
 
-func (q *Queries) CreateBill(ctx context.Context, payDate string) (Bill, error) {
-	row := q.db.QueryRowContext(ctx, createBill, payDate)
-	var i Bill
-	err := row.Scan(
-		&i.BillID,
-		&i.Total,
-		&i.PayDate,
-		&i.PaymentMethod,
-	)
-	return i, err
+func (q *Queries) CreateBill(ctx context.Context, createdAt string) (string, error) {
+	row := q.db.QueryRowContext(ctx, createBill, createdAt)
+	var bill_id string
+	err := row.Scan(&bill_id)
+	return bill_id, err
 }
 
 const deleteBill = `-- name: DeleteBill :exec
@@ -47,7 +43,7 @@ func (q *Queries) DeleteBillByID(ctx context.Context, billID string) error {
 }
 
 const getBillByID = `-- name: GetBillByID :one
-SELECT bill_id, total, pay_date, payment_method FROM bill
+SELECT bill_id, total, created_at, payment_method FROM bill
 WHERE bill_id = ?
 `
 
@@ -57,14 +53,14 @@ func (q *Queries) GetBillByID(ctx context.Context, billID string) (Bill, error) 
 	err := row.Scan(
 		&i.BillID,
 		&i.Total,
-		&i.PayDate,
+		&i.CreatedAt,
 		&i.PaymentMethod,
 	)
 	return i, err
 }
 
 const listBill = `-- name: ListBill :many
-SELECT bill_id, total, pay_date, payment_method FROM bill
+SELECT bill_id, total, created_at, payment_method FROM bill
 `
 
 func (q *Queries) ListBill(ctx context.Context) ([]Bill, error) {
@@ -79,7 +75,7 @@ func (q *Queries) ListBill(ctx context.Context) ([]Bill, error) {
 		if err := rows.Scan(
 			&i.BillID,
 			&i.Total,
-			&i.PayDate,
+			&i.CreatedAt,
 			&i.PaymentMethod,
 		); err != nil {
 			return nil, err
@@ -95,26 +91,19 @@ func (q *Queries) ListBill(ctx context.Context) ([]Bill, error) {
 	return items, nil
 }
 
-const updateBillTotal = `-- name: UpdateBillTotal :one
+const updateBill = `-- name: UpdateBill :exec
 UPDATE bill
-SET total = ?
+SET total = ?, payment_method = ?
 WHERE bill_id = ?
-RETURNING bill_id, total, pay_date, payment_method
 `
 
-type UpdateBillTotalParams struct {
-	Total  float64
-	BillID string
+type UpdateBillParams struct {
+	Total         float64
+	PaymentMethod sql.NullString
+	BillID        string
 }
 
-func (q *Queries) UpdateBillTotal(ctx context.Context, arg UpdateBillTotalParams) (Bill, error) {
-	row := q.db.QueryRowContext(ctx, updateBillTotal, arg.Total, arg.BillID)
-	var i Bill
-	err := row.Scan(
-		&i.BillID,
-		&i.Total,
-		&i.PayDate,
-		&i.PaymentMethod,
-	)
-	return i, err
+func (q *Queries) UpdateBill(ctx context.Context, arg UpdateBillParams) error {
+	_, err := q.db.ExecContext(ctx, updateBill, arg.Total, arg.PaymentMethod, arg.BillID)
+	return err
 }

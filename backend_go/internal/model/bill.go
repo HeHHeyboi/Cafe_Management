@@ -5,7 +5,8 @@ import (
 )
 
 type Bill struct {
-	Id            string
 	CreatedAt     time.Time
+	Id            string
 	PaymentMethod string
+	Total         float64
 }

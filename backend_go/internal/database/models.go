@@ -11,7 +11,7 @@ import (
 type Bill struct {
 	BillID        string
 	Total         float64
-	PayDate       string
+	CreatedAt     string
 	PaymentMethod sql.NullString
 }
 

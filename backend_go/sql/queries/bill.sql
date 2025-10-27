@@ -1,13 +1,12 @@
 -- name: CreateBill :one
-INSERT INTO bill(bill_id, pay_date, total)
+INSERT INTO bill(bill_id, created_at, total)
 VALUES (lower(hex(randomblob(8))), ?, 0)
-RETURNING *;
+RETURNING bill_id;
 
--- name: UpdateBillTotal :one
+-- name: UpdateBill :exec
 UPDATE bill
-SET total = ?
-WHERE bill_id = ?
-RETURNING *;
+SET total = ?, payment_method = ?
+WHERE bill_id = ?;
 
 -- name: GetBillByID :one
 SELECT * FROM bill
