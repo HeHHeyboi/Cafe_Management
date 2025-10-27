@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -46,14 +47,13 @@ func BindingErrorMsg(err error, ctx *gin.Context) {
 		}
 		ctx.Error(fmt.Errorf("%v", res))
 		ctx.JSON(400, gin.H{"error": res})
-	case LoginError:
+	case LoginError,
+		*json.InvalidUnmarshalError,
+		auth.HashError,
+		ParamError:
 		msg = err.Error()
 		ctx.Error(fmt.Errorf("%v", msg))
 		ctx.JSON(400, gin.H{"error": msg})
-	case auth.HashError:
-		msg = err.Error()
-		ctx.Error(fmt.Errorf("%v", msg))
-		ctx.JSON(401, gin.H{"error": msg})
 	default:
 		msg = checkDataBaseError(err)
 		ctx.Error(fmt.Errorf("%v", msg))

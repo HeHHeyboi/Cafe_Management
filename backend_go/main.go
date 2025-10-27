@@ -117,7 +117,10 @@ func main() {
 	user_repo := repository.NewUserRepo(cfg.db)
 	user_service := service.UserService{Repo: user_repo, Secret: cfg.secret}
 	user_handler := handler.NewUserHanlder(user_service)
-	global_handler := handler.GlobalHandler{UserService: user_service}
+
+	menu_service := service.NewMenuService(repository.NewMenuRepo(cfg.db))
+	menu_hanlder := handler.NewMenuHandler(menu_service)
+	global_handler := handler.GlobalHandler{UserService: &user_service, MenuService: &menu_service}
 
 	r.Static("/upload", uploadDir)
 	r.GET("/reset", global_handler.Reset)
@@ -126,6 +129,12 @@ func main() {
 	r.GET("/user/:id", user_handler.GetUserByID)
 	r.POST("/user/login", user_handler.Login)
 	r.GET("/user/logout", user_handler.Logout)
+
+	r.GET("/menu", menu_hanlder.GetAllMenu)
+	r.GET("/menu/:id", menu_hanlder.GetMenuByID)
+	r.POST("/menu", menu_hanlder.AddMenu)
+	r.PUT("/menu/:id", menu_hanlder.UpdateMenyByID)
+	r.DELETE("/menu/:id", menu_hanlder.DeleteMenuByID)
 	// r.GET("/checkAuth", func(ctx *gin.Context) {
 	// 	checkAuth(&cfg, ctx)
 	// })

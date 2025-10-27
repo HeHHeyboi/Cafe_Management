@@ -12,6 +12,10 @@ type MenuService struct {
 	repo repository.MenuRepo
 }
 
+func NewMenuService(repo repository.MenuRepo) MenuService {
+	return MenuService{repo: repo}
+}
+
 func (ms MenuService) GetAllMenu(ctx context.Context) ([]dto.MenuResponse, error) {
 	menus, err := ms.repo.GetAllMenus(ctx)
 	if err != nil {

@@ -13,6 +13,6 @@ type Category struct {
 }
 
 type Type struct {
-	Type           string  `json:"type"`
-	AdditonalPrice float64 `json:"additional_price"`
+	Type          string  `json:"type"`
+	AdditionPrice float64 `json:"addition_price"`
 }

@@ -62,7 +62,7 @@ func (m menuRepo) AddMenu(ctx context.Context, arg model.Menu) error {
 				String: t.Type,
 				Valid:  t.Type != "",
 			},
-			AdditionPrice: t.AdditonalPrice,
+			AdditionPrice: t.AdditionPrice,
 		}
 
 		err = m.db.CreateType(ctx, param)
@@ -108,8 +108,8 @@ func (m menuRepo) GetAllMenus(ctx context.Context) ([]model.Menu, error) {
 		}
 		for _, data := range type_data {
 			t := dto.Type{
-				Type:           data.Type.String,
-				AdditonalPrice: data.AdditionPrice,
+				Type:          data.Type.String,
+				AdditionPrice: data.AdditionPrice,
 			}
 			menu.Types = append(menu.Types, t)
 		}
@@ -149,8 +149,8 @@ func (m menuRepo) GetMenuByID(ctx context.Context, id int64) (model.Menu, error)
 	}
 	for _, data := range type_data {
 		t := dto.Type{
-			Type:           data.Type.String,
-			AdditonalPrice: data.AdditionPrice,
+			Type:          data.Type.String,
+			AdditionPrice: data.AdditionPrice,
 		}
 		menu.Types = append(menu.Types, t)
 	}
@@ -203,7 +203,7 @@ func (m menuRepo) UpdateMenuByID(ctx context.Context, id int64, arg model.Menu) 
 				String: t.Type,
 				Valid:  t.Type != "",
 			},
-			AdditionPrice: t.AdditonalPrice,
+			AdditionPrice: t.AdditionPrice,
 		}
 
 		err = m.db.CreateType(ctx, param)
