@@ -3,14 +3,13 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"time"
 
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/database"
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/model"
 )
 
 type BillRepo interface {
-	CreateBill(ctx context.Context, created_at time.Time) (string, error)
+	CreateBill(ctx context.Context, arg model.Bill) (string, error)
 	UpdateBillByID(ctx context.Context, bill_id string, total float64, payment_method string) error
 	GetBillByID(ctx context.Context, bill_id string) (model.Bill, error)
 	ListBill(ctx context.Context) ([]model.Bill, error)
@@ -26,12 +25,18 @@ func NewBillRepo(db *database.Queries) BillRepo {
 	return &billRepo{db: db}
 }
 
-func (b *billRepo) CreateBill(ctx context.Context, created_at time.Time) (string, error) {
-	bill_id, err := b.db.CreateBill(ctx, created_at.Format(time.RFC3339))
+func (b *billRepo) CreateBill(ctx context.Context, arg model.Bill) (string, error) {
+	id, err := b.db.CreateBill(ctx, database.CreateBillParams{
+		Total: arg.Total,
+		PaymentMethod: sql.NullString{
+			String: arg.PaymentMethod,
+			Valid:  arg.PaymentMethod != "",
+		},
+	})
 	if err != nil {
-		return "", nil
+		return "", err
 	}
-	return bill_id, nil
+	return id, nil
 }
 
 func (b *billRepo) GetBillByID(ctx context.Context, bill_id string) (model.Bill, error) {
@@ -40,12 +45,8 @@ func (b *billRepo) GetBillByID(ctx context.Context, bill_id string) (model.Bill,
 		return model.Bill{}, err
 	}
 
-	created_at, err := time.Parse(time.RFC3339, data.CreatedAt)
-	if err != nil {
-		return model.Bill{}, err
-	}
 	bill := model.Bill{
-		CreatedAt:     created_at,
+		CreatedAt:     data.CreatedAt,
 		Id:            data.BillID,
 		PaymentMethod: data.PaymentMethod.String,
 		Total:         data.Total,
@@ -62,13 +63,8 @@ func (b *billRepo) ListBill(ctx context.Context) ([]model.Bill, error) {
 
 	var bills []model.Bill
 	for _, data := range datas {
-		created_at, err := time.Parse(time.RFC3339, data.CreatedAt)
-		if err != nil {
-			return nil, err
-		}
-
 		bill := model.Bill{
-			CreatedAt:     created_at,
+			CreatedAt:     data.CreatedAt,
 			Id:            data.BillID,
 			PaymentMethod: data.PaymentMethod.String,
 			Total:         data.Total,

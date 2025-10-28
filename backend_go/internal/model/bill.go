@@ -1,11 +1,7 @@
 package model
 
-import (
-	"time"
-)
-
 type Bill struct {
-	CreatedAt     time.Time
+	CreatedAt     string
 	Id            string
 	PaymentMethod string
 	Total         float64

@@ -9,11 +9,13 @@ import (
 type GlobalHandler struct {
 	UserService *service.UserService
 	MenuService *service.MenuService
+	BillSevice  *service.BillService
 }
 
 func (gh *GlobalHandler) Reset(ctx *gin.Context) {
 	err := gh.UserService.DeleteAllUser(ctx.Request.Context())
 	err = gh.MenuService.DeleteAllMenu(ctx.Request.Context())
+	err = gh.BillSevice.DeleteAllBill(ctx.Request.Context())
 	if err != nil {
 		dto.BindingErrorMsg(err, ctx)
 	}

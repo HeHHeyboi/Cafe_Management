@@ -38,10 +38,6 @@ var duration time.Duration = 24 * time.Hour
 
 const uploadDir = "upload/"
 
-/*
-	 TODO:
-		3. When create bill and user select /giveAway decreate giveAway.remain by 1 and when it reach zero delete it
-*/
 func main() {
 	err := godotenv.Load()
 	if err != nil {
@@ -120,7 +116,11 @@ func main() {
 
 	menu_service := service.NewMenuService(repository.NewMenuRepo(cfg.db))
 	menu_hanlder := handler.NewMenuHandler(menu_service)
-	global_handler := handler.GlobalHandler{UserService: &user_service, MenuService: &menu_service}
+
+	bill_service := service.NewBillService(repository.NewBillRepo(cfg.db))
+	bill_handler := handler.NewBillHandler(bill_service)
+
+	global_handler := handler.GlobalHandler{UserService: &user_service, MenuService: &menu_service, BillSevice: &bill_service}
 
 	r.Static("/upload", uploadDir)
 	r.GET("/reset", global_handler.Reset)
@@ -135,6 +135,12 @@ func main() {
 	r.POST("/menu", menu_hanlder.AddMenu)
 	r.PUT("/menu/:id", menu_hanlder.UpdateMenyByID)
 	r.DELETE("/menu/:id", menu_hanlder.DeleteMenuByID)
+
+	r.POST("/bill", bill_handler.CreateBill)
+	r.GET("/bill", bill_handler.GetAllBills)
+	r.GET("/bill/:id", bill_handler.GetBillById)
+	r.PUT("/bill/:id", bill_handler.UpdateBillById)
+	r.DELETE("/bill/:id", bill_handler.DeleteBillById)
 	// r.GET("/checkAuth", func(ctx *gin.Context) {
 	// 	checkAuth(&cfg, ctx)
 	// })

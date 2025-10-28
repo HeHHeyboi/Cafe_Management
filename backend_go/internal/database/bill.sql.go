@@ -11,13 +11,18 @@ import (
 )
 
 const createBill = `-- name: CreateBill :one
-INSERT INTO bill(bill_id, created_at, total)
-VALUES (lower(hex(randomblob(8))), ?, 0)
+INSERT INTO bill(bill_id, created_at, total, payment_method)
+VALUES (lower(hex(randomblob(8))), datetime('now','localtime'), ?, ?)
 RETURNING bill_id
 `
 
-func (q *Queries) CreateBill(ctx context.Context, createdAt string) (string, error) {
-	row := q.db.QueryRowContext(ctx, createBill, createdAt)
+type CreateBillParams struct {
+	Total         float64
+	PaymentMethod sql.NullString
+}
+
+func (q *Queries) CreateBill(ctx context.Context, arg CreateBillParams) (string, error) {
+	row := q.db.QueryRowContext(ctx, createBill, arg.Total, arg.PaymentMethod)
 	var bill_id string
 	err := row.Scan(&bill_id)
 	return bill_id, err

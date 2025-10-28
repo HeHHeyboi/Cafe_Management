@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"time"
 
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/dto"
+	"github.com/HeHHeyboi/Cafe_Management/backend/internal/model"
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/repository"
 )
 
@@ -16,9 +16,12 @@ func NewBillService(repo repository.BillRepo) BillService {
 	return BillService{repo: repo}
 }
 
-func (bs BillService) CreateBill(ctx context.Context) (string, error) {
-	cur := time.Now()
-	id, err := bs.repo.CreateBill(ctx, cur)
+func (bs BillService) CreateBill(ctx context.Context, req dto.BillRequest) (string, error) {
+	bill := model.Bill{
+		PaymentMethod: req.PaymentMethod,
+		Total:         req.Total,
+	}
+	id, err := bs.repo.CreateBill(ctx, bill)
 	if err != nil {
 		return "", nil
 	}

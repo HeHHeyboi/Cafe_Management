@@ -1,6 +1,6 @@
 -- name: CreateBill :one
-INSERT INTO bill(bill_id, created_at, total)
-VALUES (lower(hex(randomblob(8))), ?, 0)
+INSERT INTO bill(bill_id, created_at, total, payment_method)
+VALUES (lower(hex(randomblob(8))), datetime('now','localtime'), ?, ?)
 RETURNING bill_id;
 
 -- name: UpdateBill :exec
