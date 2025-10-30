@@ -57,11 +57,13 @@ func (or orderRepo) GetOrderFromBill(ctx context.Context, bill_id string) ([]mod
 			Id:       data.OrderID,
 			MenuId:   data.MenuID,
 			Amount:   data.Amount,
-			Total:    ,
+			Total:    float64(data.Total),
 		}
+
+		orders = append(orders, order)
 	}
 
-	return nil, nil
+	return orders, nil
 }
 
 func (or orderRepo) DeleteAllOrder(ctx context.Context) error {

@@ -10,7 +10,7 @@ import (
 
 type BillRepo interface {
 	CreateBill(ctx context.Context, arg model.Bill) (string, error)
-	UpdateBillByID(ctx context.Context, bill_id string, total float64, payment_method string) error
+	UpdateBillByID(ctx context.Context, bill_id string, payment_method string) error
 	GetBillByID(ctx context.Context, bill_id string) (model.Bill, error)
 	ListBill(ctx context.Context) ([]model.Bill, error)
 	DeleteAllBill(ctx context.Context) error
@@ -27,7 +27,6 @@ func NewBillRepo(db *database.Queries) BillRepo {
 
 func (b *billRepo) CreateBill(ctx context.Context, arg model.Bill) (string, error) {
 	id, err := b.db.CreateBill(ctx, database.CreateBillParams{
-		Total: arg.Total,
 		PaymentMethod: sql.NullString{
 			String: arg.PaymentMethod,
 			Valid:  arg.PaymentMethod != "",
@@ -49,7 +48,6 @@ func (b *billRepo) GetBillByID(ctx context.Context, bill_id string) (model.Bill,
 		CreatedAt:     data.CreatedAt,
 		Id:            data.BillID,
 		PaymentMethod: data.PaymentMethod.String,
-		Total:         data.Total,
 	}
 
 	return bill, nil
@@ -75,9 +73,8 @@ func (b *billRepo) ListBill(ctx context.Context) ([]model.Bill, error) {
 	return bills, nil
 }
 
-func (b *billRepo) UpdateBillByID(ctx context.Context, bill_id string, total float64, payment_method string) error {
+func (b *billRepo) UpdateBillByID(ctx context.Context, bill_id string, payment_method string) error {
 	err := b.db.UpdateBill(ctx, database.UpdateBillParams{
-		Total: total,
 		PaymentMethod: sql.NullString{
 			String: payment_method,
 			Valid:  payment_method != "",

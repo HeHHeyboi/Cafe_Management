@@ -19,7 +19,6 @@ func NewBillService(repo repository.BillRepo) BillService {
 func (bs BillService) CreateBill(ctx context.Context, req dto.BillRequest) (string, error) {
 	bill := model.Bill{
 		PaymentMethod: req.PaymentMethod,
-		Total:         req.Total,
 	}
 	id, err := bs.repo.CreateBill(ctx, bill)
 	if err != nil {
@@ -65,7 +64,7 @@ func (bs BillService) GetBillID(ctx context.Context, id string) (dto.BillRespons
 }
 
 func (bs BillService) UpdateBillByID(ctx context.Context, bill_id string, req dto.BillRequest) error {
-	err := bs.repo.UpdateBillByID(ctx, bill_id, req.Total, req.PaymentMethod)
+	err := bs.repo.UpdateBillByID(ctx, bill_id, req.PaymentMethod)
 	if err != nil {
 		return err
 	}
