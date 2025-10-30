@@ -26,16 +26,16 @@ type Menu struct {
 	Name     string
 	MenuType string
 	ImgUrl   sql.NullString
-	Type     sql.NullString
 }
 
 type Order struct {
-	OrderID int64
-	BillID  string
-	MenuID  int64
-	Amount  int64
-	Size    sql.NullString
-	Type    sql.NullString
+	OrderID  int64
+	BillID   string
+	MenuID   int64
+	Amount   int64
+	Size     sql.NullString
+	Type     sql.NullString
+	MenuName string
 }
 
 type Type struct {

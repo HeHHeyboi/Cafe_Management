@@ -49,7 +49,7 @@ func (q *Queries) DeleteMenuByID(ctx context.Context, menuID int64) error {
 }
 
 const getAllMenus = `-- name: GetAllMenus :many
-SELECT menu_id, name, menu_type, img_url, type FROM menu
+SELECT menu_id, name, menu_type, img_url FROM menu
 `
 
 func (q *Queries) GetAllMenus(ctx context.Context) ([]Menu, error) {
@@ -66,7 +66,6 @@ func (q *Queries) GetAllMenus(ctx context.Context) ([]Menu, error) {
 			&i.Name,
 			&i.MenuType,
 			&i.ImgUrl,
-			&i.Type,
 		); err != nil {
 			return nil, err
 		}
@@ -82,7 +81,7 @@ func (q *Queries) GetAllMenus(ctx context.Context) ([]Menu, error) {
 }
 
 const getMenuByID = `-- name: GetMenuByID :one
-SELECT menu_id, name, menu_type, img_url, type FROM menu
+SELECT menu_id, name, menu_type, img_url FROM menu
 WHERE menu_id = ?
 `
 
@@ -94,7 +93,6 @@ func (q *Queries) GetMenuByID(ctx context.Context, menuID int64) (Menu, error) {
 		&i.Name,
 		&i.MenuType,
 		&i.ImgUrl,
-		&i.Type,
 	)
 	return i, err
 }
