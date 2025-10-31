@@ -40,6 +40,7 @@ func (b *billRepo) CreateBill(ctx context.Context, arg model.Bill) (string, erro
 
 func (b *billRepo) GetBillByID(ctx context.Context, bill_id string) (model.Bill, error) {
 	data, err := b.db.GetBillByID(ctx, bill_id)
+	total, err := b.db.GetTotalByBillId(ctx, bill_id)
 	if err != nil {
 		return model.Bill{}, err
 	}
@@ -48,6 +49,7 @@ func (b *billRepo) GetBillByID(ctx context.Context, bill_id string) (model.Bill,
 		CreatedAt:     data.CreatedAt,
 		Id:            data.BillID,
 		PaymentMethod: data.PaymentMethod.String,
+		Total:         total.Float64,
 	}
 
 	return bill, nil
