@@ -43,7 +43,7 @@ func main() {
 	if err != nil {
 		panic("Dont' have .env file")
 	}
-	dbName := "main.db"
+	dbName := "main.db?_pragma=foreign_keys(1)"
 
 	db, err := sql.Open("sqlite", dbName)
 	if err != nil {
@@ -246,11 +246,12 @@ func main() {
 }
 
 func setUpDB(db *sql.DB, cfg *Config) {
-	_, err := db.Exec(enableForeignKey)
-	if err != nil {
-		fmt.Println("Enable Foreign Key error", err)
-		os.Exit(1)
-	}
+	var err error
+	// _, err = db.Exec(enableForeignKey)
+	// if err != nil {
+	// 	fmt.Println("Enable Foreign Key error", err)
+	// 	os.Exit(1)
+	// }
 
 	goose.SetBaseFS(embedMigration)
 	if err := goose.SetDialect("sqlite"); err != nil {
