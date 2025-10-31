@@ -10,7 +10,6 @@ import (
 
 type Bill struct {
 	BillID        string
-	Total         float64
 	CreatedAt     string
 	PaymentMethod sql.NullString
 }

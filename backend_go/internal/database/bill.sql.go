@@ -11,18 +11,13 @@ import (
 )
 
 const createBill = `-- name: CreateBill :one
-INSERT INTO bill(bill_id, created_at, total, payment_method)
-VALUES (lower(hex(randomblob(8))), datetime('now','localtime'), ?, ?)
+INSERT INTO bill(bill_id, created_at, payment_method)
+VALUES (lower(hex(randomblob(8))), datetime('now','localtime'), ?)
 RETURNING bill_id
 `
 
-type CreateBillParams struct {
-	Total         float64
-	PaymentMethod sql.NullString
-}
-
-func (q *Queries) CreateBill(ctx context.Context, arg CreateBillParams) (string, error) {
-	row := q.db.QueryRowContext(ctx, createBill, arg.Total, arg.PaymentMethod)
+func (q *Queries) CreateBill(ctx context.Context, paymentMethod sql.NullString) (string, error) {
+	row := q.db.QueryRowContext(ctx, createBill, paymentMethod)
 	var bill_id string
 	err := row.Scan(&bill_id)
 	return bill_id, err
@@ -48,24 +43,19 @@ func (q *Queries) DeleteBillByID(ctx context.Context, billID string) error {
 }
 
 const getBillByID = `-- name: GetBillByID :one
-SELECT bill_id, total, created_at, payment_method FROM bill
+SELECT bill_id, created_at, payment_method FROM bill
 WHERE bill_id = ?
 `
 
 func (q *Queries) GetBillByID(ctx context.Context, billID string) (Bill, error) {
 	row := q.db.QueryRowContext(ctx, getBillByID, billID)
 	var i Bill
-	err := row.Scan(
-		&i.BillID,
-		&i.Total,
-		&i.CreatedAt,
-		&i.PaymentMethod,
-	)
+	err := row.Scan(&i.BillID, &i.CreatedAt, &i.PaymentMethod)
 	return i, err
 }
 
 const listBill = `-- name: ListBill :many
-SELECT bill_id, total, created_at, payment_method FROM bill
+SELECT bill_id, created_at, payment_method FROM bill
 `
 
 func (q *Queries) ListBill(ctx context.Context) ([]Bill, error) {
@@ -77,12 +67,7 @@ func (q *Queries) ListBill(ctx context.Context) ([]Bill, error) {
 	var items []Bill
 	for rows.Next() {
 		var i Bill
-		if err := rows.Scan(
-			&i.BillID,
-			&i.Total,
-			&i.CreatedAt,
-			&i.PaymentMethod,
-		); err != nil {
+		if err := rows.Scan(&i.BillID, &i.CreatedAt, &i.PaymentMethod); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -98,17 +83,16 @@ func (q *Queries) ListBill(ctx context.Context) ([]Bill, error) {
 
 const updateBill = `-- name: UpdateBill :exec
 UPDATE bill
-SET total = ?, payment_method = ?
+SET payment_method = ?
 WHERE bill_id = ?
 `
 
 type UpdateBillParams struct {
-	Total         float64
 	PaymentMethod sql.NullString
 	BillID        string
 }
 
 func (q *Queries) UpdateBill(ctx context.Context, arg UpdateBillParams) error {
-	_, err := q.db.ExecContext(ctx, updateBill, arg.Total, arg.PaymentMethod, arg.BillID)
+	_, err := q.db.ExecContext(ctx, updateBill, arg.PaymentMethod, arg.BillID)
 	return err
 }

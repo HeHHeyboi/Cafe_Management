@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/dto"
-	"github.com/HeHHeyboi/Cafe_Management/backend/internal/model"
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/repository"
 )
 
@@ -17,10 +16,7 @@ func NewBillService(repo repository.BillRepo) BillService {
 }
 
 func (bs BillService) CreateBill(ctx context.Context, req dto.BillRequest) (string, error) {
-	bill := model.Bill{
-		PaymentMethod: req.PaymentMethod,
-	}
-	id, err := bs.repo.CreateBill(ctx, bill)
+	id, err := bs.repo.CreateBill(ctx, req.PaymentMethod)
 	if err != nil {
 		return "", nil
 	}

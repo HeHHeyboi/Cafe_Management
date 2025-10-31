@@ -1,11 +1,11 @@
 -- name: CreateBill :one
-INSERT INTO bill(bill_id, created_at, total, payment_method)
-VALUES (lower(hex(randomblob(8))), datetime('now','localtime'), ?, ?)
+INSERT INTO bill(bill_id, created_at, payment_method)
+VALUES (lower(hex(randomblob(8))), datetime('now','localtime'), ?)
 RETURNING bill_id;
 
 -- name: UpdateBill :exec
 UPDATE bill
-SET total = ?, payment_method = ?
+SET payment_method = ?
 WHERE bill_id = ?;
 
 -- name: GetBillByID :one

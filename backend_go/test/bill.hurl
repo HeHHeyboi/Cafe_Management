@@ -5,8 +5,7 @@ POST http://localhost:8080/bill
 [Options]
 output: -
 {
-	"payment_method":"promptpay",
-	"total": 1
+	"payment_method":"promptpay"
 }
 HTTP 201
 
@@ -14,8 +13,7 @@ POST http://localhost:8080/bill
 [Options]
 output: -
 {
-	"payment_method":"cash",
-	"total": 1
+	"payment_method":"cash"
 }
 HTTP 201
 [Captures]
@@ -35,7 +33,7 @@ PUT http://localhost:8080/bill/{{id}}
 [Options]
 output: -
 {
-	"total": 100.00
+	"payment_method":"promptpay"
 }
 HTTP 200
 

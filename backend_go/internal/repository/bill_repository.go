@@ -9,7 +9,7 @@ import (
 )
 
 type BillRepo interface {
-	CreateBill(ctx context.Context, arg model.Bill) (string, error)
+	CreateBill(ctx context.Context, payment_method string) (string, error)
 	UpdateBillByID(ctx context.Context, bill_id string, payment_method string) error
 	GetBillByID(ctx context.Context, bill_id string) (model.Bill, error)
 	ListBill(ctx context.Context) ([]model.Bill, error)
@@ -25,13 +25,8 @@ func NewBillRepo(db *database.Queries) BillRepo {
 	return &billRepo{db: db}
 }
 
-func (b *billRepo) CreateBill(ctx context.Context, arg model.Bill) (string, error) {
-	id, err := b.db.CreateBill(ctx, database.CreateBillParams{
-		PaymentMethod: sql.NullString{
-			String: arg.PaymentMethod,
-			Valid:  arg.PaymentMethod != "",
-		},
-	})
+func (b *billRepo) CreateBill(ctx context.Context, payment_method string) (string, error) {
+	id, err := b.db.CreateBill(ctx, sql.NullString{String: payment_method, Valid: payment_method != ""})
 	if err != nil {
 		return "", err
 	}
@@ -60,6 +55,7 @@ func (b *billRepo) ListBill(ctx context.Context) ([]model.Bill, error) {
 	if err != nil {
 		return nil, err
 	}
+	var total sql.NullFloat64
 
 	var bills []model.Bill
 	for _, data := range datas {
@@ -67,8 +63,13 @@ func (b *billRepo) ListBill(ctx context.Context) ([]model.Bill, error) {
 			CreatedAt:     data.CreatedAt,
 			Id:            data.BillID,
 			PaymentMethod: data.PaymentMethod.String,
-			Total:         data.Total,
 		}
+		total, err = b.db.GetTotalByBillId(ctx, bill.Id)
+		if err != nil {
+			return nil, err
+		}
+
+		bill.Total = total.Float64
 		bills = append(bills, bill)
 	}
 

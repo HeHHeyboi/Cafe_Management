@@ -62,7 +62,6 @@ func (or orderRepo) GetOrderFromBill(ctx context.Context, bill_id string) ([]mod
 
 		orders = append(orders, order)
 	}
-
 	return orders, nil
 }
 
