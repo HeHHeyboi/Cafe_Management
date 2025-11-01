@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS "orders"(
 	size TEXT,
 	type TEXT,
 	FOREIGN KEY (bill_id) REFERENCES bill(bill_id) ON DELETE CASCADE,
-	FOREIGN KEY (menu_id) REFERENCES menu(menu_id) ON DELETE SET NULL
+	FOREIGN KEY (menu_id) REFERENCES menu(menu_id) ON DELETE SET 0
 );
 -- +goose Down
 DROP TABLE "orders";

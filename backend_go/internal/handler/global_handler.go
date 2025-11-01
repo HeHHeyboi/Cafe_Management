@@ -20,18 +20,18 @@ func (gh *GlobalHandler) Reset(ctx *gin.Context) {
 		return
 	}
 
+	err = gh.MenuService.DeleteAllMenu(ctx.Request.Context())
+	if err != nil {
+		dto.BindingErrorMsg(err, ctx)
+		return
+	}
+
 	err = gh.OrderService.DeleteAllOrder(ctx.Request.Context())
 	if err != nil {
 		dto.BindingErrorMsg(err, ctx)
 		return
 	}
 	err = gh.UserService.DeleteAllUser(ctx.Request.Context())
-	if err != nil {
-		dto.BindingErrorMsg(err, ctx)
-		return
-	}
-
-	err = gh.MenuService.DeleteAllMenu(ctx.Request.Context())
 	if err != nil {
 		dto.BindingErrorMsg(err, ctx)
 		return
