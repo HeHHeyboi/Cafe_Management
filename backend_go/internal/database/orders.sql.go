@@ -11,17 +11,18 @@ import (
 )
 
 const createNewOrder = `-- name: CreateNewOrder :exec
-INSERT INTO orders(bill_id, menu_id, amount, "type","size",menu_name)
+INSERT INTO orders(bill_id, menu_id, amount, "type","size", menu_name)
 SELECT ?,?,?,?,?,m.name FROM menu AS m
-	WHERE menu.menu_id = ?
+WHERE m.menu_id = ?
 `
 
 type CreateNewOrderParams struct {
-	BillID string
-	MenuID int64
-	Amount int64
-	Type   sql.NullString
-	Size   sql.NullString
+	BillID   string
+	MenuID   int64
+	Amount   int64
+	Type     sql.NullString
+	Size     sql.NullString
+	TargetID int64
 }
 
 func (q *Queries) CreateNewOrder(ctx context.Context, arg CreateNewOrderParams) error {
@@ -31,6 +32,7 @@ func (q *Queries) CreateNewOrder(ctx context.Context, arg CreateNewOrderParams) 
 		arg.Amount,
 		arg.Type,
 		arg.Size,
+		arg.TargetID,
 	)
 	return err
 }

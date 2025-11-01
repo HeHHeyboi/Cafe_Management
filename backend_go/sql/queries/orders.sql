@@ -1,7 +1,7 @@
 -- name: CreateNewOrder :exec
-INSERT INTO orders(bill_id, menu_id, amount, "type","size",menu_name)
-SELECT ?,@menu_id,?,?,?,m.name FROM menu AS m
-	WHERE menu.menu_id = @menu_id;
+INSERT INTO orders(bill_id, menu_id, amount, "type","size", menu_name)
+SELECT ?,?,?,?,?,m.name FROM menu AS m
+WHERE m.menu_id = @target_id;
 
 -- name: GetOrderFromBill :many
 SELECT order_id, o.bill_id,o.menu_name, o.menu_id, amount, o."size", o."type",1.0 * o.amount * (c.price + t.addition_price) AS total 

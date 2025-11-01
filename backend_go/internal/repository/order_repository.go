@@ -35,6 +35,7 @@ func (or orderRepo) CreateNewOrder(ctx context.Context, billID string, arg model
 			String: arg.Size,
 			Valid:  arg.Size != "",
 		},
+		TargetID: arg.MenuId,
 	})
 	if err != nil {
 		return err
@@ -66,5 +67,9 @@ func (or orderRepo) GetOrderFromBill(ctx context.Context, bill_id string) ([]mod
 }
 
 func (or orderRepo) DeleteAllOrder(ctx context.Context) error {
+	err := or.db.DeleteOrder(ctx)
+	if err != nil {
+		return err
+	}
 	return nil
 }

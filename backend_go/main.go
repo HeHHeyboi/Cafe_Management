@@ -120,7 +120,15 @@ func main() {
 	bill_service := service.NewBillService(repository.NewBillRepo(cfg.db))
 	bill_handler := handler.NewBillHandler(bill_service)
 
-	global_handler := handler.GlobalHandler{UserService: &user_service, MenuService: &menu_service, BillSevice: &bill_service}
+	order_service := service.NewOrderService(repository.NewOrderRepo(cfg.db))
+	order_handler := handler.NewOrderHandler(order_service)
+
+	global_handler := handler.GlobalHandler{
+		UserService:  &user_service,
+		MenuService:  &menu_service,
+		BillSevice:   &bill_service,
+		OrderService: &order_service,
+	}
 
 	r.Static("/upload", uploadDir)
 	r.GET("/reset", global_handler.Reset)
@@ -141,6 +149,9 @@ func main() {
 	r.GET("/bill/:id", bill_handler.GetBillById)
 	r.PUT("/bill/:id", bill_handler.UpdateBillById)
 	r.DELETE("/bill/:id", bill_handler.DeleteBillById)
+
+	r.POST("/order/:id", order_handler.CreateOrder)
+	r.GET("/order/:id", order_handler.GetOrdersByBillID)
 	// r.GET("/checkAuth", func(ctx *gin.Context) {
 	// 	checkAuth(&cfg, ctx)
 	// })

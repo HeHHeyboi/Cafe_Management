@@ -7,17 +7,34 @@ import (
 )
 
 type GlobalHandler struct {
-	UserService *service.UserService
-	MenuService *service.MenuService
-	BillSevice  *service.BillService
+	UserService  *service.UserService
+	MenuService  *service.MenuService
+	BillSevice   *service.BillService
+	OrderService *service.OrderService
 }
 
 func (gh *GlobalHandler) Reset(ctx *gin.Context) {
-	err := gh.UserService.DeleteAllUser(ctx.Request.Context())
-	err = gh.MenuService.DeleteAllMenu(ctx.Request.Context())
-	err = gh.BillSevice.DeleteAllBill(ctx.Request.Context())
+	err := gh.BillSevice.DeleteAllBill(ctx.Request.Context())
 	if err != nil {
 		dto.BindingErrorMsg(err, ctx)
+		return
+	}
+
+	err = gh.OrderService.DeleteAllOrder(ctx.Request.Context())
+	if err != nil {
+		dto.BindingErrorMsg(err, ctx)
+		return
+	}
+	err = gh.UserService.DeleteAllUser(ctx.Request.Context())
+	if err != nil {
+		dto.BindingErrorMsg(err, ctx)
+		return
+	}
+
+	err = gh.MenuService.DeleteAllMenu(ctx.Request.Context())
+	if err != nil {
+		dto.BindingErrorMsg(err, ctx)
+		return
 	}
 
 	ctx.JSON(200, gin.H{"msg": "reset success"})
