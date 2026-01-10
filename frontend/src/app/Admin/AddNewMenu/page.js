@@ -37,7 +37,7 @@ function ImageUpload({ image, onChange }) {
           className="absolute inset-0 opacity-0 cursor-pointer"
         />
         {image ? (
-          <Image
+          <img
             src={URL.createObjectURL(image)}
             alt="preview"
             className="w-full h-auto max-h-[600px] object-contain"
@@ -83,10 +83,9 @@ function CategorySelector({ selected, onSelect }) {
               key={cat.title}
               onClick={() => onSelect(cat.title)}
               className={`flex flex-col items-center justify-center rounded-xl py-3 px-2 shadow-sm border transition
-                ${
-                  isActive
-                    ? "bg-blue-500 text-white border-blue-500"
-                    : "bg-gray-50 text-gray-700 hover:bg-gray-100"
+                ${isActive
+                  ? "bg-blue-500 text-white border-blue-500"
+                  : "bg-gray-50 text-gray-700 hover:bg-gray-100"
                 }`}
             >
               <Icon className="h-6 w-6 mb-1" />
