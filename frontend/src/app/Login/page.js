@@ -26,7 +26,7 @@ export default function AdminLoginPage() {
   // ฟังก์ชันตรวจสอบ login
   const handleLogin = (e) => {
     e.preventDefault(); // ป้องกันการ reload หน้าเมื่อ submit
-    
+
     axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/login`, {
       "email": username,
       "password": password,
@@ -39,10 +39,10 @@ export default function AdminLoginPage() {
         router.push('/Admin/MenuOrder');
       } else {
         setError(response.data.msg);
-      }      
+      }
     }).catch((error) => {
       console.log(error);
-      const msg = error.response?.data?.['Bad Requst'] ?? error.response.data?.['error'];
+      const msg = error.response?.data?.['Bad Requst'] ?? error.response?.data?.['error'] ?? "Network Error or Server Unreachable";
       alert(msg);
     })
     // router.push("/Admin/MenuOrder")
