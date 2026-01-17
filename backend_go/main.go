@@ -152,117 +152,12 @@ func main() {
 
 	r.POST("/order/:id", order_handler.CreateOrder)
 	r.GET("/order/:id", order_handler.GetOrdersByBillID)
-	// r.GET("/checkAuth", func(ctx *gin.Context) {
-	// 	checkAuth(&cfg, ctx)
-	// })
-	// r.POST("/user", func(ctx *gin.Context) {
-	// 	createUser(&cfg, ctx)
-	// })
-	// r.GET("/user", func(ctx *gin.Context) {
-	// 	getUser(&cfg, ctx)
-	// })
-	// r.GET("/user/:id", func(ctx *gin.Context) {
-	// 	GetUserByID(&cfg, ctx)
-	// })
-	// r.POST("/user/login", func(ctx *gin.Context) {
-	// 	loginUser(&cfg, ctx)
-	// })
-	// r.GET("/user/logout", func(ctx *gin.Context) {
-	// 	logoutUser(&cfg, ctx)
-	// })
-	// r.GET("/user/bill", func(ctx *gin.Context) {
-	// 	GetUserBill(&cfg, ctx)
-	// })
-	// r.GET("/user/bill/:id", func(ctx *gin.Context) {
-	// 	GetUserBillByID(&cfg, ctx)
-	// })
-	//
-	// r.POST("/gallery", func(ctx *gin.Context) {
-	// 	BookGallery(&cfg, ctx)
-	// })
-	// r.GET("/gallery", func(ctx *gin.Context) {
-	// 	listBooking(&cfg, ctx)
-	// })
-	// r.DELETE("/gallery/:name", func(ctx *gin.Context) {
-	// 	DeleteGallery(&cfg, ctx)
-	// })
-	//
-	// r.GET("/menu", func(ctx *gin.Context) {
-	// 	GetAllMenu(&cfg, ctx)
-	// })
-	// r.POST("/menu", func(ctx *gin.Context) {
-	// 	AddNewMenu(&cfg, ctx)
-	// })
-	//
-	// r.GET("/menu/id/:id", GetMenu(&cfg))
-	// r.GET("/menu/name/:name", GetMenu(&cfg))
-	//
-	// r.DELETE("/menu/id/:id", func(ctx *gin.Context) {
-	// 	DeleteMenuByID(&cfg, ctx)
-	// })
-	// r.DELETE("/menu/name/:name", func(ctx *gin.Context) {
-	// 	DeleteMenuByName(&cfg, ctx)
-	// })
-	//
-	// r.PUT("/menu/id/:id", UpdateMenu(&cfg))
-	// r.PUT("/menu/name/:name", UpdateMenu(&cfg))
-	//
-	// r.GET("/giveAway", func(ctx *gin.Context) {
-	// 	GetAllGiveAways(&cfg, ctx)
-	// })
-	// r.POST("/giveAway", func(ctx *gin.Context) {
-	// 	AddNewGiveAway(&cfg, ctx)
-	// })
-	// r.PUT("/giveAway/id/:id", func(ctx *gin.Context) {
-	// 	UpdateGiveAway(&cfg, ctx)
-	// })
-	// r.PUT("/giveAway/name/:name", func(ctx *gin.Context) {
-	// 	UpdateGiveAway(&cfg, ctx)
-	// })
-	//
-	// r.POST("/bill", func(ctx *gin.Context) {
-	// 	CreateNewBill(&cfg, ctx)
-	// })
-	// r.GET("/bill", func(ctx *gin.Context) {
-	// 	GetBill(&cfg, ctx)
-	// })
-	// r.GET("/bill/:id", func(ctx *gin.Context) {
-	// 	GetBillByID(&cfg, ctx)
-	// })
-	// r.GET("/bill/:id/update", func(ctx *gin.Context) {
-	// 	UpdateBillStatus(&cfg, ctx)
-	// })
-	// r.DELETE("/bill/:id", func(ctx *gin.Context) {
-	// 	DeleteBillByID(&cfg, ctx)
-	// })
-	//
-	// r.GET("/reset", func(ctx *gin.Context) {
-	// 	err := cfg.db.DeleteAllUser(ctx.Request.Context())
-	// 	err = cfg.db.DeleteGallery(ctx.Request.Context())
-	// 	err = cfg.db.DeleteAllMenu(ctx.Request.Context())
-	// 	err = cfg.db.DeleteGiveAways(ctx.Request.Context())
-	// 	err = cfg.db.DeleteBill(ctx.Request.Context())
-	// 	err = cfg.db.DeleteIMG(ctx.Request.Context())
-	//
-	// 	if err != nil {
-	// 		ctx.Error(err)
-	// 		ctx.String(http.StatusInternalServerError, "Can't reset data")
-	// 		return
-	// 	}
-	// 	ctx.JSON(200, gin.H{
-	// 		"msg": "Reset Success",
-	// 	})
-	// })
+
 	r.Run()
 }
 
 func setUpDB(db *sql.DB, cfg *Config) {
 	var err error
-	// _, err = db.Exec(enableForeignKey)
-	// if err != nil {
-	// 	fmt.Println("Enable Foreign Key error", err)
-	// 	os.Exit(1)
-	// }
 
 	goose.SetBaseFS(embedMigration)
 	if err := goose.SetDialect("sqlite"); err != nil {
