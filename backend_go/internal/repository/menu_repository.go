@@ -22,7 +22,7 @@ type menuRepo struct {
 	db *database.Queries
 }
 
-func NewMenuRepo(db *database.Queries) MenuRepo {
+func newMenuRepo(db *database.Queries) MenuRepo {
 	return &menuRepo{db: db}
 }
 

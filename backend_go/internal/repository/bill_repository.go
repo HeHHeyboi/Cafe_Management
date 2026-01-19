@@ -21,7 +21,7 @@ type billRepo struct {
 	db *database.Queries
 }
 
-func NewBillRepo(db *database.Queries) BillRepo {
+func newBillRepo(db *database.Queries) BillRepo {
 	return &billRepo{db: db}
 }
 

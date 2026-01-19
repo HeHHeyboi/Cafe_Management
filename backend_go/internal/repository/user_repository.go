@@ -22,7 +22,7 @@ type userRepository struct {
 	db *database.Queries
 }
 
-func NewUserRepo(q *database.Queries) UserRepo {
+func newUserRepo(q *database.Queries) UserRepo {
 	return &userRepository{db: q}
 }
 

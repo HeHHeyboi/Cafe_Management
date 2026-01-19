@@ -18,7 +18,7 @@ type orderRepo struct {
 	db *database.Queries
 }
 
-func NewOrderRepo(db *database.Queries) OrderRepo {
+func newOrderRepo(db *database.Queries) OrderRepo {
 	return orderRepo{db: db}
 }
 

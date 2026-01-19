@@ -109,18 +109,18 @@ func main() {
 		AllowHeaders:     []string{"Content-Type", "Authorization", "X-Requested-With"},
 		AllowCredentials: true,
 	}))
+	repos := repository.CreateRepository(cfg.db)
 
-	user_repo := repository.NewUserRepo(cfg.db)
-	user_service := service.UserService{Repo: user_repo, Secret: cfg.secret}
+	user_service := service.UserService{Repo: repos.User, Secret: cfg.secret}
 	user_handler := handler.NewUserHanlder(user_service)
 
-	menu_service := service.NewMenuService(repository.NewMenuRepo(cfg.db))
+	menu_service := service.NewMenuService(repos.Menu)
 	menu_hanlder := handler.NewMenuHandler(menu_service)
 
-	bill_service := service.NewBillService(repository.NewBillRepo(cfg.db))
+	bill_service := service.NewBillService(repos.Bill)
 	bill_handler := handler.NewBillHandler(bill_service)
 
-	order_service := service.NewOrderService(repository.NewOrderRepo(cfg.db))
+	order_service := service.NewOrderService(repos.Order)
 	order_handler := handler.NewOrderHandler(order_service)
 
 	global_handler := handler.GlobalHandler{
