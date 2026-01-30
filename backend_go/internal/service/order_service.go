@@ -31,6 +31,28 @@ func (o OrderService) CreateOrder(ctx context.Context, billId string, req dto.Or
 	return nil
 }
 
+func (o OrderService) GetAllOrder(ctx context.Context) ([]dto.OrderResponse, error) {
+	orders, err := o.repo.GetAllOrder(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var response []dto.OrderResponse
+	for _, order := range orders {
+		res := dto.OrderResponse{
+			Size:   order.Size,
+			Type:   order.Type,
+			Id:     order.Id,
+			MenuId: order.MenuId,
+			Amount: order.Amount,
+			Total:  order.Total,
+		}
+		response = append(response, res)
+	}
+
+	return response, nil
+}
+
 func (o OrderService) GetOrdersByBillID(ctx context.Context, billID string) ([]dto.OrderResponse, error) {
 	orders, err := o.repo.GetOrderFromBill(ctx, billID)
 	if err != nil {

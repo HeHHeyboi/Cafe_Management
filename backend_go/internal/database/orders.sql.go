@@ -46,6 +46,54 @@ func (q *Queries) DeleteOrder(ctx context.Context) error {
 	return err
 }
 
+const getAllOrder = `-- name: GetAllOrder :many
+SELECT o.bill_id,o.order_id, o.menu_name,o.menu_id, o.amount, o."size", o."type", 1.0 * o.amount * (c.price + t.addition_price) AS total
+FROM orders AS o, category as C, "type" AS t
+`
+
+type GetAllOrderRow struct {
+	BillID   string
+	OrderID  int64
+	MenuName string
+	MenuID   int64
+	Amount   int64
+	Size     sql.NullString
+	Type     sql.NullString
+	Total    int64
+}
+
+func (q *Queries) GetAllOrder(ctx context.Context) ([]GetAllOrderRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAllOrder)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAllOrderRow
+	for rows.Next() {
+		var i GetAllOrderRow
+		if err := rows.Scan(
+			&i.BillID,
+			&i.OrderID,
+			&i.MenuName,
+			&i.MenuID,
+			&i.Amount,
+			&i.Size,
+			&i.Type,
+			&i.Total,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getOrderFromBill = `-- name: GetOrderFromBill :many
 SELECT order_id, o.bill_id,o.menu_name, o.menu_id, amount, o."size", o."type",1.0 * o.amount * (c.price + t.addition_price) AS total 
 FROM orders AS o, category AS c, "type" AS t

@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/dto"
 	"github.com/HeHHeyboi/Cafe_Management/backend/internal/service"
 	"github.com/gin-gonic/gin"
@@ -12,6 +14,17 @@ type OrderHandler struct {
 
 func NewOrderHandler(service service.OrderService) OrderHandler {
 	return OrderHandler{service}
+}
+
+func (o OrderHandler) GetAllOrder(ctx *gin.Context) {
+	response, err := o.service.GetAllOrder(ctx.Request.Context())
+	fmt.Println(response)
+	if err != nil {
+		dto.BindingErrorMsg(err, ctx)
+		return
+	}
+
+	ctx.JSON(200, response)
 }
 
 func (o OrderHandler) CreateOrder(ctx *gin.Context) {

@@ -11,6 +11,7 @@ import (
 type OrderRepo interface {
 	CreateNewOrder(ctx context.Context, billID string, arg model.Order) error
 	GetOrderFromBill(ctx context.Context, bill_id string) ([]model.Order, error)
+	GetAllOrder(ctx context.Context) ([]model.Order, error)
 	DeleteAllOrder(ctx context.Context) error
 }
 
@@ -20,6 +21,29 @@ type orderRepo struct {
 
 func newOrderRepo(db *database.Queries) OrderRepo {
 	return orderRepo{db: db}
+}
+
+func (or orderRepo) GetAllOrder(ctx context.Context) ([]model.Order, error) {
+	datas, err := or.db.GetAllOrder(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	orders := []model.Order{}
+	for _, data := range datas {
+		order := model.Order{
+			MenuName: data.MenuName,
+			Size:     data.Size.String,
+			Type:     data.Type.String,
+			Id:       data.OrderID,
+			MenuId:   data.Amount,
+			Amount:   data.Amount,
+			Total:    float64(data.Total),
+		}
+		orders = append(orders, order)
+	}
+
+	return orders, nil
 }
 
 func (or orderRepo) CreateNewOrder(ctx context.Context, billID string, arg model.Order) error {

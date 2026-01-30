@@ -144,12 +144,14 @@ func main() {
 	r.PUT("/menu/:id", menu_hanlder.UpdateMenyByID)
 	r.DELETE("/menu/:id", menu_hanlder.DeleteMenuByID)
 
+	r.POST("/bill/new", bill_handler.CreateBill)
 	r.POST("/bill", bill_handler.CreateBill)
 	r.GET("/bill", bill_handler.GetAllBills)
 	r.GET("/bill/:id", bill_handler.GetBillById)
 	r.PUT("/bill/:id", bill_handler.UpdateBillById)
 	r.DELETE("/bill/:id", bill_handler.DeleteBillById)
 
+	r.GET("/order", order_handler.GetAllOrder)
 	r.POST("/order/:id", order_handler.CreateOrder)
 	r.GET("/order/:id", order_handler.GetOrdersByBillID)
 
