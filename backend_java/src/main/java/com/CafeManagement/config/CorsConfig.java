@@ -13,7 +13,9 @@ public class CorsConfig {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedOrigins("https://backend.pasitlab.com", "https://cafebackend.pasitlab.com", "http://localhost:3000")
+				registry.addMapping("/**")
+						.allowedOrigins("https://backend.pasitlab.com", "https://cafebackend.pasitlab.com",
+								"http://localhost:3000", "http://192.168.1.245:3000")
 						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH").allowedHeaders("*")
 						.allowCredentials(true);
 			}
